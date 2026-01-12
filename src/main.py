@@ -2,10 +2,18 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from controllers import auth_controller
 import psycopg2
-from pydantic import BaseModel
-from typing import List
+from pydantic import BaseModel, EmailStr
+from typing import List, Optional, ClassVar
+from passlib.context import CryptContext
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
+from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
+
+
 
 app = FastAPI()
+
+
 
 origins = [
     "https://sagafe.vercel.app",
@@ -22,11 +30,54 @@ app.add_middleware(
 
 app.include_router(auth_controller.router)
 
+class SignUpRequest(BaseModel):
+    first_name: str
+    last_name: str
+    email: EmailStr
+    password: str
+    golf_handicap: Optional[int] = None
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+class UserResponse(BaseModel):
+    first_name: str
+    last_name: str
+    role: str
+    golf_handicap: Optional[int]
 
 class Events(BaseModel):
     township: str
     golf_course: str
     # Add other fields as per your database schema
+
+class User(BaseModel):
+    __tablename__ = "user"
+
+    id: int = Column(Integer, primary_key=True, index=True)
+    first_name: str = Column(String, nullable=False)
+    last_name: str = Column(String, nullable=False)
+    role: str = Column(String, default="user")
+    created_at: str = Column(DateTime(timezone=True), server_default=func.now())
+    last_logged_in: str = Column(DateTime(timezone=True), nullable=True)
+    is_active: bool = Column(Boolean, default=True)
+    golf_handicap: Optional[int] = Column(Integer, nullable=True)
+
+    account: ClassVar = relationship("UserAccount", back_populates="user", uselist=False)
+
+
+class UserAccount(BaseModel):
+    __tablename__ = "user_account"
+
+    id: int = Column(Integer, primary_key=True, index=True)
+    user_id: int = Column(Integer, ForeignKey("user.id"))
+    email: str = Column(String, unique=True, nullable=False, index=True)
+    password: str = Column(String, nullable=False)
+    created_on: str = Column(DateTime(timezone=True), server_default=func.now())
+    last_logged_in: str = Column(DateTime(timezone=True), nullable=True)
+
+    user: ClassVar = relationship("User", back_populates="account")
 
 # Function to get a database connection
 def get_db_connection():
