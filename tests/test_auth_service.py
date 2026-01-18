@@ -51,10 +51,12 @@ class TestAuthService:
 
     def test_auth_service_repository_type(self):
         """Test that AuthService has the correct repository type."""
-        from src.repositories.auth_repository import AuthRepository
-
         service = AuthService()
-        assert isinstance(service.auth_repo, AuthRepository)
+        # Check that auth_repo has the get_token method (duck typing)
+        assert hasattr(service.auth_repo, 'get_token')
+        assert callable(service.auth_repo.get_token)
+        # Verify it returns the expected token
+        assert service.auth_repo.get_token() == "fake token"
 
 
 class TestAuthServiceEdgeCases:

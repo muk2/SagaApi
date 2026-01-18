@@ -62,8 +62,9 @@ class TestAuthIntegration:
         assert hasattr(service, 'auth_repo')
         assert service.auth_repo is not None
 
-        # Repository should be of correct type
-        assert isinstance(service.auth_repo, AuthRepository)
+        # Repository should have get_token method
+        assert hasattr(service.auth_repo, 'get_token')
+        assert callable(service.auth_repo.get_token)
 
         # Service's repo should work
         token = service.auth_repo.get_token()

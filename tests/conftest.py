@@ -2,21 +2,6 @@
 Pytest configuration and fixtures for SagaApi tests.
 """
 import pytest
-from fastapi.testclient import TestClient
-from src.main import app
-
-
-@pytest.fixture
-def client():
-    """
-    Fixture providing a TestClient for FastAPI application.
-
-    Usage:
-        def test_endpoint(client):
-            response = client.get("/some-endpoint")
-            assert response.status_code == 200
-    """
-    return TestClient(app)
 
 
 @pytest.fixture
@@ -41,3 +26,25 @@ def expired_auth_token():
     Fixture providing an expired authentication token for testing edge cases.
     """
     return "expired_token"
+
+
+@pytest.fixture
+def auth_service():
+    """
+    Fixture providing an AuthService instance for testing.
+    """
+    import sys
+    sys.path.insert(0, '/Users/malchal/SagaApi/src')
+    from services.auth_service import AuthService
+    return AuthService()
+
+
+@pytest.fixture
+def auth_repository():
+    """
+    Fixture providing an AuthRepository instance for testing.
+    """
+    import sys
+    sys.path.insert(0, '/Users/malchal/SagaApi/src')
+    from repositories.auth_repository import AuthRepository
+    return AuthRepository()
