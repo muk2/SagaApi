@@ -29,3 +29,7 @@ build/
 # Logs and temporary files
 *.log
 tmp/
+
+# Ralph orchestrator - ignore local session logs
+ralph-tasks/sessions/
+ralph-tasks/.ralph/

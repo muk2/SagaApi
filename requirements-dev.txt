@@ -1,0 +1,25 @@
+# Development dependencies for SagaApi
+# Install with: pip install -r requirements-dev.txt
+
+# Testing
+pytest>=8.0.0
+pytest-asyncio>=0.23.0
+pytest-cov>=4.1.0
+httpx>=0.26.0  # For FastAPI test client
+
+# Code quality
+ruff>=0.1.0
+black>=24.0.0
+isort>=5.13.0
+
+# Type checking (optional)
+mypy>=1.8.0
+
+# Security scanning (optional)
+bandit>=1.7.0
+
+# Database migrations (if using Alembic)
+alembic>=1.13.0
+
+# Development utilities
+ipython>=8.20.0

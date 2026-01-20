@@ -1,0 +1,58 @@
+# Ralph Orchestrator Configuration for SagaApi
+# https://github.com/mikeyobrien/ralph-orchestrator
+
+[ralph]
+# Backend to use (claude, kiro, gemini, codex, amp)
+backend = "claude"
+
+# Maximum iterations before stopping (prevents infinite loops)
+max_iterations = 50
+
+# Timeout in seconds (8 hours = 28800 seconds)
+timeout = 28800
+
+# Working directory (relative to project root)
+work_dir = "ralph-tasks"
+
+# Session logging
+log_sessions = true
+session_log_dir = "ralph-tasks/sessions"
+
+[claude]
+# Claude-specific settings
+# Requires ANTHROPIC_API_KEY environment variable
+model = "claude-sonnet-4-5-20250929"
+max_tokens = 8192
+
+# Enable yolo mode (auto-approve tool usage)
+yolo_mode = true
+
+[gates]
+# Quality gates that must pass before iteration completes
+# Ralph won't proceed to next iteration if these fail
+
+# Run tests (requires pytest)
+tests = { command = "pytest", enabled = true }
+
+# Type checking (requires mypy - optional)
+# types = { command = "mypy src/", enabled = false }
+
+# Linting (requires ruff)
+lint = { command = "ruff check src/", enabled = true }
+
+# Format check (requires ruff)
+format = { command = "ruff format --check src/", enabled = false }
+
+# Build/import check
+build = { command = "python -m py_compile src/**/*.py", enabled = false }
+
+[git]
+# Git integration settings
+auto_commit = true
+commit_prefix = "[ralph]"
+branch_prefix = "ralph/"
+
+[output]
+# Output formatting
+verbose = true
+show_diffs = true

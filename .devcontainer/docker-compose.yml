@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/workspace:cached
+      - venv:/workspace/.venv
+      - cargo-cache:/usr/local/cargo/registry
+    command: sleep infinity
+    environment:
+      - DATABASE_URL=postgresql://sagaapi:sagaapi_dev@db:5432/sagaapi
+      - PYTHONPATH=/workspace/src
+    depends_on:
+      - db
+    networks:
+      - sagaapi-network
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: sagaapi
+      POSTGRES_PASSWORD: sagaapi_dev
+      POSTGRES_DB: sagaapi
+    ports:
+      - "5432:5432"
+    networks:
+      - sagaapi-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sagaapi"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres-data:
+  venv:
+  cargo-cache:
+
+networks:
+  sagaapi-network:
+    driver: bridge
