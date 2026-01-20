@@ -1,0 +1,24 @@
+fastapi
+uvicorn[standard]
+python-multipart
+
+# CORS support for React frontend
+fastapi[all]
+
+# Optional but recommended for future API features
+pydantic
+pydantic[email]
+
+# Database (you said you're using Postgres now, MySQL later)
+sqlalchemy
+psycopg2-binary
+
+# If you plan JWT auth soon
+python-jose
+passlib[bcrypt]
+
+# If scraping code uses aiohttp or requests, include these:
+requests
+beautifulsoup4
+lxml
+aiohttp
