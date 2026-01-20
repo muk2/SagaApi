@@ -1,0 +1,23 @@
+[project]
+name = "sagaapi"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "aiohttp>=3.13.3",
+    "beautifulsoup4>=4.14.3",
+    "fastapi[all]>=0.128.0",
+    "lxml>=6.0.2",
+    "passlib[bcrypt]>=1.7.4",
+    "psycopg2-binary>=2.9.11",
+    "pydantic[email]>=2.12.5",
+    "python-jose>=3.5.0",
+    "python-multipart>=0.0.21",
+    "requests>=2.32.5",
+    "sqlalchemy>=2.0.45",
+    "uvicorn[standard]>=0.40.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
