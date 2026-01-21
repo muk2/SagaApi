@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker ps:*)",
+      "Bash(test:*)",
+      "Bash(PYTHONPATH=/Users/malchal/SagaApi/src python3 -m pytest:*)",
+      "Bash(python3 -m pytest:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(gh pr create:*)",
+      "Bash(gh pr diff:*)",
+      "Bash(gh pr review:*)",
+      "Bash(git push:*)"
+    ]
+  }
+}

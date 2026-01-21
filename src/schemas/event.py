@@ -7,4 +7,4 @@ class EventRead(BaseModel):
     golf_course: str
 
     class Config:
-        from_attributes = True   # Pydantic v2 (ORM mode)
+        from_attributes = True  # Pydantic v2 (ORM mode)
