@@ -7,15 +7,31 @@ from .auth import (
     TokenResponse,
     UserResponse,
 )
-from .event import EventRead
+from .event import (
+    EventCreate,
+    EventList,
+    EventRead,
+    EventReadWithTiers,
+    EventUpdate,
+    PriceTierCreate,
+    PriceTierRead,
+    PriceTierUpdate,
+)
 
 __all__ = [
+    "EventCreate",
+    "EventList",
+    "EventRead",
+    "EventReadWithTiers",
+    "EventUpdate",
     "LoginRequest",
     "LoginResponse",
+    "PriceTierCreate",
+    "PriceTierRead",
+    "PriceTierUpdate",
     "SignUpRequest",
     "SignUpResponse",
     "TokenPayload",
     "TokenResponse",
     "UserResponse",
-    "EventRead",
 ]

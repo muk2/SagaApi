@@ -1,4 +1,4 @@
 from .auth_repository import AuthRepository
-from .event_repository import get_events
+from .event_repository import EventRepository, PriceTierRepository
 
-__all__ = ["AuthRepository", "get_events"]
+__all__ = ["AuthRepository", "EventRepository", "PriceTierRepository"]
