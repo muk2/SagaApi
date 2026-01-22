@@ -44,3 +44,8 @@ class SignUpResponse(BaseModel):
 class TokenPayload(BaseModel):
     sub: int
     exp: int | None = None
+    token_version: int = 1
+
+
+class LogoutResponse(BaseModel):
+    message: str

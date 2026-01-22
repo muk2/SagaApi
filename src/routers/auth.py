@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from core.database import get_db
-from schemas.auth import LoginRequest, LoginResponse, SignUpRequest, SignUpResponse, UserResponse
+from core.dependencies import CurrentUser
+from schemas.auth import LoginRequest, LoginResponse, LogoutResponse, SignUpRequest, SignUpResponse, UserResponse
 from services.auth_service import AuthService
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -46,3 +47,16 @@ def login(data: LoginRequest, db: Session = Depends(get_db)) -> LoginResponse:
         token_type="bearer",
         user=user_response,
     )
+
+
+@router.post("/logout", response_model=LogoutResponse)
+def logout(current_user: CurrentUser, db: Session = Depends(get_db)) -> LogoutResponse:
+    """
+    Logout the current user by invalidating their token.
+
+    Increments the user's token_version, which invalidates all existing tokens.
+    Requires a valid JWT token in the Authorization header.
+    """
+    service = AuthService(db)
+    service.logout(current_user.id)
+    return LogoutResponse(message="Successfully logged out")

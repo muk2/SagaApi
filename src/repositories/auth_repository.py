@@ -18,6 +18,15 @@ class AuthRepository:
         stmt = select(User).where(User.id == user_id)
         return self.db.execute(stmt).scalar_one_or_none()
 
+    def get_user_account_by_user_id(self, user_id: int) -> UserAccount | None:
+        stmt = select(UserAccount).where(UserAccount.user_id == user_id)
+        return self.db.execute(stmt).scalar_one_or_none()
+
+    def increment_token_version(self, user_id: int) -> None:
+        account = self.get_user_account_by_user_id(user_id)
+        if account:
+            account.token_version += 1
+
     def create_user(
         self,
         first_name: str,

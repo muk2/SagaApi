@@ -44,5 +44,6 @@ class UserAccount(Base):
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     role: Mapped[str | None] = mapped_column(String(50), nullable=True)
     last_logged_in: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    token_version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
 
     user: Mapped["User"] = relationship("User", back_populates="account", foreign_keys=[user_id])

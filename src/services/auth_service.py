@@ -21,9 +21,9 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def create_access_token(user_id: int) -> str:
+def create_access_token(user_id: int, token_version: int) -> str:
     expire = datetime.now(UTC) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    payload = {"sub": str(user_id), "exp": expire}
+    payload = {"sub": str(user_id), "exp": expire, "token_version": token_version}
     return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
@@ -36,7 +36,11 @@ def decode_access_token(token: str) -> TokenPayload:
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid token payload",
             )
-        return TokenPayload(sub=int(user_id), exp=payload.get("exp"))
+        return TokenPayload(
+            sub=int(user_id),
+            exp=payload.get("exp"),
+            token_version=payload.get("token_version", 1),
+        )
     except JWTError as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -99,7 +103,7 @@ class AuthService:
         self.repo.update_last_login(account)
         self.repo.commit()
 
-        token = create_access_token(account.user.id)
+        token = create_access_token(account.user.id, account.token_version)
 
         user_response = UserResponse(
             id=account.user.id,
@@ -119,3 +123,15 @@ class AuthService:
                 detail="User not found",
             )
         return user
+
+    def validate_token_version(self, user_id: int, token_version: int) -> None:
+        account = self.repo.get_user_account_by_user_id(user_id)
+        if not account or account.token_version != token_version:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token has been invalidated",
+            )
+
+    def logout(self, user_id: int) -> None:
+        self.repo.increment_token_version(user_id)
+        self.repo.commit()

@@ -17,10 +17,12 @@ def get_current_user(
 ) -> User:
     """
     Dependency that extracts and validates the JWT token from the Authorization header.
+    Validates token version to ensure the token hasn't been invalidated by logout.
     Returns the current authenticated user.
     """
     token_data = decode_access_token(token)
     service = AuthService(db)
+    service.validate_token_version(token_data.sub, token_data.token_version)
     return service.get_current_user(token_data.sub)
 
 
