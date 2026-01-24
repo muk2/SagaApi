@@ -1,32 +1,38 @@
+from collections.abc import Generator
+from typing import Annotated
+
+from fastapi import Depends
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
+
 from .config import settings
 
 
-# ---- SQLAlchemy Base ----
 class Base(DeclarativeBase):
     pass
 
 
-# ---- Engine ----
 engine = create_engine(
     settings.DATABASE_URL,
     pool_size=10,
     max_overflow=5,
-    pool_pre_ping=True,   # detects dead connections
+    pool_pre_ping=True,
 )
 
 
-# ---- Session Factory ----
 SessionLocal = sessionmaker(
     bind=engine,
     autocommit=False,
     autoflush=False,
 )
 
-def get_db():
+
+def get_db() -> Generator[Session]:
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
+
+
+DbSession = Annotated[Session, Depends(get_db)]
