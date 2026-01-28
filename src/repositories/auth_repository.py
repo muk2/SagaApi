@@ -2,7 +2,7 @@ from datetime import datetime
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-
+from typing import Optional
 from models.user import User, UserAccount
 
 
@@ -10,15 +10,15 @@ class AuthRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def get_user_account_by_email(self, email: str) -> UserAccount | None:
+    def get_user_account_by_email(self, email: str) -> Optional[UserAccount]:
         stmt = select(UserAccount).where(UserAccount.email == email)
         return self.db.execute(stmt).scalar_one_or_none()
 
-    def get_user_by_id(self, user_id: int) -> User | None:
+    def get_user_by_id(self, user_id: int) -> Optional[User]:
         stmt = select(User).where(User.id == user_id)
         return self.db.execute(stmt).scalar_one_or_none()
 
-    def get_user_account_by_user_id(self, user_id: int) -> UserAccount | None:
+    def get_user_account_by_user_id(self, user_id: int) -> Optional[UserAccount]:
         stmt = select(UserAccount).where(UserAccount.user_id == user_id)
         return self.db.execute(stmt).scalar_one_or_none()
 
@@ -31,8 +31,8 @@ class AuthRepository:
         self,
         first_name: str,
         last_name: str,
-        phone_number: str | None,
-        handicap: int | None,
+        phone_number: Optional[str],
+        handicap: Optional[int],
     ) -> User:
         user = User(
             first_name=first_name,

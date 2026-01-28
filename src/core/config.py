@@ -1,5 +1,5 @@
 from pathlib import Path
-
+from typing import List
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Find project root (where .env lives)
@@ -14,6 +14,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
+    print("Loading env from:", ENV_FILE)
     # Database
     DATABASE_URL: str
 
@@ -23,10 +24,10 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
     # CORS
-    CORS_ORIGINS: list[str] = [
-        "https://sagafe.vercel.app",
-        "http://localhost:3000",
-    ]
+    CORS_ORIGINS: List[str] = [
+    "https://sagafe.vercel.app",
+    "http://localhost:3000",
+]
 
 
 settings = Settings()

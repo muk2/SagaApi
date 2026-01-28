@@ -1,8 +1,9 @@
+from __future__ import annotations
 from datetime import datetime
 
 from sqlalchemy import DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
+from typing import Optional
 from core.database import Base
 
 
@@ -18,9 +19,9 @@ class User(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     first_name: Mapped[str] = mapped_column(String(100), nullable=False)
     last_name: Mapped[str] = mapped_column(String(100), nullable=False)
-    phone_number: Mapped[str | None] = mapped_column(String(20), nullable=True)
-    handicap: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    user_account_id: Mapped[int | None] = mapped_column(
+    phone_number: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    handicap: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    user_account_id: Mapped[Optional[int]] = mapped_column(
         Integer, ForeignKey("saga.user_account.id"), nullable=True
     )
 
@@ -42,8 +43,8 @@ class UserAccount(Base):
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("saga.user.id"), nullable=False)
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
-    role: Mapped[str | None] = mapped_column(String(50), nullable=True)
-    last_logged_in: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    role: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    last_logged_in: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     token_version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     reset_token: Mapped[str | None] = mapped_column(String(255), nullable=True)
     reset_token_expires: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

@@ -1,4 +1,5 @@
-from typing import Annotated
+from typing_extensions import Annotated
+
 
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
