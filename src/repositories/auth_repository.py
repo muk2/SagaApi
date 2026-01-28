@@ -72,3 +72,18 @@ class AuthRepository:
 
     def rollback(self) -> None:
         self.db.rollback()
+
+    def set_reset_token(self, account: UserAccount, token: str, expires: datetime) -> None:
+        account.reset_token = token
+        account.reset_token_expires = expires
+
+    def get_user_account_by_reset_token(self, token: str) -> UserAccount | None:
+        stmt = select(UserAccount).where(UserAccount.reset_token == token)
+        return self.db.execute(stmt).scalar_one_or_none()
+
+    def clear_reset_token(self, account: UserAccount) -> None:
+        account.reset_token = None
+        account.reset_token_expires = None
+
+    def update_password(self, account: UserAccount, password_hash: str) -> None:
+        account.password_hash = password_hash
