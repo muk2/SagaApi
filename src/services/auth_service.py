@@ -1,5 +1,6 @@
 from __future__ import annotations
-from datetime import timezone, datetime, timedelta
+import secrets
+from datetime import timezone, datetime, timedelta, UTC
 
 from fastapi import HTTPException, status
 from jose import JWTError, jwt
@@ -9,7 +10,14 @@ from sqlalchemy.orm import Session
 from core.config import settings
 from models.user import User, UserAccount
 from repositories.auth_repository import AuthRepository
-from schemas.auth import LoginRequest, SignUpRequest, TokenPayload, UserResponse
+from schemas.auth import (
+    ForgotPasswordRequest,
+    LoginRequest,
+    ResetPasswordRequest,
+    SignUpRequest,
+    TokenPayload,
+    UserResponse,
+)
 
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
@@ -135,4 +143,59 @@ class AuthService:
 
     def logout(self, user_id: int) -> None:
         self.repo.increment_token_version(user_id)
+        self.repo.commit()
+
+    def forgot_password(self, data: ForgotPasswordRequest) -> str:
+        """
+        Initiates password reset flow by generating a reset token.
+
+        Returns the reset token (for development/testing).
+        In production, this should be sent via email instead of returned.
+        """
+        account = self.repo.get_user_account_by_email(data.email)
+
+        # Don't reveal whether email exists (security best practice)
+        if not account:
+            # Still return success to prevent email enumeration
+            return ""
+
+        # Generate secure reset token
+        reset_token = secrets.token_urlsafe(32)
+        expires = datetime.now(UTC) + timedelta(hours=1)
+
+        self.repo.set_reset_token(account, reset_token, expires)
+        self.repo.commit()
+
+        # TODO: Send email with reset token
+        # For now, return token (in production, send via email and return empty string)
+        return reset_token
+
+    def reset_password(self, data: ResetPasswordRequest) -> None:
+        """
+        Resets user password using a valid reset token.
+        """
+        account = self.repo.get_user_account_by_reset_token(data.token)
+
+        if not account:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid or expired reset token",
+            )
+
+        # Check if token is expired
+        if not account.reset_token_expires or account.reset_token_expires < datetime.now(UTC):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid or expired reset token",
+            )
+
+        # Update password
+        self.repo.update_password(account, hash_password(data.new_password))
+
+        # Clear reset token
+        self.repo.clear_reset_token(account)
+
+        # Invalidate all existing tokens for security
+        self.repo.increment_token_version(account.user_id)
+
         self.repo.commit()
