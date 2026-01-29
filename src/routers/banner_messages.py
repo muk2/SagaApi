@@ -6,7 +6,7 @@ from core.database import get_db
 from schemas.banner_message import BannerRead
 from services.banner_service import list_banners
 
-print("🔥 banner_messages router loaded")
+
 
 router = APIRouter(prefix="/api/banner_messages", tags=["Banner Messages"])
 

@@ -28,6 +28,17 @@ class Settings(BaseSettings):
     "https://sagafe.vercel.app",
     "http://localhost:3000",
 ]
+    
+    FRONTEND_URL: str = "http://localhost:3000"
+    SMTP_HOST: str = "smtp.gmail.com" 
+    SMTP_PORT: int = 587
+    SMTP_USERNAME: str = "EMAIL ADDRESS HERE"
+    SMTP_PASSWORD: str = "PASSWORD FOR EMAIL HERE"
+    SMTP_FROM_NAME: str = "EMAIL ADDRESS HERE"
+    SMTP_FROM_EMAIL: str = "EMAIL ADDRESS HERE"
+    SMTP_TLS: bool = True
+    SMTP_SSL: bool = False
+    SMTP_PASSWORD: str = "PASSWORD GIVEN AFTER CREATING AN APP PASSWORD IN GMAIL"
 
 
 settings = Settings()

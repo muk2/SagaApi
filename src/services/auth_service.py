@@ -1,6 +1,6 @@
 from __future__ import annotations
 import secrets
-from datetime import timezone, datetime, timedelta, UTC
+from datetime import timezone, datetime, timedelta
 
 from fastapi import HTTPException, status
 from jose import JWTError, jwt
@@ -147,28 +147,73 @@ class AuthService:
 
     def forgot_password(self, data: ForgotPasswordRequest) -> str:
         """
-        Initiates password reset flow by generating a reset token.
-
-        Returns the reset token (for development/testing).
-        In production, this should be sent via email instead of returned.
+        Initiates password reset flow by sending a reset token via email.
         """
         account = self.repo.get_user_account_by_email(data.email)
 
         # Don't reveal whether email exists (security best practice)
         if not account:
             # Still return success to prevent email enumeration
-            return ""
+            return "If an account exists with that email, you will receive a password reset link."
 
         # Generate secure reset token
         reset_token = secrets.token_urlsafe(32)
-        expires = datetime.now(UTC) + timedelta(hours=1)
+        expires = datetime.now(timezone.utc) + timedelta(hours=1)
 
         self.repo.set_reset_token(account, reset_token, expires)
         self.repo.commit()
 
-        # TODO: Send email with reset token
-        # For now, return token (in production, send via email and return empty string)
-        return reset_token
+        # Send reset email
+        reset_link = f"{settings.FRONTEND_URL}/reset-password?token={reset_token}"
+        self._send_reset_email(account.email, reset_link)
+
+        return "If an account exists with that email, you will receive a password reset link."
+
+    def _send_reset_email(self, to_email: str, reset_link: str):
+        """Send password reset email via SMTP."""
+        import smtplib
+        from email.mime.text import MIMEText
+        from email.mime.multipart import MIMEMultipart
+
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = "Password Reset Request"
+        msg["From"] = f"{settings.SMTP_FROM_NAME} <{settings.SMTP_FROM_EMAIL}>"
+        msg["To"] = to_email
+
+        # Create email body
+        text = f"Click the link to reset your password: {reset_link}\n\nThis link expires in 1 hour."
+        html = f"""
+        <html>
+        <body>
+            <p>Click the link below to reset your password:</p>
+            <p><a href="{reset_link}">Reset Password</a></p>
+            <p>This link expires in 1 hour.</p>
+        </body>
+        </html>
+        """
+
+        msg.attach(MIMEText(text, "plain"))
+        msg.attach(MIMEText(html, "html"))
+
+        # Send email with proper TLS/SSL handling
+        try:
+            if settings.SMTP_SSL:
+                # Use SSL from the start (port 465)
+                server = smtplib.SMTP_SSL(settings.SMTP_HOST, settings.SMTP_PORT)
+            else:
+                # Use regular connection then upgrade to TLS (port 587)
+                server = smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT)
+                server.ehlo()  # Identify ourselves to the server
+                if settings.SMTP_TLS:
+                    server.starttls()
+                    server.ehlo()  # Re-identify after starting TLS
+            
+            server.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
+            server.send_message(msg)
+            server.quit()
+        except Exception as e:
+            print(f"Failed to send email: {e}")
+            raise
 
     def reset_password(self, data: ResetPasswordRequest) -> None:
         """
@@ -183,7 +228,7 @@ class AuthService:
             )
 
         # Check if token is expired
-        if not account.reset_token_expires or account.reset_token_expires < datetime.now(UTC):
+        if not account.reset_token_expires or account.reset_token_expires < datetime.now(timezone.utc):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid or expired reset token",

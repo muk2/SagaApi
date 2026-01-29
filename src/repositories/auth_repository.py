@@ -77,7 +77,7 @@ class AuthRepository:
         account.reset_token = token
         account.reset_token_expires = expires
 
-    def get_user_account_by_reset_token(self, token: str) -> UserAccount | None:
+    def get_user_account_by_reset_token(self, token: str) -> Optional[UserAccount]:
         stmt = select(UserAccount).where(UserAccount.reset_token == token)
         return self.db.execute(stmt).scalar_one_or_none()
 
