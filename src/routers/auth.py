@@ -3,7 +3,18 @@ from sqlalchemy.orm import Session
 
 from core.database import get_db
 from core.dependencies import CurrentUser
-from schemas.auth import LoginRequest, LoginResponse, LogoutResponse, SignUpRequest, SignUpResponse, UserResponse
+from schemas.auth import (
+    ForgotPasswordRequest,
+    ForgotPasswordResponse,
+    LoginRequest,
+    LoginResponse,
+    LogoutResponse,
+    ResetPasswordRequest,
+    ResetPasswordResponse,
+    SignUpRequest,
+    SignUpResponse,
+    UserResponse,
+)
 from services.auth_service import AuthService
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -60,3 +71,31 @@ def logout(current_user: CurrentUser, db: Session = Depends(get_db)) -> LogoutRe
     service = AuthService(db)
     service.logout(current_user.id)
     return LogoutResponse(message="Successfully logged out")
+
+
+@router.post("/forgot-password", response_model=ForgotPasswordResponse)
+def forgot_password(data: ForgotPasswordRequest, db: Session = Depends(get_db)) -> ForgotPasswordResponse:
+    """
+    Initiate password reset flow.
+
+    Generates a reset token and stores it in the database.
+    In production, this token should be sent to the user's email.
+
+    Returns success regardless of whether email exists (prevents email enumeration).
+    """
+    service = AuthService(db)
+    service.forgot_password(data)
+    return ForgotPasswordResponse(message="Password reset email sent")
+
+
+@router.post("/reset-password", response_model=ResetPasswordResponse)
+def reset_password(data: ResetPasswordRequest, db: Session = Depends(get_db)) -> ResetPasswordResponse:
+    """
+    Reset user password using a valid reset token.
+
+    Validates the token, checks expiration, updates the password,
+    and invalidates all existing JWT tokens for security.
+    """
+    service = AuthService(db)
+    service.reset_password(data)
+    return ResetPasswordResponse(message="Password reset successful")

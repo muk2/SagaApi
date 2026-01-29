@@ -8,6 +8,7 @@ from .auth import (
     UserResponse,
 )
 from .event import EventRead
+from .banner_message import BannerRead
 
 __all__ = [
     "LoginRequest",
@@ -18,4 +19,5 @@ __all__ = [
     "TokenResponse",
     "UserResponse",
     "EventRead",
+    "BannerRead",
 ]

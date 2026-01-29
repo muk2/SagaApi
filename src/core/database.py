@@ -1,5 +1,6 @@
+from __future__ import annotations
 from collections.abc import Generator
-from typing import Annotated
+from typing_extensions import Annotated
 
 from fastapi import Depends
 from sqlalchemy import create_engine

@@ -1,13 +1,13 @@
 from pydantic import BaseModel, EmailStr
-
+from typing import Optional
 
 class SignUpRequest(BaseModel):
     first_name: str
     last_name: str
-    phone_number: str | None = None
+    phone_number: Optional[str] = None
     email: EmailStr
     password: str
-    golf_handicap: int | None = None
+    golf_handicap: Optional[int] = None
 
 
 class LoginRequest(BaseModel):
@@ -20,7 +20,7 @@ class UserResponse(BaseModel):
     first_name: str
     last_name: str
     role: str = "user"
-    golf_handicap: int | None = None
+    golf_handicap: Optional[int] = None
 
     model_config = {"from_attributes": True}
 
@@ -43,9 +43,26 @@ class SignUpResponse(BaseModel):
 
 class TokenPayload(BaseModel):
     sub: int
-    exp: int | None = None
+    exp: Optional[int] = None
     token_version: int = 1
 
 
 class LogoutResponse(BaseModel):
+    message: str
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ForgotPasswordResponse(BaseModel):
+    message: str
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+
+
+class ResetPasswordResponse(BaseModel):
     message: str
