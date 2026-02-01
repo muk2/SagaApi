@@ -20,11 +20,10 @@ class User(Base):
     first_name: Mapped[str] = mapped_column(String(100), nullable=False)
     last_name: Mapped[str] = mapped_column(String(100), nullable=False)
     phone_number: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
-    handicap: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    handicap: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     user_account_id: Mapped[Optional[int]] = mapped_column(
         Integer, ForeignKey("saga.user_account.id"), nullable=True
     )
-
     account: Mapped["UserAccount | None"] = relationship(
         "UserAccount", back_populates="user", foreign_keys="UserAccount.user_id"
     )

@@ -32,7 +32,7 @@ class AuthRepository:
         first_name: str,
         last_name: str,
         phone_number: Optional[str],
-        handicap: Optional[int],
+        handicap: Optional[str],
     ) -> User:
         user = User(
             first_name=first_name,
