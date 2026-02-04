@@ -10,6 +10,8 @@ class EventRead(BaseModel):
     golf_course: str
     date: dt_date
     start_time: dt_time
+    member_price: float
+    guest_price: float
 
     class Config:
         from_attributes = True  # Pydantic v2 (ORM mode)
