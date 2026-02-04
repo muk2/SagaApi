@@ -1,6 +1,6 @@
 import json
 from datetime import datetime, time
-from typing import Optional
+from typing import Optional, List, Tuple, Dict
 
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
@@ -22,7 +22,7 @@ class AdminService:
         self.repo = AdminRepository(db)
 
     # User Management
-    def get_all_users(self) -> list[UserListItem]:
+    def get_all_users(self) -> List[UserListItem]:
         """Get all users with their account info."""
         users_data = self.repo.get_all_users()
         result = []
@@ -41,7 +41,7 @@ class AdminService:
             )
         return result
 
-    def update_user_role(self, user_id: int, role: str) -> tuple[int, str]:
+    def update_user_role(self, user_id: int, role: str) -> Tuple[int, str]:
         """Update a user's role."""
         try:
             account = self.repo.update_user_role(user_id, role)
@@ -82,15 +82,18 @@ class AdminService:
                 detail=f"Failed to delete user: {e!s}",
             ) from e
 
-    def get_event_registrations(self, event_id: int) -> list[EventRegistrationDetail]:
+    def get_event_registrations(self, event_id: int) -> List[EventRegistrationDetail]:
         """Get all registrations for an event."""
         registrations = self.repo.get_event_registrations(event_id)
         result = []
+        
         for reg in registrations:
             user_name = None
-            if reg.user:
-                user_name = f"{reg.user.first_name} {reg.user.last_name}"
-
+            
+            # ✅ Access user through user_account relationship
+            if reg.user_account and reg.user_account.user:
+                user_name = f"{reg.user_account.user.first_name} {reg.user_account.user.last_name}"
+            
             result.append(
                 EventRegistrationDetail(
                     id=reg.id,
@@ -98,7 +101,7 @@ class AdminService:
                     guest_id=reg.guest_id,
                     email=reg.email,
                     phone=reg.phone,
-                    handicap=reg.handicap,
+                    handicap=str(reg.handicap),
                     payment_status=reg.payment_status,
                     payment_method=reg.payment_method,
                     amount_paid=float(reg.amount_paid) if reg.amount_paid else None,
@@ -129,6 +132,8 @@ class AdminService:
                 "golf_course": event.golf_course,
                 "date": event.date,
                 "start_time": str(event.start_time),
+                "member_price": event.member_price,
+                "guest_price": event.guest_price
             }
         except Exception as e:
             self.repo.rollback()
@@ -162,6 +167,8 @@ class AdminService:
                 "golf_course": event.golf_course,
                 "date": event.date,
                 "start_time": str(event.start_time),
+                "member_price": event.member_price,
+                "guest_price": event.guest_price,
             }
         except HTTPException:
             self.repo.rollback()
@@ -194,7 +201,7 @@ class AdminService:
             ) from e
 
     # Banner Management
-    def update_banner_messages(self, messages: list[str]) -> None:
+    def update_banner_messages(self, messages: List[str]) -> None:
         """Update all banner messages."""
         try:
             self.repo.update_banner_messages(messages)
@@ -207,7 +214,7 @@ class AdminService:
             ) from e
 
     # Photo Album Management
-    def get_all_photo_albums(self) -> list[PhotoAlbumResponse]:
+    def get_all_photo_albums(self) -> List[PhotoAlbumResponse]:
         """Get all photo albums."""
         albums = self.repo.get_all_photo_albums()
         result = []
@@ -319,14 +326,14 @@ class AdminService:
             ) from e
 
     # Site Content Management
-    def get_all_content(self) -> list[ContentItem]:
+    def get_all_content(self) -> List[ContentItem]:
         """Get all site content."""
         content_list = self.repo.get_all_content()
         return [
             ContentItem(key=c.key, value=c.value, description=c.description) for c in content_list
         ]
 
-    def update_content(self, content_dict: dict[str, str]) -> None:
+    def update_content(self, content_dict: Dict[str, str]) -> None:
         """Update site content."""
         try:
             self.repo.update_content(content_dict)
@@ -339,7 +346,7 @@ class AdminService:
             ) from e
 
     # Carousel Images Management
-    def get_carousel_images(self) -> list[CarouselImageItem]:
+    def get_carousel_images(self) -> List[CarouselImageItem]:
         """Get all carousel images."""
         images = self.repo.get_carousel_images()
         return [
@@ -352,7 +359,7 @@ class AdminService:
             for img in images
         ]
 
-    def update_carousel_images(self, images_data: list[dict]) -> list[CarouselImageItem]:
+    def update_carousel_images(self, images_data: List[dict]) -> List[CarouselImageItem]:
         """Update carousel images."""
         try:
             images = self.repo.update_carousel_images(images_data)

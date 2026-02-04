@@ -22,7 +22,7 @@ class EventRegistration(Base):
         Integer, ForeignKey("saga.event.id"), nullable=False, index=True
     )
     user_id: Mapped[Optional[int]] = mapped_column(
-        Integer, ForeignKey("saga.user.id"), nullable=True, index=True
+        Integer, ForeignKey("saga.user_account.id"), nullable=True, index=True  # ✅ Points to user_account
     )
     guest_id: Mapped[Optional[int]] = mapped_column(
         Integer, nullable=True
@@ -43,6 +43,11 @@ class EventRegistration(Base):
         DateTime, nullable=False, default=lambda: datetime.now(), onupdate=lambda: datetime.now()
     )
    
-    # Relationships
-    user: Mapped[Optional["User"]] = relationship("User", foreign_keys=[user_id])
+    # ✅ Relationship to UserAccount (not User directly)
+    user_account: Mapped[Optional["UserAccount"]] = relationship(
+        "UserAccount", 
+        foreign_keys=[user_id],
+        lazy="joined"  # Eager load by default
+    )
+    
     event: Mapped["Event"] = relationship("Event", foreign_keys=[event_id])

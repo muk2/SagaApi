@@ -35,15 +35,20 @@ router = APIRouter(prefix="/api/admin", tags=["Admin"])
 
 
 # ===== Admin Users API =====
-@router.get("/users", response_model=UserListResponse)
-def get_all_users(admin_user: AdminUser, db: Session = Depends(get_db)) -> UserListResponse:
+@router.get("/users") 
+def get_all_users(
+    admin_user: AdminUser, 
+    db: Session = Depends(get_db)
+):
     """
     Get all users.
     Requires admin authentication.
     """
     service = AdminService(db)
     users = service.get_all_users()
-    return UserListResponse(users=users)
+    
+    # Return the list directly, not wrapped in UserListResponse
+    return users
 
 
 @router.put("/users/{user_id}/role", response_model=UpdateUserRoleResponse)
@@ -243,8 +248,8 @@ def update_content(
 # ===== Admin Media API =====
 @router.post("/media/upload", response_model=MediaUploadResponse)
 async def upload_image(
+    admin_user: AdminUser,
     file: UploadFile = File(...),
-    admin_user: AdminUser = Depends(),
     db: Session = Depends(get_db),
 ) -> MediaUploadResponse:
     """

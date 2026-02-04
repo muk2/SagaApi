@@ -1,6 +1,6 @@
 from datetime import date as dt_date
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List, Dict
 
 from pydantic import BaseModel, EmailStr, field_serializer
 
@@ -24,7 +24,7 @@ class UserListItem(BaseModel):
 class UserListResponse(BaseModel):
     """Response schema for listing users."""
 
-    users: list[UserListItem]
+    users: List[UserListItem]
 
 
 class UpdateUserRoleRequest(BaseModel):
@@ -69,7 +69,7 @@ class EventRegistrationsResponse(BaseModel):
     """Response schema for event registrations."""
 
     event_id: int
-    registrations: list[EventRegistrationDetail]
+    registrations: List[EventRegistrationDetail]
 
 
 # Admin Events Schemas
@@ -82,6 +82,8 @@ class CreateEventRequest(BaseModel):
     golf_course: str
     date: dt_date
     start_time: str  # Format: "HH:MM:SS"
+    member_price: float
+    guest_price: float
 
 
 class UpdateEventRequest(BaseModel):
@@ -93,6 +95,8 @@ class UpdateEventRequest(BaseModel):
     golf_course: Optional[str] = None
     date: Optional[dt_date] = None
     start_time: Optional[str] = None
+    member_price: Optional[float] = 0
+    guest_price: Optional[float] = 0
 
 
 class EventResponse(BaseModel):
@@ -105,6 +109,8 @@ class EventResponse(BaseModel):
     golf_course: str
     date: dt_date
     start_time: str
+    member_price: float
+    guest_price: float
 
     model_config = {"from_attributes": True}
 
@@ -117,7 +123,7 @@ class EventResponse(BaseModel):
 class UpdateBannerMessagesRequest(BaseModel):
     """Request schema for updating banner messages."""
 
-    messages: list[str]
+    messages: List[str]
 
 
 class UpdateBannerSettingsRequest(BaseModel):
@@ -140,7 +146,7 @@ class PhotoAlbumCreate(BaseModel):
     title: str
     description: Optional[str] = None
     cover_image_url: Optional[str] = None
-    images: Optional[list[str]] = None
+    images: Optional[List[str]] = None
 
 
 class PhotoAlbumUpdate(BaseModel):
@@ -149,7 +155,7 @@ class PhotoAlbumUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     cover_image_url: Optional[str] = None
-    images: Optional[list[str]] = None
+    images: Optional[List[str]] = None
 
 
 class PhotoAlbumResponse(BaseModel):
@@ -159,7 +165,7 @@ class PhotoAlbumResponse(BaseModel):
     title: str
     description: Optional[str] = None
     cover_image_url: Optional[str] = None
-    images: Optional[list[str]] = None
+    images: Optional[List[str]] = None
     created_at: datetime
     updated_at: datetime
 
@@ -169,7 +175,7 @@ class PhotoAlbumResponse(BaseModel):
 class PhotoAlbumListResponse(BaseModel):
     """Response schema for listing photo albums."""
 
-    albums: list[PhotoAlbumResponse]
+    albums: List[PhotoAlbumResponse]
 
 
 # Admin Content Schemas
@@ -184,13 +190,13 @@ class ContentItem(BaseModel):
 class ContentResponse(BaseModel):
     """Response schema for site content."""
 
-    content: list[ContentItem]
+    content: List[ContentItem]
 
 
 class UpdateContentRequest(BaseModel):
     """Request schema for updating content."""
 
-    content: dict[str, str]  # key-value pairs
+    content: Dict[str, str]  # key-value pairs
 
 
 # Admin Media Schemas
@@ -215,10 +221,10 @@ class CarouselImageItem(BaseModel):
 class CarouselImagesResponse(BaseModel):
     """Response schema for carousel images."""
 
-    images: list[CarouselImageItem]
+    images: List[CarouselImageItem]
 
 
 class UpdateCarouselImagesRequest(BaseModel):
     """Request schema for updating carousel images."""
 
-    images: list[dict]  # [{image_url, alt_text, display_order}]
+    images: List[dict]  # [{image_url, alt_text, display_order}]

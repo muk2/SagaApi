@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, Time
+from sqlalchemy import Column, Integer, String, Date, Time, Numeric
 from core.database import Base
 
 
@@ -13,4 +13,6 @@ class Event(Base):
     golf_course = Column(String, nullable=False)
     date = Column(Date, nullable=False)
     start_time = Column(Time, nullable=False)
+    member_price = Column(Numeric(10, 2), nullable=False)
+    guest_price = Column(Numeric(10, 2), nullable=False)
 

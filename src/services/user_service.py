@@ -34,6 +34,7 @@ class UserService:
                 state=reg.event.state,
                 golf_course=reg.event.golf_course,
                 date=reg.event.date,
+                start_time = reg.event.start_time,
             )
             for reg in registrations
         ]

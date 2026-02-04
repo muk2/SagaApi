@@ -6,7 +6,7 @@ from sqlalchemy import DateTime, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from core.database import Base
-
+from typing import Optional
 
 class PhotoAlbum(Base):
     """
@@ -19,9 +19,9 @@ class PhotoAlbum(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
-    description: Mapped[str | None] = mapped_column(Text, nullable=True)
-    cover_image_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
-    images: Mapped[str | None] = mapped_column(
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    cover_image_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    images: Mapped[Optional[str]] = mapped_column(
         Text, nullable=True
     )  # JSON array of image URLs
     created_at: Mapped[datetime] = mapped_column(
