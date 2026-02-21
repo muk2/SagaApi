@@ -31,9 +31,9 @@ class Settings(BaseSettings):
     "https://sagafe.vercel.app",
     "http://localhost:3000",
 ]
-    
+
     FRONTEND_URL: str = "http://localhost:3000"
-    SMTP_HOST: str = "smtp.gmail.com" 
+    SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 587
     SMTP_USERNAME: Optional[str] = os.getenv("SMTP_EMAIL")
     SMTP_FROM_NAME: Optional[str] = os.getenv("SMTP_EMAIL")
@@ -41,6 +41,13 @@ class Settings(BaseSettings):
     SMTP_TLS: bool = True
     SMTP_SSL: bool = False
     SMTP_PASSWORD: Optional[str] = os.getenv("SMTP_PASSWORD")
+
+    # North Payment Gateway
+    NORTH_MID: Optional[str] = os.getenv("NORTH_MID")
+    NORTH_DEVELOPER_KEY: Optional[str] = os.getenv("NORTH_DEVELOPER_KEY")
+    NORTH_PASSWORD: Optional[str] = os.getenv("NORTH_PASSWORD")
+    NORTH_BASE_URL: str = os.getenv("NORTH_BASE_URL", "https://secure.networkmerchants.com/api/transact.php")
+    NORTH_TIMEOUT_SECONDS: int = int(os.getenv("NORTH_TIMEOUT_SECONDS", "30"))
 
 
 settings = Settings()
