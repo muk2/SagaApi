@@ -18,6 +18,7 @@ dependencies = [
     "requests>=2.32.5",
     "sqlalchemy>=2.0.45",
     "uvicorn[standard]>=0.40.0",
+    "alembic>=1.14.0",
 ]
 
 [project.optional-dependencies]
