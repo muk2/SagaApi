@@ -1,10 +1,13 @@
-from typing_extensions import Annotated
+from __future__ import annotations
 
+from functools import lru_cache
+from typing import Annotated
 
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
+from core.config import settings
 from core.database import get_db
 from models.user import User
 from services.auth_service import AuthService, decode_access_token
@@ -28,3 +31,17 @@ def get_current_user(
 
 
 CurrentUser = Annotated[User, Depends(get_current_user)]
+
+
+@lru_cache
+def get_north_service():
+    """Create a configured NorthPaymentService singleton."""
+    from services.north_payment_service import NorthPaymentService
+
+    return NorthPaymentService(
+        mid=settings.NORTH_MID,
+        developer_key=settings.NORTH_DEVELOPER_KEY,
+        password=settings.NORTH_PASSWORD,
+        base_url=settings.NORTH_BASE_URL,
+        timeout=settings.NORTH_TIMEOUT_SECONDS,
+    )

@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Find project root (where .env lives)
@@ -24,13 +24,13 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
     # CORS
-    CORS_ORIGINS: List[str] = [
-    "https://sagafe.vercel.app",
-    "http://localhost:3000",
-]
-    
+    CORS_ORIGINS: list[str] = [
+        "https://sagafe.vercel.app",
+        "http://localhost:3000",
+    ]
+
     FRONTEND_URL: str = "http://localhost:3000"
-    SMTP_HOST: str = "smtp.gmail.com" 
+    SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 587
     SMTP_USERNAME: str = "EMAIL ADDRESS HERE"
     SMTP_PASSWORD: str = "PASSWORD FOR EMAIL HERE"
