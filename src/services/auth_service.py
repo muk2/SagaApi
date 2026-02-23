@@ -75,6 +75,7 @@ class AuthService:
                 last_name=data.last_name,
                 phone_number=data.phone_number,
                 handicap=data.handicap,
+                membership=data.membership
             )
 
             account = self.repo.create_user_account(
@@ -122,6 +123,7 @@ class AuthService:
             role=account.role or "user",
             handicap=account.user.handicap,
             phone_number=account.user.phone_number,
+            membership=account.user.membership
         )
 
         return token, user_response

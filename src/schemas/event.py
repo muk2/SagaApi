@@ -1,6 +1,7 @@
 from pydantic import BaseModel, field_serializer
 from datetime import date as dt_date
 from datetime import time as dt_time
+from typing import Optional
 
 class EventRead(BaseModel):
     id: int
@@ -12,6 +13,9 @@ class EventRead(BaseModel):
     start_time: dt_time
     member_price: float
     guest_price: float
+    capacity: int
+    registered: int = 0
+    image_url: Optional[str] = None
 
     class Config:
         from_attributes = True  # Pydantic v2 (ORM mode)

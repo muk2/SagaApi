@@ -32,13 +32,12 @@ class Settings(BaseSettings):
     FRONTEND_URL: str = "http://localhost:3000"
     SMTP_HOST: str = "smtp.gmail.com" 
     SMTP_PORT: int = 587
-    SMTP_USERNAME: str = "EMAIL ADDRESS HERE"
-    SMTP_PASSWORD: str = "PASSWORD FOR EMAIL HERE"
-    SMTP_FROM_NAME: str = "EMAIL ADDRESS HERE"
-    SMTP_FROM_EMAIL: str = "EMAIL ADDRESS HERE"
+    SMTP_USERNAME: str = "sagagolfevents@gmail.com"
+    SMTP_FROM_NAME: str = "sagagolfevents@gmail.com"
+    SMTP_FROM_EMAIL: str = "sagagolfevents@gmail.com"
     SMTP_TLS: bool = True
     SMTP_SSL: bool = False
-    SMTP_PASSWORD: str = "PASSWORD GIVEN AFTER CREATING AN APP PASSWORD IN GMAIL"
+    SMTP_PASSWORD: str = "ynwjxiescwdystot"
 
 
 settings = Settings()

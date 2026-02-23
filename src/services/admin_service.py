@@ -1,4 +1,5 @@
 import json
+import os
 from datetime import datetime, time
 from typing import Optional, List, Tuple, Dict
 
@@ -12,8 +13,17 @@ from schemas.admin import (
     EventRegistrationDetail,
     PhotoAlbumResponse,
     UserListItem,
+    EventResponse
 )
 
+from repositories.carousel_repository import CarouselRepository
+from models.event_registration import EventRegistration
+from models.photo_album import PhotoAlbum
+from repositories.partner_repository import PartnerRepository
+from schemas.partner import PartnerResponse
+from models.event import Event  
+from models.user import User, UserAccount
+from models.guest import Guest
 
 class AdminService:
     """Service layer for admin-related business logic."""
@@ -37,6 +47,7 @@ class AdminService:
                     phone_number=user.phone_number,
                     handicap=user.handicap,
                     last_logged_in=account.last_logged_in if account else None,
+                    membership=str(user.membership)
                 )
             )
         return result
@@ -83,32 +94,88 @@ class AdminService:
             ) from e
 
     def get_event_registrations(self, event_id: int) -> List[EventRegistrationDetail]:
-        """Get all registrations for an event."""
-        registrations = self.repo.get_event_registrations(event_id)
-        result = []
+        """Get all registrations for an event with membership info."""
         
+
+        registrations = (
+            self.repo.db.query(EventRegistration)
+            .outerjoin(UserAccount, EventRegistration.user_id == UserAccount.id)
+            .outerjoin(User, UserAccount.user_id == User.id)
+            .outerjoin(Guest, EventRegistration.guest_id == Guest.id)
+            .filter(EventRegistration.event_id == event_id)
+            .all()
+        )
+
+        result = []
+
         for reg in registrations:
             user_name = None
+            membership = "guest"  # Default for guests
             
-            # ✅ Access user through user_account relationship
+            
             if reg.user_account and reg.user_account.user:
-                user_name = f"{reg.user_account.user.first_name} {reg.user_account.user.last_name}"
+                user = reg.user_account.user
+                user_name = f"{user.first_name} {user.last_name}"
+                # Get membership from user table
+                membership = getattr(user, 'membership', 'guest') or 'guest'
+            
+            
+            elif reg.guest:
+                guest = reg.guest
+                user_name = f"{guest.first_name} {guest.last_name}"
+                membership = "guest"
             
             result.append(
                 EventRegistrationDetail(
                     id=reg.id,
-                    user_id=reg.user_id,
-                    guest_id=reg.guest_id,
+                    user_name=user_name,
                     email=reg.email,
                     phone=reg.phone,
                     handicap=str(reg.handicap),
-                    payment_status=reg.payment_status,
-                    payment_method=reg.payment_method,
-                    amount_paid=float(reg.amount_paid) if reg.amount_paid else None,
-                    created_at=reg.created_at,
-                    user_name=user_name,
+                    created_at=reg.created_at.isoformat() if reg.created_at else None,
+                    payment_status='Paid',
+                    membership=membership  
                 )
             )
+
+        return result
+
+    def delete_event_registration(self, registration_id: int) -> bool:
+        """
+        Delete an event registration by ID.
+        Returns True if deleted, False if not found.
+        """
+        return self.repo.delete_event_registration(registration_id)
+    
+    def get_all_events(self, sort_by: str = 'date', sort_order: str = 'asc') -> List[EventResponse]:
+        """Get all events with registration counts."""
+        events = self.repo.get_all_events(sort_by, sort_order)
+        result = []
+        
+        for event in events:
+            # Count registrations for this event
+            registered_count = self.repo.db.query(EventRegistration)\
+                .filter(EventRegistration.event_id == event.id)\
+                .count()
+            
+            result.append(
+                EventResponse(
+                    id=event.id,
+                    golf_course=event.golf_course,
+                    township=event.township,
+                    state=event.state,
+                    zipcode=getattr(event, 'zipcode', None),
+                    date=event.date.strftime('%Y-%m-%d') if hasattr(event.date, 'strftime') else str(event.date),
+                    start_time=str(event.start_time),
+                    guest_price=float(event.guest_price),  
+                    member_price=float(event.member_price) if event.member_price else float(event.guest_price),
+                    capacity=event.capacity,
+                    registered=registered_count,
+                    image_url=getattr(event, 'image_url', None),  # ✅ Include image
+                    description=getattr(event, 'description', None),  # ✅ Include description
+                )
+            )
+        
         return result
 
     # Event Management
@@ -133,7 +200,10 @@ class AdminService:
                 "date": event.date,
                 "start_time": str(event.start_time),
                 "member_price": event.member_price,
-                "guest_price": event.guest_price
+                "guest_price": event.guest_price,
+                "capacity": event.capacity,
+                "image_url": getattr(event, 'image_url', None),
+                "description": getattr(event, 'description', None),
             }
         except Exception as e:
             self.repo.rollback()
@@ -143,8 +213,34 @@ class AdminService:
             ) from e
 
     def update_event(self, event_id: int, event_data: dict) -> Optional[dict]:
-        """Update an event."""
+        """Update an event and delete old image if replaced."""
         try:
+            # ✅ Get the existing event to check for old image
+            event = self.repo.db.query(Event).filter(Event.id == event_id).first()
+            if not event:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Event not found",
+                )
+            
+            # ✅ If image is being replaced, delete the old one
+            old_image_url = event.image_url if hasattr(event, 'image_url') else None
+            new_image_url = event_data.get('image_url')
+            
+            if new_image_url and old_image_url and new_image_url != old_image_url:
+                # New image provided and different from old one
+                if old_image_url.startswith('/uploads/'):
+                    file_path = old_image_url.lstrip('/')
+                    full_path = os.path.join(os.getcwd(), file_path)
+                    
+                    try:
+                        if os.path.exists(full_path):
+                            os.remove(full_path)
+                            print(f"Deleted old event image: {full_path}")
+                    except Exception as e:
+                        print(f"Failed to delete old file {full_path}: {e}")
+                        # Continue with update even if file deletion fails
+            
             # Convert start_time string to time object if needed
             if "start_time" in event_data and isinstance(event_data["start_time"], str):
                 time_parts = event_data["start_time"].split(":")
@@ -169,6 +265,9 @@ class AdminService:
                 "start_time": str(event.start_time),
                 "member_price": event.member_price,
                 "guest_price": event.guest_price,
+                "capacity": event.capacity,
+                "image_url": getattr(event, 'image_url', None),
+                "description": getattr(event, 'description', None),
             }
         except HTTPException:
             self.repo.rollback()
@@ -181,8 +280,30 @@ class AdminService:
             ) from e
 
     def delete_event(self, event_id: int) -> None:
-        """Delete an event."""
+        """Delete an event and its associated image file."""
         try:
+            # ✅ Get the event first to access image_url
+            event = self.repo.db.query(Event).filter(Event.id == event_id).first()
+            if not event:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Event not found",
+                )
+            
+            # ✅ Delete the image file from disk if it exists
+            if hasattr(event, 'image_url') and event.image_url and event.image_url.startswith('/uploads/'):
+                file_path = event.image_url.lstrip('/')  # Remove leading /
+                full_path = os.path.join(os.getcwd(), file_path)
+                
+                try:
+                    if os.path.exists(full_path):
+                        os.remove(full_path)
+                        print(f"Deleted event image: {full_path}")
+                except Exception as e:
+                    print(f"Failed to delete file {full_path}: {e}")
+                    # Continue with database deletion even if file deletion fails
+            
+            # Delete from database
             deleted = self.repo.delete_event(event_id)
             if not deleted:
                 raise HTTPException(
@@ -213,117 +334,108 @@ class AdminService:
                 detail=f"Failed to update banner messages: {e!s}",
             ) from e
 
+    def get_banner_settings(self) -> dict:
+        """Get current banner settings."""
+        settings = self.repo.get_banner_settings()
+        if not settings:
+            return {"enabled": False, "messages": []}
+        
+        return {
+            "enabled": settings.enabled,
+            "messages": settings.messages or []
+        }
+
+    def update_banner_settings(self, enabled: bool, messages: Optional[List[str]] = None) -> None:
+        """Update banner settings."""
+        try:
+            self.repo.update_banner_settings(enabled, messages)
+            self.repo.commit()
+        except Exception as e:
+            self.repo.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Failed to update banner settings: {e!s}",
+            ) from e
+
     # Photo Album Management
     def get_all_photo_albums(self) -> List[PhotoAlbumResponse]:
         """Get all photo albums."""
         albums = self.repo.get_all_photo_albums()
-        result = []
-        for album in albums:
-            images = None
-            if album.images:
-                try:
-                    images = json.loads(album.images)
-                except json.JSONDecodeError:
-                    images = None
-
-            result.append(
-                PhotoAlbumResponse(
-                    id=album.id,
-                    title=album.title,
-                    description=album.description,
-                    cover_image_url=album.cover_image_url,
-                    images=images,
-                    created_at=album.created_at,
-                    updated_at=album.updated_at,
-                )
+        return [
+            PhotoAlbumResponse(
+                id=album.id,
+                title=album.title,
+                date=album.date if album.date else None,
+                coverImage=album.cover_image,
+                googleDriveLink=album.google_drive_link
             )
-        return result
+            for album in albums
+        ]
 
     def create_photo_album(self, album_data: dict) -> PhotoAlbumResponse:
         """Create a new photo album."""
-        try:
-            album = self.repo.create_photo_album(album_data)
-            self.repo.commit()
-
-            images = None
-            if album.images:
-                try:
-                    images = json.loads(album.images)
-                except json.JSONDecodeError:
-                    images = None
-
-            return PhotoAlbumResponse(
-                id=album.id,
-                title=album.title,
-                description=album.description,
-                cover_image_url=album.cover_image_url,
-                images=images,
-                created_at=album.created_at,
-                updated_at=album.updated_at,
-            )
-        except Exception as e:
-            self.repo.rollback()
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Failed to create photo album: {e!s}",
-            ) from e
+        album = self.repo.create_photo_album(album_data)
+        return PhotoAlbumResponse(
+            id=album.id,
+            title=album.title,
+            date=album.date.isoformat() if album.date else None,
+            coverImage=album.cover_image,
+            googleDriveLink=album.google_drive_link
+        )
 
     def update_photo_album(self, album_id: int, album_data: dict) -> PhotoAlbumResponse:
-        """Update a photo album."""
-        try:
-            album = self.repo.update_photo_album(album_id, album_data)
-            if not album:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Photo album not found",
-                )
-            self.repo.commit()
-
-            images = None
-            if album.images:
+        """Update photo album and delete old cover image if replaced."""
+        album = self.repo.db.query(PhotoAlbum).filter(PhotoAlbum.id == album_id).first()
+        if not album:
+            raise HTTPException(status_code=404, detail="Album not found")
+        
+        # ✅ If cover image is being replaced, delete the old one
+        old_cover_image = album.cover_image
+        new_cover_image = album_data.get('cover_image')
+        
+        if new_cover_image and old_cover_image and new_cover_image != old_cover_image:
+            # New cover provided and different from old one
+            if old_cover_image.startswith('/uploads/'):
+                file_path = old_cover_image.lstrip('/')
+                full_path = os.path.join(os.getcwd(), file_path)
+                
                 try:
-                    images = json.loads(album.images)
-                except json.JSONDecodeError:
-                    images = None
-
-            return PhotoAlbumResponse(
-                id=album.id,
-                title=album.title,
-                description=album.description,
-                cover_image_url=album.cover_image_url,
-                images=images,
-                created_at=album.created_at,
-                updated_at=album.updated_at,
-            )
-        except HTTPException:
-            self.repo.rollback()
-            raise
-        except Exception as e:
-            self.repo.rollback()
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Failed to update photo album: {e!s}",
-            ) from e
+                    if os.path.exists(full_path):
+                        os.remove(full_path)
+                        print(f"Deleted old album cover: {full_path}")
+                except Exception as e:
+                    print(f"Failed to delete old file {full_path}: {e}")
+        
+        updated_album = self.repo.update_photo_album(album_id, album_data)
+        self.repo.db.commit()
+        self.repo.db.refresh(album)
+        return PhotoAlbumResponse(
+            id=updated_album.id,
+            title=updated_album.title,
+            date=updated_album.date if updated_album.date else None,
+            coverImage=updated_album.cover_image,
+            googleDriveLink=album.google_drive_link
+        )
 
     def delete_photo_album(self, album_id: int) -> None:
-        """Delete a photo album."""
-        try:
-            deleted = self.repo.delete_photo_album(album_id)
-            if not deleted:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Photo album not found",
-                )
-            self.repo.commit()
-        except HTTPException:
-            self.repo.rollback()
-            raise
-        except Exception as e:
-            self.repo.rollback()
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Failed to delete photo album: {e!s}",
-            ) from e
+        """Delete photo album and its cover image."""
+        album = self.repo.db.query(PhotoAlbum).filter(PhotoAlbum.id == album_id).first()
+        if not album:
+            raise HTTPException(status_code=404, detail="Album not found")
+        
+        # ✅ Delete cover image file if it's local
+        if album.cover_image and album.cover_image.startswith('/uploads/'):
+            file_path = album.cover_image.lstrip('/')
+            full_path = os.path.join(os.getcwd(), file_path)
+            
+            try:
+                if os.path.exists(full_path):
+                    os.remove(full_path)
+            except Exception as e:
+                print(f"Failed to delete file {full_path}: {e}")
+        
+        self.repo.db.delete(album)
+        self.repo.db.commit()
 
     # Site Content Management
     def get_all_content(self) -> List[ContentItem]:
@@ -346,36 +458,114 @@ class AdminService:
             ) from e
 
     # Carousel Images Management
-    def get_carousel_images(self) -> List[CarouselImageItem]:
-        """Get all carousel images."""
-        images = self.repo.get_carousel_images()
+    def update_carousel_images(self, image_urls: List[str]) -> List[str]:
+        """Update carousel images - accepts list of URL strings."""
+        carousel_repo = CarouselRepository(self.repo.db)
+        carousel_repo.update_images(image_urls)
+        return image_urls
+
+    def get_carousel_images(self) -> List[str]:
+        """Get carousel images - returns list of URL strings."""
+        carousel_repo = CarouselRepository(self.repo.db)
+        return carousel_repo.get_all_images()
+    
+    # Partner Management
+    def get_all_partners(self) -> List[PartnerResponse]:
+        """Get all partners."""
+        partner_repo = PartnerRepository(self.repo.db)
+        partners = partner_repo.get_all()
         return [
-            CarouselImageItem(
-                id=img.id,
-                image_url=img.image_url,
-                alt_text=img.alt_text,
-                display_order=img.display_order,
+            PartnerResponse(
+                id=p.id,
+                name=p.name,
+                logo_url=p.logo_url,
+                website_url=p.website_url,
+                display_order=p.display_order
             )
-            for img in images
+            for p in partners
         ]
 
-    def update_carousel_images(self, images_data: List[dict]) -> List[CarouselImageItem]:
-        """Update carousel images."""
-        try:
-            images = self.repo.update_carousel_images(images_data)
-            self.repo.commit()
-            return [
-                CarouselImageItem(
-                    id=img.id,
-                    image_url=img.image_url,
-                    alt_text=img.alt_text,
-                    display_order=img.display_order,
-                )
-                for img in images
-            ]
-        except Exception as e:
-            self.repo.rollback()
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Failed to update carousel images: {e!s}",
-            ) from e
+    def create_partner(self, name: str, logo_url: str, website_url: str, display_order: int) -> PartnerResponse:
+        """Create new partner."""
+        partner_repo = PartnerRepository(self.repo.db)
+        partner = partner_repo.create(
+            name=name,
+            logo_url=logo_url,
+            website_url=website_url,
+            display_order=display_order
+        )
+        return PartnerResponse(
+            id=partner.id,
+            name=partner.name,
+            logo_url=partner.logo_url,
+            website_url=partner.website_url,
+            display_order=partner.display_order
+        )
+
+    def update_partner(self, partner_id: int, **kwargs) -> PartnerResponse:
+        """Update partner and delete old logo if replaced."""
+        partner_repo = PartnerRepository(self.repo.db)
+        
+        # ✅ Get existing partner to check for old logo
+        partner = partner_repo.get_by_id(partner_id)
+        if not partner:
+            raise HTTPException(status_code=404, detail="Partner not found")
+        
+        # ✅ If logo is being replaced, delete the old one
+        old_logo_url = partner.logo_url
+        new_logo_url = kwargs.get('logo_url')
+        
+        if new_logo_url and old_logo_url and new_logo_url != old_logo_url:
+            # New logo provided and different from old one
+            if old_logo_url.startswith('/uploads/'):
+                file_path = old_logo_url.lstrip('/')
+                full_path = os.path.join(os.getcwd(), file_path)
+                
+                try:
+                    if os.path.exists(full_path):
+                        os.remove(full_path)
+                        print(f"Deleted old partner logo: {full_path}")
+                except Exception as e:
+                    print(f"Failed to delete old file {full_path}: {e}")
+        
+        # Update partner
+        updated_partner = partner_repo.update(partner_id, **kwargs)
+        if not updated_partner:
+            raise HTTPException(status_code=404, detail="Partner not found")
+        
+        return PartnerResponse(
+            id=updated_partner.id,
+            name=updated_partner.name,
+            logo_url=updated_partner.logo_url,
+            website_url=updated_partner.website_url,
+            display_order=updated_partner.display_order
+        )
+
+    def delete_partner(self, partner_id: int) -> bool:
+        """Delete partner and its logo file."""
+        partner_repo = PartnerRepository(self.repo.db)
+        
+        # ✅ Get the partner first to access logo_url
+        partner = partner_repo.get_by_id(partner_id)
+        if not partner:
+            raise HTTPException(status_code=404, detail="Partner not found")
+        
+        # ✅ Delete the logo file from disk if it's a local upload
+        if partner.logo_url and partner.logo_url.startswith('/uploads/'):
+            file_path = partner.logo_url.lstrip('/')  # Remove leading /
+            full_path = os.path.join(os.getcwd(), file_path)
+            
+            try:
+                if os.path.exists(full_path):
+                    os.remove(full_path)
+                    print(f"Deleted file: {full_path}")
+            except Exception as e:
+                print(f"Failed to delete file {full_path}: {e}")
+                # Continue with database deletion even if file deletion fails
+        
+        # Delete from database
+        success = partner_repo.delete(partner_id)
+        if not success:
+            raise HTTPException(status_code=404, detail="Partner not found")
+        
+        return success

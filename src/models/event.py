@@ -15,4 +15,6 @@ class Event(Base):
     start_time = Column(Time, nullable=False)
     member_price = Column(Numeric(10, 2), nullable=False)
     guest_price = Column(Numeric(10, 2), nullable=False)
+    capacity = Column(Integer, nullable=False)
+    image_url = Column(String, nullable=True)
 

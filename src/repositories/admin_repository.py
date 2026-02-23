@@ -1,7 +1,7 @@
 import json
 from typing import Optional, List, Tuple, Dict
 
-from sqlalchemy import select
+from sqlalchemy import select, desc, asc
 from sqlalchemy.orm import Session, joinedload
 
 from models.banner_message import Banner
@@ -126,10 +126,11 @@ class AdminRepository:
             self.db.add(banner)
         self.db.flush()
 
+
     # Photo Album Management
     def get_all_photo_albums(self) -> List[PhotoAlbum]:
         """Get all photo albums."""
-        stmt = select(PhotoAlbum).order_by(PhotoAlbum.created_at.desc())
+        stmt = select(PhotoAlbum).order_by(PhotoAlbum.date.desc())
         return list(self.db.execute(stmt).scalars().all())
 
     def create_photo_album(self, album_data: dict) -> PhotoAlbum:
@@ -188,6 +189,27 @@ class AdminRepository:
         stmt = select(CarouselImage).order_by(CarouselImage.display_order)
         return list(self.db.execute(stmt).scalars().all())
 
+
+    def get_all_events(self, order_by: str = 'date', order: str = 'desc') -> List[Event]:
+        """Get all events sorted by specified field."""
+        
+        stmt = select(Event)
+        
+        # Apply ordering
+        if order_by == 'date':
+            order_col = Event.date
+        else:
+            order_col = Event.id
+        
+        if order == 'desc':
+            stmt = stmt.order_by(desc(order_col))
+        else:
+            stmt = stmt.order_by(asc(order_col))
+        
+        result = self.db.execute(stmt).scalars().all()
+        return list(result)
+    
+
     def update_carousel_images(self, images_data: List[dict]) -> List[CarouselImage]:
         """Replace all carousel images with new ones."""
         # Delete existing carousel images
@@ -217,3 +239,21 @@ class AdminRepository:
     def rollback(self) -> None:
         """Rollback the transaction."""
         self.db.rollback()
+
+    def delete_event_registration(self, registration_id: int) -> bool:
+        """
+        Delete an event registration.
+        Returns True if registration was found and deleted, False otherwise.
+        """
+        from models.event_registration import EventRegistration
+        
+        registration = self.db.query(EventRegistration).filter(
+            EventRegistration.id == registration_id
+        ).first()
+        
+        if not registration:
+            return False
+        
+        self.db.delete(registration)
+        self.db.commit()
+        return True

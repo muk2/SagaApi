@@ -1,32 +1,12 @@
-from __future__ import annotations
-
-from datetime import datetime
-
-from sqlalchemy import DateTime, Integer, String, Text
-from sqlalchemy.orm import Mapped, mapped_column
-
+from sqlalchemy import Column, Integer, String, Date
 from core.database import Base
-from typing import Optional
 
 class PhotoAlbum(Base):
-    """
-    Represents a photo album.
-    Contains album metadata and images.
-    """
-
-    __tablename__ = "photo_album"
+    __tablename__ = "photo_albums"
     __table_args__ = {"schema": "saga"}
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    title: Mapped[str] = mapped_column(String(255), nullable=False)
-    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    cover_image_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
-    images: Mapped[Optional[str]] = mapped_column(
-        Text, nullable=True
-    )  # JSON array of image URLs
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=lambda: datetime.now()
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=lambda: datetime.now(), onupdate=lambda: datetime.now()
-    )
+    
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, nullable=False)
+    date = Column(Date, nullable=False)
+    cover_image = Column(String, nullable=False)
+    google_drive_link = Column(String, nullable=False)

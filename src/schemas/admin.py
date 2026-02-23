@@ -1,7 +1,6 @@
 from datetime import date as dt_date
 from datetime import datetime
 from typing import Optional, List, Dict
-
 from pydantic import BaseModel, EmailStr, field_serializer
 
 
@@ -16,6 +15,7 @@ class UserListItem(BaseModel):
     role: Optional[str] = None
     phone_number: Optional[str] = None
     handicap: Optional[str] = None
+    membership: str
     last_logged_in: Optional[datetime] = None
 
     model_config = {"from_attributes": True}
@@ -61,7 +61,7 @@ class EventRegistrationDetail(BaseModel):
     amount_paid: Optional[float] = None
     created_at: datetime
     user_name: Optional[str] = None
-
+    membership: str = "guest"
     model_config = {"from_attributes": True}
 
 
@@ -84,7 +84,8 @@ class CreateEventRequest(BaseModel):
     start_time: str  # Format: "HH:MM:SS"
     member_price: float
     guest_price: float
-
+    capacity: int
+    image_url: Optional[str] = None
 
 class UpdateEventRequest(BaseModel):
     """Request schema for updating event."""
@@ -97,7 +98,8 @@ class UpdateEventRequest(BaseModel):
     start_time: Optional[str] = None
     member_price: Optional[float] = 0
     guest_price: Optional[float] = 0
-
+    capacity: Optional[int] = 1
+    image_url: Optional[str] = None
 
 class EventResponse(BaseModel):
     """Response schema for event operations."""
@@ -111,6 +113,9 @@ class EventResponse(BaseModel):
     start_time: str
     member_price: float
     guest_price: float
+    capacity: int  
+    registered: int = 0  
+    image_url: Optional[str] = None
 
     model_config = {"from_attributes": True}
 
@@ -138,24 +143,6 @@ class BannerResponse(BaseModel):
     message: str
     data: Optional[dict] = None
 
-
-# Admin Photos Schemas
-class PhotoAlbumCreate(BaseModel):
-    """Request schema for creating photo album."""
-
-    title: str
-    description: Optional[str] = None
-    cover_image_url: Optional[str] = None
-    images: Optional[List[str]] = None
-
-
-class PhotoAlbumUpdate(BaseModel):
-    """Request schema for updating photo album."""
-
-    title: Optional[str] = None
-    description: Optional[str] = None
-    cover_image_url: Optional[str] = None
-    images: Optional[List[str]] = None
 
 
 class PhotoAlbumResponse(BaseModel):
@@ -221,10 +208,41 @@ class CarouselImageItem(BaseModel):
 class CarouselImagesResponse(BaseModel):
     """Response schema for carousel images."""
 
-    images: List[CarouselImageItem]
+    images: List[str]
 
 
 class UpdateCarouselImagesRequest(BaseModel):
     """Request schema for updating carousel images."""
 
-    images: List[dict]  # [{image_url, alt_text, display_order}]
+    images: List[str]  # [{image_url, alt_text, display_order}]
+
+class PhotoAlbumBase(BaseModel):
+    title: str
+    date: dt_date
+    coverImage: str
+    googleDriveLink: str
+
+
+class PhotoAlbumCreate(PhotoAlbumBase):
+    pass
+
+class PhotoAlbumUpdate(BaseModel):
+    title: Optional[str] = None
+    date: Optional[dt_date] = None
+    coverImage: Optional[str] = None
+    googleDriveLink: Optional[str] = None
+
+
+class PhotoAlbumResponse(BaseModel):
+    id: int
+    title: str
+    date: dt_date
+    coverImage: str
+    googleDriveLink: str
+
+    
+    class Config:
+        from_attributes = True
+
+class PhotoAlbumListResponse(BaseModel):
+    albums: List[PhotoAlbumResponse]

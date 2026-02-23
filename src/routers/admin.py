@@ -1,8 +1,8 @@
 import os
 import uuid
-from typing import Optional
+from typing import List
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status, Query
 from sqlalchemy.orm import Session
 
 from core.database import get_db
@@ -26,10 +26,12 @@ from schemas.admin import (
     UpdateContentRequest,
     UpdateEventRequest,
     UpdateUserRoleRequest,
-    UpdateUserRoleResponse,
-    UserListResponse,
+    UpdateUserRoleResponse
 )
 from services.admin_service import AdminService
+
+from schemas.partner import PartnerCreate, PartnerUpdate, PartnerResponse, PartnerListResponse
+
 
 router = APIRouter(prefix="/api/admin", tags=["Admin"])
 
@@ -81,6 +83,19 @@ def delete_user(
     service.delete_user(user_id)
     return DeleteUserResponse(message="User deleted successfully")
 
+@router.get("/events", response_model=List[EventResponse])
+def get_all_events(
+    order_by: str = Query(default='date'),
+    order: str = Query(default='asc'),
+    admin_user: AdminUser = None, 
+    db: Session = Depends(get_db)  
+) -> List[EventResponse]:
+    """
+    Get all events with registration counts.
+    Requires admin authentication.
+    """
+    service = AdminService(db)
+    return service.get_all_events(sort_by=order_by, sort_order=order)
 
 @router.get("/events/{event_id}/registrations", response_model=EventRegistrationsResponse)
 def get_event_registrations(
@@ -94,6 +109,28 @@ def get_event_registrations(
     registrations = service.get_event_registrations(event_id)
     return EventRegistrationsResponse(event_id=event_id, registrations=registrations)
 
+
+@router.delete("/event-registrations/{registration_id}")
+def delete_event_registration(
+    registration_id: int, admin_user: AdminUser, db: Session = Depends(get_db)
+):
+    """
+    Delete an event registration.
+    Requires admin authentication.
+    """
+    service = AdminService(db)
+    success = service.delete_event_registration(registration_id)
+    
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Registration not found"
+        )
+    
+    return {
+        "message": "Registration deleted successfully",
+        "registration_id": registration_id
+    }
 
 # ===== Admin Events API =====
 @router.post("/events", response_model=EventResponse, status_code=status.HTTP_201_CREATED)
@@ -310,12 +347,62 @@ def get_carousel_images(
 
 @router.put("/media/carousel", response_model=CarouselImagesResponse)
 def update_carousel_images(
-    data: UpdateCarouselImagesRequest, admin_user: AdminUser, db: Session = Depends(get_db)
+    data: UpdateCarouselImagesRequest, 
+    admin_user: AdminUser, 
+    db: Session = Depends(get_db)
 ) -> CarouselImagesResponse:
-    """
-    Update carousel images.
-    Requires admin authentication.
-    """
+    """Update carousel images."""
     service = AdminService(db)
+    # ✅ Pass list of strings directly
     images = service.update_carousel_images(data.images)
     return CarouselImagesResponse(images=images)
+
+# Partners API
+@router.get("/partners", response_model=PartnerListResponse)
+def get_all_partners(
+    admin_user: AdminUser,
+    db: Session = Depends(get_db)
+):
+    """Get all partners. Requires admin authentication."""
+    service = AdminService(db)
+    partners = service.get_all_partners()
+    return PartnerListResponse(partners=partners)
+
+@router.post("/partners", response_model=PartnerResponse)
+def create_partner(
+    data: PartnerCreate,
+    admin_user: AdminUser,
+    db: Session = Depends(get_db)
+):
+    """Create new partner. Requires admin authentication."""
+    service = AdminService(db)
+    return service.create_partner(
+        name=data.name,
+        logo_url=data.logo_url,
+        website_url=data.website_url,
+        display_order=data.display_order
+    )
+
+@router.put("/partners/{partner_id}", response_model=PartnerResponse)
+def update_partner(
+    partner_id: int,
+    data: PartnerUpdate,
+    admin_user: AdminUser,
+    db: Session = Depends(get_db)
+):
+    """Update partner. Requires admin authentication."""
+    service = AdminService(db)
+    update_data = {k: v for k, v in data.dict().items() if v is not None}
+    return service.update_partner(partner_id, **update_data)
+
+@router.delete("/partners/{partner_id}")
+def delete_partner(
+    partner_id: int,
+    admin_user: AdminUser,
+    db: Session = Depends(get_db)
+):
+    """Delete partner. Requires admin authentication."""
+    service = AdminService(db)
+    service.delete_partner(partner_id)
+    return {"message": "Partner deleted successfully"}
+
