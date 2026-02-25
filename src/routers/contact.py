@@ -3,12 +3,11 @@ from pydantic import BaseModel, EmailStr
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-import os
-from dotenv import load_dotenv
+
+from core.config import settings
 
 router = APIRouter(prefix="/api/contact", tags=["Contact"])
 
-load_dotenv()
 
 class ContactRequest(BaseModel):
     name: str
@@ -25,8 +24,8 @@ async def send_contact_email(data: ContactRequest):
         # Email configuration
         SMTP_SERVER = "smtp.gmail.com"
         SMTP_PORT = 587
-        SENDER_EMAIL = os.getenv("SMTP_EMAIL")
-        SENDER_PASSWORD = os.getenv("SMTP_PASSWORD")  # Set this in your environment
+        SENDER_EMAIL = settings.SMTP_USERNAME
+        SENDER_PASSWORD = settings.SMTP_PASSWORD  # Set this in your environment
         RECIPIENT_EMAIL = "sagagolfevents@gmail.com"
 
         if not SENDER_PASSWORD:
