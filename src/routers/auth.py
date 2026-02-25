@@ -36,8 +36,10 @@ def signup(data: SignUpRequest, db: Session = Depends(get_db)) -> SignUpResponse
         first_name=user.first_name,
         last_name=user.last_name,
         role="user",
+        email=data.email,
         phone_number=user.phone_number,
         handicap=user.handicap,
+        membership=user.membership
     )
 
     return SignUpResponse(message="User created successfully", user=user_response)

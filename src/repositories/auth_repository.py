@@ -33,12 +33,14 @@ class AuthRepository:
         last_name: str,
         phone_number: Optional[str],
         handicap: Optional[str],
+        membership: str
     ) -> User:
         user = User(
             first_name=first_name,
             last_name=last_name,
             phone_number=phone_number,
             handicap=handicap,
+            membership=membership
         )
         self.db.add(user)
         self.db.flush()

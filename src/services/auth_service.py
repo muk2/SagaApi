@@ -18,6 +18,9 @@ from schemas.auth import (
     TokenPayload,
     UserResponse,
 )
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
@@ -75,6 +78,7 @@ class AuthService:
                 last_name=data.last_name,
                 phone_number=data.phone_number,
                 handicap=data.handicap,
+                membership=data.membership
             )
 
             account = self.repo.create_user_account(
@@ -122,6 +126,7 @@ class AuthService:
             role=account.role or "user",
             handicap=account.user.handicap,
             phone_number=account.user.phone_number,
+            membership=account.user.membership
         )
 
         return token, user_response
@@ -173,9 +178,7 @@ class AuthService:
 
     def _send_reset_email(self, to_email: str, reset_link: str):
         """Send password reset email via SMTP."""
-        import smtplib
-        from email.mime.text import MIMEText
-        from email.mime.multipart import MIMEMultipart
+
 
         msg = MIMEMultipart("alternative")
         msg["Subject"] = "Password Reset Request"
