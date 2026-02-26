@@ -8,6 +8,7 @@ class SignUpRequest(BaseModel):
     email: EmailStr
     password: str
     handicap: Optional[str] = None
+    membership: str
 
 
 class LoginRequest(BaseModel):
@@ -23,7 +24,7 @@ class UserResponse(BaseModel):
     email: str
     phone_number: Optional[str] = None
     handicap: Optional[str] = None
-
+    membership: str
     model_config = {"from_attributes": True}
 
 

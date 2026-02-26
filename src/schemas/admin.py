@@ -1,67 +1,108 @@
 from datetime import date as dt_date
-from datetime import time as dt_time
-from decimal import Decimal
-
-from pydantic import BaseModel, field_serializer
-
-# ── User Schemas ──────────────────────────────────────────────────────────────
+from datetime import datetime
+from typing import Optional, List, Dict
+from pydantic import BaseModel, EmailStr, field_serializer
 
 
-class AdminUserResponse(BaseModel):
-    """Response schema for a user in the admin panel."""
+# Admin Users Schemas
+class UserListItem(BaseModel):
+    """Schema for user in list view."""
 
     id: int
     first_name: str
     last_name: str
-    phone_number: str | None = None
-    handicap: str | None = None
-    email: str | None = None
-    role: str | None = None
+    email: str
+    role: Optional[str] = None
+    phone_number: Optional[str] = None
+    handicap: Optional[str] = None
+    membership: str
+    last_logged_in: Optional[datetime] = None
 
     model_config = {"from_attributes": True}
 
 
-class AdminUserListResponse(BaseModel):
-    """Response schema for listing all users."""
+class UserListResponse(BaseModel):
+    """Response schema for listing users."""
 
-    users: list[AdminUserResponse]
+    users: List[UserListItem]
 
 
 class UpdateUserRoleRequest(BaseModel):
-    """Request schema for updating a user's role."""
+    """Request schema for updating user role."""
 
     role: str
 
 
 class UpdateUserRoleResponse(BaseModel):
-    """Response schema for updating a user's role."""
+    """Response schema for updating user role."""
 
     message: str
-    user: AdminUserResponse
+    user_id: int
+    new_role: str
 
 
 class DeleteUserResponse(BaseModel):
-    """Response schema for deleting a user."""
+    """Response schema for deleting user."""
 
     message: str
 
 
-# ── Event Schemas ─────────────────────────────────────────────────────────────
+class EventRegistrationDetail(BaseModel):
+    """Schema for event registration details."""
+
+    id: int
+    user_id: Optional[int] = None
+    guest_id: Optional[int] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    handicap: Optional[str] = None
+    payment_status: str
+    payment_method: Optional[str] = None
+    amount_paid: Optional[float] = None
+    created_at: datetime
+    user_name: Optional[str] = None
+    membership: str = "guest"
+    model_config = {"from_attributes": True}
 
 
+class EventRegistrationsResponse(BaseModel):
+    """Response schema for event registrations."""
+
+    event_id: int
+    registrations: List[EventRegistrationDetail]
+
+
+# Admin Events Schemas
 class CreateEventRequest(BaseModel):
-    """Request schema for creating an event."""
+    """Request schema for creating event."""
 
     township: str
     state: str
     zipcode: str
     golf_course: str
     date: dt_date
-    start_time: dt_time
+    start_time: str  # Format: "HH:MM:SS"
+    member_price: float
+    guest_price: float
+    capacity: int
+    image_url: Optional[str] = None
 
+class UpdateEventRequest(BaseModel):
+    """Request schema for updating event."""
 
-class AdminEventResponse(BaseModel):
-    """Response schema for an event in the admin panel."""
+    township: Optional[str] = None
+    state: Optional[str] = None
+    zipcode: Optional[str] = None
+    golf_course: Optional[str] = None
+    date: Optional[dt_date] = None
+    start_time: Optional[str] = None
+    member_price: Optional[float] = 0
+    guest_price: Optional[float] = 0
+    capacity: Optional[int] = 1
+    image_url: Optional[str] = None
+
+class EventResponse(BaseModel):
+    """Response schema for event operations."""
 
     id: int
     township: str
@@ -69,7 +110,12 @@ class AdminEventResponse(BaseModel):
     zipcode: str
     golf_course: str
     date: dt_date
-    start_time: dt_time
+    start_time: str
+    member_price: float
+    guest_price: float
+    capacity: int
+    registered: int = 0
+    image_url: Optional[str] = None
 
     model_config = {"from_attributes": True}
 
@@ -78,87 +124,125 @@ class AdminEventResponse(BaseModel):
         return date_val.strftime("%m/%d/%Y")
 
 
-class CreateEventResponse(BaseModel):
-    """Response schema for creating an event."""
-
-    message: str
-    event: AdminEventResponse
-
-
-class UpdateEventRequest(BaseModel):
-    """Request schema for updating an event."""
-
-    township: str | None = None
-    state: str | None = None
-    zipcode: str | None = None
-    golf_course: str | None = None
-    date: dt_date | None = None
-    start_time: dt_time | None = None
-
-
-class UpdateEventResponse(BaseModel):
-    """Response schema for updating an event."""
-
-    message: str
-    event: AdminEventResponse
-
-
-class DeleteEventResponse(BaseModel):
-    """Response schema for deleting an event."""
-
-    message: str
-
-
-class EventRegistrationDetailResponse(BaseModel):
-    """Response schema for a single event registration (admin view)."""
-
-    id: int
-    event_id: int
-    user_id: int | None = None
-    guest_id: int | None = None
-    handicap: str | None = None
-    email: str | None = None
-    phone: str | None = None
-    payment_status: str
-    payment_method: str | None = None
-    amount_paid: Decimal | None = None
-
-    model_config = {"from_attributes": True}
-
-
-class EventRegistrationsListResponse(BaseModel):
-    """Response schema for listing registrations for an event."""
-
-    event_id: int
-    registrations: list[EventRegistrationDetailResponse]
-
-
-# ── Banner Schemas ────────────────────────────────────────────────────────────
-
-
-class BannerMessageItem(BaseModel):
-    """Schema for a single banner message."""
-
-    message: str
-
-
+# Admin Banner Schemas
 class UpdateBannerMessagesRequest(BaseModel):
-    """Request schema for replacing all banner messages."""
+    """Request schema for updating banner messages."""
 
-    messages: list[BannerMessageItem]
+    messages: List[str]
 
 
-class BannerMessageResponse(BaseModel):
-    """Response schema for a single banner message."""
+class UpdateBannerSettingsRequest(BaseModel):
+    """Request schema for updating banner display count."""
+
+    display_count: int
+
+
+class BannerResponse(BaseModel):
+    """Response schema for banner operations."""
+
+    message: str
+    data: Optional[dict] = None
+
+
+
+class PhotoAlbumResponse(BaseModel):
+    """Response schema for photo album."""
 
     id: int
-    message: str
+    title: str
+    description: Optional[str] = None
+    cover_image_url: Optional[str] = None
+    images: Optional[List[str]] = None
+    created_at: datetime
+    updated_at: datetime
 
     model_config = {"from_attributes": True}
 
 
-class UpdateBannerMessagesResponse(BaseModel):
-    """Response schema for updating banner messages."""
+class PhotoAlbumListResponse(BaseModel):
+    """Response schema for listing photo albums."""
+
+    albums: List[PhotoAlbumResponse]
+
+
+# Admin Content Schemas
+class ContentItem(BaseModel):
+    """Schema for a single content item."""
+
+    key: str
+    value: Optional[str] = None
+    description: Optional[str] = None
+
+
+class ContentResponse(BaseModel):
+    """Response schema for site content."""
+
+    content: List[ContentItem]
+
+
+class UpdateContentRequest(BaseModel):
+    """Request schema for updating content."""
+
+    content: Dict[str, str]  # key-value pairs
+
+
+# Admin Media Schemas
+class MediaUploadResponse(BaseModel):
+    """Response schema for media upload."""
 
     message: str
-    banners: list[BannerMessageResponse]
+    url: str
+
+
+class CarouselImageItem(BaseModel):
+    """Schema for carousel image."""
+
+    id: int
+    image_url: str
+    alt_text: Optional[str] = None
+    display_order: int
+
+    model_config = {"from_attributes": True}
+
+
+class CarouselImagesResponse(BaseModel):
+    """Response schema for carousel images."""
+
+    images: List[str]
+
+
+class UpdateCarouselImagesRequest(BaseModel):
+    """Request schema for updating carousel images."""
+
+    images: List[str]  # [{image_url, alt_text, display_order}]
+
+class PhotoAlbumBase(BaseModel):
+    title: str
+    date: dt_date
+    coverImage: str
+    googleDriveLink: str
+
+
+class PhotoAlbumCreate(PhotoAlbumBase):
+    pass
+
+class PhotoAlbumUpdate(BaseModel):
+    title: Optional[str] = None
+    date: Optional[dt_date] = None
+    coverImage: Optional[str] = None
+    googleDriveLink: Optional[str] = None
+
+
+class PhotoAlbumResponse(BaseModel):
+    id: int
+    title: str
+    date: dt_date
+    coverImage: str
+    googleDriveLink: str
+
+
+    class Config:
+        from_attributes = True
+
+class PhotoAlbumListResponse(BaseModel):
+    albums: List[PhotoAlbumResponse]

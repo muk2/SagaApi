@@ -21,6 +21,7 @@ class User(Base):
     last_name: Mapped[str] = mapped_column(String(100), nullable=False)
     phone_number: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     handicap: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    membership: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
     user_account_id: Mapped[Optional[int]] = mapped_column(
         Integer, ForeignKey("saga.user_account.id"), nullable=True
     )
@@ -28,6 +29,13 @@ class User(Base):
         "UserAccount", back_populates="user", foreign_keys="UserAccount.user_id"
     )
 
+    user_account = relationship(
+        "UserAccount",
+        foreign_keys="[UserAccount.user_id]",  
+        back_populates="user",
+        cascade="all, delete-orphan",
+        uselist=False  
+    )
 
 class UserAccount(Base):
     """
@@ -48,4 +56,10 @@ class UserAccount(Base):
     reset_token: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     reset_token_expires: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    user: Mapped["User"] = relationship("User", back_populates="account", foreign_keys=[user_id])
+    user: Mapped["User"] = relationship("User", back_populates="user_account", foreign_keys=[user_id])
+
+    user = relationship(
+        "User",
+        foreign_keys=[user_id],  # Use list syntax here
+        back_populates="user_account"
+    )

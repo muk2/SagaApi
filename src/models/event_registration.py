@@ -22,10 +22,10 @@ class EventRegistration(Base):
         Integer, ForeignKey("saga.event.id"), nullable=False, index=True
     )
     user_id: Mapped[Optional[int]] = mapped_column(
-        Integer, ForeignKey("saga.user.id"), nullable=True, index=True
+        Integer, ForeignKey("saga.user_account.id"), nullable=True, index=True  # ✅ Points to user_account
     )
     guest_id: Mapped[Optional[int]] = mapped_column(
-        Integer, nullable=True
+        Integer, ForeignKey("saga.guest.id"), nullable=True
     )
     price_tier_id: Mapped[Optional[int]] = mapped_column(
         Integer, nullable=True
@@ -33,7 +33,7 @@ class EventRegistration(Base):
     handicap: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     email: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     phone: Mapped[Optional[str]] = mapped_column(String, nullable=True)
-    payment_status: Mapped[str] = mapped_column(String, nullable=False, default="pending")
+    payment_status: Mapped[str] = mapped_column(String, nullable=False, default="paid")
     payment_method: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     amount_paid: Mapped[Optional[Decimal]] = mapped_column(Numeric, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
@@ -43,6 +43,12 @@ class EventRegistration(Base):
         DateTime, nullable=False, default=lambda: datetime.now(), onupdate=lambda: datetime.now()
     )
    
-    # Relationships
-    user: Mapped[Optional["User"]] = relationship("User", foreign_keys=[user_id])
+    # ✅ Relationship to UserAccount (not User directly)
+    user_account: Mapped[Optional["UserAccount"]] = relationship(
+        "UserAccount", 
+        foreign_keys=[user_id],
+        lazy="joined"  # Eager load by default
+    )
+    
+    guest: Mapped[Optional["Guest"]] = relationship("Guest", foreign_keys=[guest_id])
     event: Mapped["Event"] = relationship("Event", foreign_keys=[event_id])
