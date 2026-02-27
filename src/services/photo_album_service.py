@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from repositories.photo_album_repository import PhotoAlbumRepository
-from schemas.photo_album import PhotoAlbumCreate, PhotoAlbumUpdate, PhotoAlbumResponse
+from src.repositories.photo_album_repository import PhotoAlbumRepository
+from src.schemas.photo_album import PhotoAlbumCreate, PhotoAlbumUpdate, PhotoAlbumResponse
 from typing import List
 
 class PhotoAlbumService:

@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from typing import Optional
-from models.user import User, UserAccount
+from src.models.user import User, UserAccount
 
 
 class AuthRepository:

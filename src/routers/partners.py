@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from core.database import get_db
-from repositories.partner_repository import PartnerRepository
+from src.core.database import get_db
+from src.repositories.partner_repository import PartnerRepository
 
 router = APIRouter(prefix="/api/partners", tags=["Partners"])
 

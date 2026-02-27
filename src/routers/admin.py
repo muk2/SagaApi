@@ -5,9 +5,9 @@ from typing import List
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status, Query
 from sqlalchemy.orm import Session
 
-from core.database import get_db
-from core.dependencies import AdminUser
-from schemas.admin import (
+from src.core.database import get_db
+from src.core.dependencies import AdminUser
+from src.schemas.admin import (
     BannerResponse,
     CarouselImagesResponse,
     ContentResponse,
@@ -28,9 +28,9 @@ from schemas.admin import (
     UpdateUserRoleRequest,
     UpdateUserRoleResponse
 )
-from services.admin_service import AdminService
+from src.services.admin_service import AdminService
 
-from schemas.partner import PartnerCreate, PartnerUpdate, PartnerResponse, PartnerListResponse
+from src.schemas.partner import PartnerCreate, PartnerUpdate, PartnerResponse, PartnerListResponse
 
 
 router = APIRouter(prefix="/api/admin", tags=["Admin"])

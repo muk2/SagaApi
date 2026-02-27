@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
 
-from core.database import get_db
-from services.admin_service import AdminService
-from schemas.admin import PhotoAlbumResponse
+from src.core.database import get_db
+from src.services.admin_service import AdminService
+from src.schemas.admin import PhotoAlbumResponse
 
 router = APIRouter(prefix="/api/photo-albums", tags=["Photo Albums"])
 

@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text, Numeric, Boolean, DateTime
 from sqlalchemy.sql import func
-from core.database import Base
+from src.core.database import Base
 
 class MembershipOption(Base):
     __tablename__ = "membership_options"

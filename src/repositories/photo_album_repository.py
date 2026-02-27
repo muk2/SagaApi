@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from models.photo_album import PhotoAlbum
+from src.models.photo_album import PhotoAlbum
 from typing import List, Optional
 
 class PhotoAlbumRepository:

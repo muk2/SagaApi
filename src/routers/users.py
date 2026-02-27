@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from core.database import get_db
-from core.dependencies import CurrentUser
-from schemas.user import (
+from src.core.database import get_db
+from src.core.dependencies import CurrentUser
+from src.schemas.user import (
     EventRegistrationCreateResponse,
     EventRegistrationRequest,
     PasswordResetRequest,
@@ -12,7 +12,7 @@ from schemas.user import (
     UserProfileUpdateRequest,
     UserProfileUpdateResponse,
 )
-from services.user_service import UserService
+from src.services.user_service import UserService
 
 router = APIRouter(prefix="/api/users", tags=["Users"])
 

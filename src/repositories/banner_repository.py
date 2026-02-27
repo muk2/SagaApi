@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
-from models.banner_message import Banner
-from models.banner_settings import BannerSettings
+from src.models.banner_message import Banner
+from src.models.banner_settings import BannerSettings
 
 def get_banners(db: Session):
     return db.query(Banner).all()

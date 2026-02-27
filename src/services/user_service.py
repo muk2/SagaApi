@@ -1,13 +1,13 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from typing import Tuple, Optional, List
-from repositories.user_repository import UserRepository
-from schemas.user import (
+from src.repositories.user_repository import UserRepository
+from src.schemas.user import (
     EventRegistrationResponse,
     PasswordResetRequest,
     UserProfileUpdateRequest,
 )
-from services.auth_service import hash_password, verify_password
+from src.services.auth_service import hash_password, verify_password
 from sqlalchemy.exc import IntegrityError
 
 class UserService:

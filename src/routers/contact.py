@@ -4,7 +4,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-from core.config import settings
+from src.core.config import settings
 
 router = APIRouter(prefix="/api/contact", tags=["Contact"])
 

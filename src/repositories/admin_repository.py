@@ -4,13 +4,13 @@ from typing import Optional, List, Tuple, Dict
 from sqlalchemy import select, desc, asc
 from sqlalchemy.orm import Session, joinedload
 
-from models.banner_message import Banner
-from models.carousel_image import CarouselImage
-from models.event import Event
-from models.event_registration import EventRegistration
-from models.photo_album import PhotoAlbum
-from models.site_content import SiteContent
-from models.user import User, UserAccount
+from src.models.banner_message import Banner
+from src.models.carousel_image import CarouselImage
+from src.models.event import Event
+from src.models.event_registration import EventRegistration
+from src.models.photo_album import PhotoAlbum
+from src.models.site_content import SiteContent
+from src.models.user import User, UserAccount
 
 
 class AdminRepository:
@@ -245,7 +245,7 @@ class AdminRepository:
         Delete an event registration.
         Returns True if registration was found and deleted, False otherwise.
         """
-        from models.event_registration import EventRegistration
+        from src.models.event_registration import EventRegistration
 
         registration = self.db.query(EventRegistration).filter(
             EventRegistration.id == registration_id

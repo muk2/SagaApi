@@ -2,14 +2,14 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import Optional
 
-from core.database import get_db
-from core.dependencies import OptionalUser
-from services.event_service import list_events
-from models.event_registration import EventRegistration
-from models.guest import Guest
-from models.user import User, UserAccount
+from src.core.database import get_db
+from src.core.dependencies import OptionalUser
+from src.services.event_service import list_events
+from src.models.event_registration import EventRegistration
+from src.models.guest import Guest
+from src.models.user import User, UserAccount
 from pydantic import BaseModel, EmailStr
-from models.event import Event
+from src.models.event import Event
 
 router = APIRouter(prefix="/api/events", tags=["Events"])
 

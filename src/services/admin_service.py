@@ -6,8 +6,8 @@ from typing import Optional, List, Tuple, Dict
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from repositories.admin_repository import AdminRepository
-from schemas.admin import (
+from src.repositories.admin_repository import AdminRepository
+from src.schemas.admin import (
     CarouselImageItem,
     ContentItem,
     EventRegistrationDetail,
@@ -16,14 +16,14 @@ from schemas.admin import (
     EventResponse
 )
 
-from repositories.carousel_repository import CarouselRepository
-from models.event_registration import EventRegistration
-from models.photo_album import PhotoAlbum
-from repositories.partner_repository import PartnerRepository
-from schemas.partner import PartnerResponse
-from models.event import Event
-from models.user import User, UserAccount
-from models.guest import Guest
+from src.repositories.carousel_repository import CarouselRepository
+from src.models.event_registration import EventRegistration
+from src.models.photo_album import PhotoAlbum
+from src.repositories.partner_repository import PartnerRepository
+from src.schemas.partner import PartnerResponse
+from src.models.event import Event
+from src.models.user import User, UserAccount
+from src.models.guest import Guest
 
 
 class AdminService:

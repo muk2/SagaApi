@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
-from core.database import get_db
-from core.dependencies import AdminUser
-from models.scholarship_recipient import ScholarshipRecipient
-from schemas.scholarship_recipient import (
+from src.core.database import get_db
+from src.core.dependencies import AdminUser
+from src.models.scholarship_recipient import ScholarshipRecipient
+from src.schemas.scholarship_recipient import (
     ScholarshipRecipientCreate,
     ScholarshipRecipientUpdate,
     ScholarshipRecipientResponse,

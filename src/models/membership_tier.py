@@ -7,10 +7,10 @@ from typing import TYPE_CHECKING
 from sqlalchemy import Boolean, DateTime, Integer, Numeric, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from core.database import Base
+from src.core.database import Base
 
 if TYPE_CHECKING:
-    from models.member_membership import MemberMembership
+    from src.models.member_membership import MemberMembership
 
 
 class MembershipTier(Base):

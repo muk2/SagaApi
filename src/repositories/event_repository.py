@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from models.event import Event
+from src.models.event import Event
 
 
 def get_events(db: Session):

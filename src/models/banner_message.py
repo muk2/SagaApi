@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String
-from core.database import Base
+from src.core.database import Base
 
 
 class Banner(Base):

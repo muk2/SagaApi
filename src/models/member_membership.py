@@ -6,12 +6,12 @@ from typing import TYPE_CHECKING
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from core.database import Base
+from src.core.database import Base
 
 if TYPE_CHECKING:
-    from models.membership_tier import MembershipTier
-    from models.payment import Payment
-    from models.user import User
+    from src.models.membership_tier import MembershipTier
+    from src.models.payment import Payment
+    from src.models.user import User
 
 
 class MemberMembership(Base):

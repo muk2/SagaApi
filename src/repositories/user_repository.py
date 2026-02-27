@@ -1,9 +1,9 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
-from models.event import Event
-from models.event_registration import EventRegistration
-from models.user import User, UserAccount
+from src.models.event import Event
+from src.models.event_registration import EventRegistration
+from src.models.user import User, UserAccount
 from typing import Optional, List
 
 class UserRepository:

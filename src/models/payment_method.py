@@ -3,7 +3,7 @@ from __future__ import annotations
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from core.database import Base
+from src.core.database import Base
 
 
 class PaymentMethod(Base):

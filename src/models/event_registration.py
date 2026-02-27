@@ -7,12 +7,12 @@ from typing import TYPE_CHECKING, Optional
 from sqlalchemy import DateTime, ForeignKey, Integer, Numeric, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from core.database import Base
+from src.core.database import Base
 
 if TYPE_CHECKING:
-    from models.event import Event
-    from models.guest import Guest
-    from models.user import UserAccount
+    from src.models.event import Event
+    from src.models.guest import Guest
+    from src.models.user import UserAccount
 
 
 class EventRegistration(Base):

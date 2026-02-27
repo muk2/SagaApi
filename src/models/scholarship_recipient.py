@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text, DateTime
 from sqlalchemy.sql import func
-from core.database import Base
+from src.core.database import Base
 
 class ScholarshipRecipient(Base):
     __tablename__ = "scholarship_recipients"
