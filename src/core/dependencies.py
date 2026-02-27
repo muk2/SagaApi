@@ -52,7 +52,7 @@ async def get_current_user_optional(
     """
     if not credentials:
         return None
-    
+
     try:
         token = credentials.credentials
         token_data = decode_access_token(token)
@@ -61,7 +61,7 @@ async def get_current_user_optional(
         return service.get_current_user(token_data.sub)
     except:
         return None
-    
+
 CurrentUser = Annotated[User, Depends(get_current_user)]
 AdminUser = Annotated[User, Depends(get_admin_user)]
-OptionalUser = Annotated[Optional[User], Depends(get_current_user_optional)] 
+OptionalUser = Annotated[Optional[User], Depends(get_current_user_optional)]

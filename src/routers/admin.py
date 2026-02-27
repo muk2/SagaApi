@@ -37,9 +37,9 @@ router = APIRouter(prefix="/api/admin", tags=["Admin"])
 
 
 # ===== Admin Users API =====
-@router.get("/users") 
+@router.get("/users")
 def get_all_users(
-    admin_user: AdminUser, 
+    admin_user: AdminUser,
     db: Session = Depends(get_db)
 ):
     """
@@ -48,7 +48,7 @@ def get_all_users(
     """
     service = AdminService(db)
     users = service.get_all_users()
-    
+
     # Return the list directly, not wrapped in UserListResponse
     return users
 
@@ -87,8 +87,8 @@ def delete_user(
 def get_all_events(
     order_by: str = Query(default='date'),
     order: str = Query(default='asc'),
-    admin_user: AdminUser = None, 
-    db: Session = Depends(get_db)  
+    admin_user: AdminUser = None,
+    db: Session = Depends(get_db)
 ) -> List[EventResponse]:
     """
     Get all events with registration counts.
@@ -120,13 +120,13 @@ def delete_event_registration(
     """
     service = AdminService(db)
     success = service.delete_event_registration(registration_id)
-    
+
     if not success:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Registration not found"
         )
-    
+
     return {
         "message": "Registration deleted successfully",
         "registration_id": registration_id
@@ -347,13 +347,12 @@ def get_carousel_images(
 
 @router.put("/media/carousel", response_model=CarouselImagesResponse)
 def update_carousel_images(
-    data: UpdateCarouselImagesRequest, 
-    admin_user: AdminUser, 
+    data: UpdateCarouselImagesRequest,
+    admin_user: AdminUser,
     db: Session = Depends(get_db)
 ) -> CarouselImagesResponse:
     """Update carousel images."""
     service = AdminService(db)
-    # ✅ Pass list of strings directly
     images = service.update_carousel_images(data.images)
     return CarouselImagesResponse(images=images)
 
@@ -405,4 +404,3 @@ def delete_partner(
     service = AdminService(db)
     service.delete_partner(partner_id)
     return {"message": "Partner deleted successfully"}
-

@@ -113,8 +113,8 @@ class EventResponse(BaseModel):
     start_time: str
     member_price: float
     guest_price: float
-    capacity: int  
-    registered: int = 0  
+    capacity: int
+    registered: int = 0
     image_url: Optional[str] = None
 
     model_config = {"from_attributes": True}
@@ -240,7 +240,7 @@ class PhotoAlbumResponse(BaseModel):
     coverImage: str
     googleDriveLink: str
 
-    
+
     class Config:
         from_attributes = True
 

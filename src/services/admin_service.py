@@ -21,9 +21,10 @@ from models.event_registration import EventRegistration
 from models.photo_album import PhotoAlbum
 from repositories.partner_repository import PartnerRepository
 from schemas.partner import PartnerResponse
-from models.event import Event  
+from models.event import Event
 from models.user import User, UserAccount
 from models.guest import Guest
+
 
 class AdminService:
     """Service layer for admin-related business logic."""
@@ -95,7 +96,7 @@ class AdminService:
 
     def get_event_registrations(self, event_id: int) -> List[EventRegistrationDetail]:
         """Get all registrations for an event with membership info."""
-        
+
 
         registrations = (
             self.repo.db.query(EventRegistration)
@@ -111,20 +112,20 @@ class AdminService:
         for reg in registrations:
             user_name = None
             membership = "guest"  # Default for guests
-            
-            
+
+
             if reg.user_account and reg.user_account.user:
                 user = reg.user_account.user
                 user_name = f"{user.first_name} {user.last_name}"
                 # Get membership from user table
                 membership = getattr(user, 'membership', 'guest') or 'guest'
-            
-            
+
+
             elif reg.guest:
                 guest = reg.guest
                 user_name = f"{guest.first_name} {guest.last_name}"
                 membership = "guest"
-            
+
             result.append(
                 EventRegistrationDetail(
                     id=reg.id,
@@ -134,7 +135,7 @@ class AdminService:
                     handicap=str(reg.handicap),
                     created_at=reg.created_at.isoformat() if reg.created_at else None,
                     payment_status='Paid',
-                    membership=membership  
+                    membership=membership
                 )
             )
 
@@ -146,18 +147,18 @@ class AdminService:
         Returns True if deleted, False if not found.
         """
         return self.repo.delete_event_registration(registration_id)
-    
+
     def get_all_events(self, sort_by: str = 'date', sort_order: str = 'asc') -> List[EventResponse]:
         """Get all events with registration counts."""
         events = self.repo.get_all_events(sort_by, sort_order)
         result = []
-        
+
         for event in events:
             # Count registrations for this event
             registered_count = self.repo.db.query(EventRegistration)\
                 .filter(EventRegistration.event_id == event.id)\
                 .count()
-            
+
             result.append(
                 EventResponse(
                     id=event.id,
@@ -167,15 +168,15 @@ class AdminService:
                     zipcode=getattr(event, 'zipcode', None),
                     date=event.date.strftime('%Y-%m-%d') if hasattr(event.date, 'strftime') else str(event.date),
                     start_time=str(event.start_time),
-                    guest_price=float(event.guest_price),  
+                    guest_price=float(event.guest_price),
                     member_price=float(event.member_price) if event.member_price else float(event.guest_price),
                     capacity=event.capacity,
                     registered=registered_count,
-                    image_url=getattr(event, 'image_url', None),  # ✅ Include image
-                    description=getattr(event, 'description', None),  # ✅ Include description
+                    image_url=getattr(event, 'image_url', None),
+                    description=getattr(event, 'description', None),
                 )
             )
-        
+
         return result
 
     # Event Management
@@ -215,24 +216,24 @@ class AdminService:
     def update_event(self, event_id: int, event_data: dict) -> Optional[dict]:
         """Update an event and delete old image if replaced."""
         try:
-            # ✅ Get the existing event to check for old image
+            # Get the existing event to check for old image
             event = self.repo.db.query(Event).filter(Event.id == event_id).first()
             if not event:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
                     detail="Event not found",
                 )
-            
-            # ✅ If image is being replaced, delete the old one
+
+            # If image is being replaced, delete the old one
             old_image_url = event.image_url if hasattr(event, 'image_url') else None
             new_image_url = event_data.get('image_url')
-            
+
             if new_image_url and old_image_url and new_image_url != old_image_url:
                 # New image provided and different from old one
                 if old_image_url.startswith('/uploads/'):
                     file_path = old_image_url.lstrip('/')
                     full_path = os.path.join(os.getcwd(), file_path)
-                    
+
                     try:
                         if os.path.exists(full_path):
                             os.remove(full_path)
@@ -240,7 +241,7 @@ class AdminService:
                     except Exception as e:
                         print(f"Failed to delete old file {full_path}: {e}")
                         # Continue with update even if file deletion fails
-            
+
             # Convert start_time string to time object if needed
             if "start_time" in event_data and isinstance(event_data["start_time"], str):
                 time_parts = event_data["start_time"].split(":")
@@ -282,19 +283,19 @@ class AdminService:
     def delete_event(self, event_id: int) -> None:
         """Delete an event and its associated image file."""
         try:
-            # ✅ Get the event first to access image_url
+            # Get the event first to access image_url
             event = self.repo.db.query(Event).filter(Event.id == event_id).first()
             if not event:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
                     detail="Event not found",
                 )
-            
-            # ✅ Delete the image file from disk if it exists
+
+            # Delete the image file from disk if it exists
             if hasattr(event, 'image_url') and event.image_url and event.image_url.startswith('/uploads/'):
                 file_path = event.image_url.lstrip('/')  # Remove leading /
                 full_path = os.path.join(os.getcwd(), file_path)
-                
+
                 try:
                     if os.path.exists(full_path):
                         os.remove(full_path)
@@ -302,7 +303,7 @@ class AdminService:
                 except Exception as e:
                     print(f"Failed to delete file {full_path}: {e}")
                     # Continue with database deletion even if file deletion fails
-            
+
             # Delete from database
             deleted = self.repo.delete_event(event_id)
             if not deleted:
@@ -339,7 +340,7 @@ class AdminService:
         settings = self.repo.get_banner_settings()
         if not settings:
             return {"enabled": False, "messages": []}
-        
+
         return {
             "enabled": settings.enabled,
             "messages": settings.messages or []
@@ -388,24 +389,24 @@ class AdminService:
         album = self.repo.db.query(PhotoAlbum).filter(PhotoAlbum.id == album_id).first()
         if not album:
             raise HTTPException(status_code=404, detail="Album not found")
-        
-        # ✅ If cover image is being replaced, delete the old one
+
+        # If cover image is being replaced, delete the old one
         old_cover_image = album.cover_image
         new_cover_image = album_data.get('cover_image')
-        
+
         if new_cover_image and old_cover_image and new_cover_image != old_cover_image:
             # New cover provided and different from old one
             if old_cover_image.startswith('/uploads/'):
                 file_path = old_cover_image.lstrip('/')
                 full_path = os.path.join(os.getcwd(), file_path)
-                
+
                 try:
                     if os.path.exists(full_path):
                         os.remove(full_path)
                         print(f"Deleted old album cover: {full_path}")
                 except Exception as e:
                     print(f"Failed to delete old file {full_path}: {e}")
-        
+
         updated_album = self.repo.update_photo_album(album_id, album_data)
         self.repo.db.commit()
         self.repo.db.refresh(album)
@@ -422,18 +423,18 @@ class AdminService:
         album = self.repo.db.query(PhotoAlbum).filter(PhotoAlbum.id == album_id).first()
         if not album:
             raise HTTPException(status_code=404, detail="Album not found")
-        
-        # ✅ Delete cover image file if it's local
+
+        # Delete cover image file if it's local
         if album.cover_image and album.cover_image.startswith('/uploads/'):
             file_path = album.cover_image.lstrip('/')
             full_path = os.path.join(os.getcwd(), file_path)
-            
+
             try:
                 if os.path.exists(full_path):
                     os.remove(full_path)
             except Exception as e:
                 print(f"Failed to delete file {full_path}: {e}")
-        
+
         self.repo.db.delete(album)
         self.repo.db.commit()
 
@@ -468,7 +469,7 @@ class AdminService:
         """Get carousel images - returns list of URL strings."""
         carousel_repo = CarouselRepository(self.repo.db)
         return carousel_repo.get_all_images()
-    
+
     # Partner Management
     def get_all_partners(self) -> List[PartnerResponse]:
         """Get all partners."""
@@ -505,34 +506,34 @@ class AdminService:
     def update_partner(self, partner_id: int, **kwargs) -> PartnerResponse:
         """Update partner and delete old logo if replaced."""
         partner_repo = PartnerRepository(self.repo.db)
-        
-        # ✅ Get existing partner to check for old logo
+
+        # Get existing partner to check for old logo
         partner = partner_repo.get_by_id(partner_id)
         if not partner:
             raise HTTPException(status_code=404, detail="Partner not found")
-        
-        # ✅ If logo is being replaced, delete the old one
+
+        # If logo is being replaced, delete the old one
         old_logo_url = partner.logo_url
         new_logo_url = kwargs.get('logo_url')
-        
+
         if new_logo_url and old_logo_url and new_logo_url != old_logo_url:
             # New logo provided and different from old one
             if old_logo_url.startswith('/uploads/'):
                 file_path = old_logo_url.lstrip('/')
                 full_path = os.path.join(os.getcwd(), file_path)
-                
+
                 try:
                     if os.path.exists(full_path):
                         os.remove(full_path)
                         print(f"Deleted old partner logo: {full_path}")
                 except Exception as e:
                     print(f"Failed to delete old file {full_path}: {e}")
-        
+
         # Update partner
         updated_partner = partner_repo.update(partner_id, **kwargs)
         if not updated_partner:
             raise HTTPException(status_code=404, detail="Partner not found")
-        
+
         return PartnerResponse(
             id=updated_partner.id,
             name=updated_partner.name,
@@ -544,17 +545,17 @@ class AdminService:
     def delete_partner(self, partner_id: int) -> bool:
         """Delete partner and its logo file."""
         partner_repo = PartnerRepository(self.repo.db)
-        
-        # ✅ Get the partner first to access logo_url
+
+        # Get the partner first to access logo_url
         partner = partner_repo.get_by_id(partner_id)
         if not partner:
             raise HTTPException(status_code=404, detail="Partner not found")
-        
-        # ✅ Delete the logo file from disk if it's a local upload
+
+        # Delete the logo file from disk if it's a local upload
         if partner.logo_url and partner.logo_url.startswith('/uploads/'):
             file_path = partner.logo_url.lstrip('/')  # Remove leading /
             full_path = os.path.join(os.getcwd(), file_path)
-            
+
             try:
                 if os.path.exists(full_path):
                     os.remove(full_path)
@@ -562,10 +563,10 @@ class AdminService:
             except Exception as e:
                 print(f"Failed to delete file {full_path}: {e}")
                 # Continue with database deletion even if file deletion fails
-        
+
         # Delete from database
         success = partner_repo.delete(partner_id)
         if not success:
             raise HTTPException(status_code=404, detail="Partner not found")
-        
+
         return success
