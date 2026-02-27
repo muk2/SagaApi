@@ -8,10 +8,10 @@ import pytest
 from fastapi import HTTPException
 from fastapi.testclient import TestClient
 
-from models.banner_message import Banner
-from models.event import Event
-from models.event_registration import EventRegistration
-from models.user import User, UserAccount
+from src.models.banner_message import Banner
+from src.models.event import Event
+from src.models.event_registration import EventRegistration
+from src.models.user import User, UserAccount
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────
 
@@ -99,8 +99,8 @@ def mock_db():
 @pytest.fixture
 def client(admin_user):
     """Create a test client with overridden dependencies."""
-    from core.database import get_db
-    from core.dependencies import get_current_user
+    from src.core.database import get_db
+    from src.core.dependencies import get_current_user
     from main import app
 
     def override_get_db():
@@ -121,8 +121,8 @@ def client(admin_user):
 @pytest.fixture
 def non_admin_client(non_admin_user):
     """Create a test client with a non-admin user."""
-    from core.database import get_db
-    from core.dependencies import get_current_user
+    from src.core.database import get_db
+    from src.core.dependencies import get_current_user
     from main import app
 
     def override_get_db():
@@ -213,7 +213,7 @@ class TestAdminAuthorization:
 class TestAdminUsers:
     """Test admin user management endpoints."""
 
-    @patch("routers.admin.AdminService")
+    @patch("src.routers.admin.AdminService")
     def test_list_users_success(self, mock_service_cls, client):
         from schemas.admin import AdminUserResponse
 
@@ -248,7 +248,7 @@ class TestAdminUsers:
         assert data["users"][0]["role"] == "admin"
         assert data["users"][1]["role"] == "user"
 
-    @patch("routers.admin.AdminService")
+    @patch("src.routers.admin.AdminService")
     def test_list_users_empty(self, mock_service_cls, client):
         mock_service = MagicMock()
         mock_service_cls.return_value = mock_service
@@ -258,7 +258,7 @@ class TestAdminUsers:
         assert response.status_code == 200
         assert response.json()["users"] == []
 
-    @patch("routers.admin.AdminService")
+    @patch("src.routers.admin.AdminService")
     def test_update_user_role_success(self, mock_service_cls, client):
         from schemas.admin import AdminUserResponse
 
@@ -281,7 +281,7 @@ class TestAdminUsers:
         assert data["user"]["role"] == "admin"
         mock_service.update_user_role.assert_called_once_with(2, "admin")
 
-    @patch("routers.admin.AdminService")
+    @patch("src.routers.admin.AdminService")
     def test_update_user_role_not_found(self, mock_service_cls, client):
         mock_service = MagicMock()
         mock_service_cls.return_value = mock_service
@@ -293,12 +293,12 @@ class TestAdminUsers:
         assert response.status_code == 404
         assert response.json()["detail"] == "User not found"
 
-    @patch("routers.admin.AdminService")
+    @patch("src.routers.admin.AdminService")
     def test_update_user_role_missing_body(self, mock_service_cls, client):
         response = client.put("/api/admin/users/1/role")
         assert response.status_code == 422
 
-    @patch("routers.admin.AdminService")
+    @patch("src.routers.admin.AdminService")
     def test_delete_user_success(self, mock_service_cls, client):
         mock_service = MagicMock()
         mock_service_cls.return_value = mock_service
@@ -310,7 +310,7 @@ class TestAdminUsers:
         assert data["message"] == "User deleted successfully"
         mock_service.delete_user.assert_called_once_with(2)
 
-    @patch("routers.admin.AdminService")
+    @patch("src.routers.admin.AdminService")
     def test_delete_user_not_found(self, mock_service_cls, client):
         mock_service = MagicMock()
         mock_service_cls.return_value = mock_service
@@ -329,7 +329,7 @@ class TestAdminUsers:
 class TestAdminEvents:
     """Test admin event management endpoints."""
 
-    @patch("routers.admin.AdminService")
+    @patch("src.routers.admin.AdminService")
     def test_create_event_success(self, mock_service_cls, client):
         from schemas.admin import AdminEventResponse
 
@@ -360,13 +360,13 @@ class TestAdminEvents:
         assert data["event"]["golf_course"] == "Lincoln Greens"
         assert data["event"]["township"] == "Springfield"
 
-    @patch("routers.admin.AdminService")
+    @patch("src.routers.admin.AdminService")
     def test_create_event_validation_error(self, mock_service_cls, client):
         # Missing required fields
         response = client.post("/api/admin/events", json={"township": "Test"})
         assert response.status_code == 422
 
-    @patch("routers.admin.AdminService")
+    @patch("src.routers.admin.AdminService")
     def test_update_event_success(self, mock_service_cls, client):
         from schemas.admin import AdminEventResponse
 
@@ -389,7 +389,7 @@ class TestAdminEvents:
         assert data["event"]["township"] == "New Town"
         mock_service.update_event.assert_called_once()
 
-    @patch("routers.admin.AdminService")
+    @patch("src.routers.admin.AdminService")
     def test_update_event_not_found(self, mock_service_cls, client):
         mock_service = MagicMock()
         mock_service_cls.return_value = mock_service
@@ -401,7 +401,7 @@ class TestAdminEvents:
         assert response.status_code == 404
         assert response.json()["detail"] == "Event not found"
 
-    @patch("routers.admin.AdminService")
+    @patch("src.routers.admin.AdminService")
     def test_delete_event_success(self, mock_service_cls, client):
         mock_service = MagicMock()
         mock_service_cls.return_value = mock_service
@@ -412,7 +412,7 @@ class TestAdminEvents:
         assert response.json()["message"] == "Event deleted successfully"
         mock_service.delete_event.assert_called_once_with(1)
 
-    @patch("routers.admin.AdminService")
+    @patch("src.routers.admin.AdminService")
     def test_delete_event_not_found(self, mock_service_cls, client):
         mock_service = MagicMock()
         mock_service_cls.return_value = mock_service
@@ -423,7 +423,7 @@ class TestAdminEvents:
         response = client.delete("/api/admin/events/999")
         assert response.status_code == 404
 
-    @patch("routers.admin.AdminService")
+    @patch("src.routers.admin.AdminService")
     def test_get_event_registrations_success(self, mock_service_cls, client):
         from schemas.admin import EventRegistrationDetailResponse
 
@@ -464,7 +464,7 @@ class TestAdminEvents:
         assert data["registrations"][0]["payment_status"] == "pending"
         assert data["registrations"][1]["payment_status"] == "paid"
 
-    @patch("routers.admin.AdminService")
+    @patch("src.routers.admin.AdminService")
     def test_get_event_registrations_not_found(self, mock_service_cls, client):
         mock_service = MagicMock()
         mock_service_cls.return_value = mock_service
@@ -475,7 +475,7 @@ class TestAdminEvents:
         response = client.get("/api/admin/events/999/registrations")
         assert response.status_code == 404
 
-    @patch("routers.admin.AdminService")
+    @patch("src.routers.admin.AdminService")
     def test_get_event_registrations_empty(self, mock_service_cls, client):
         mock_service = MagicMock()
         mock_service_cls.return_value = mock_service
@@ -493,7 +493,7 @@ class TestAdminEvents:
 class TestAdminBanners:
     """Test admin banner message endpoints."""
 
-    @patch("routers.admin.AdminService")
+    @patch("src.routers.admin.AdminService")
     def test_update_banners_success(self, mock_service_cls, client):
         from schemas.admin import BannerMessageResponse
 
@@ -517,7 +517,7 @@ class TestAdminBanners:
         assert len(data["banners"]) == 2
         assert data["banners"][0]["message"] == "Welcome to Saga Golf!"
 
-    @patch("routers.admin.AdminService")
+    @patch("src.routers.admin.AdminService")
     def test_update_banners_empty_list(self, mock_service_cls, client):
 
         mock_service = MagicMock()
@@ -529,7 +529,7 @@ class TestAdminBanners:
         data = response.json()
         assert data["banners"] == []
 
-    @patch("routers.admin.AdminService")
+    @patch("src.routers.admin.AdminService")
     def test_update_banners_validation_error(self, mock_service_cls, client):
         # Missing 'messages' key
         response = client.put("/api/admin/banner-messages", json={})
@@ -542,9 +542,9 @@ class TestAdminBanners:
 class TestAdminService:
     """Test AdminService business logic with mocked repository."""
 
-    @patch("services.admin_service.AdminRepository")
+    @patch("src.services.admin_service.AdminRepository")
     def test_get_all_users(self, mock_repo_cls, mock_db):
-        from services.admin_service import AdminService
+        from src.services.admin_service import AdminService
 
         mock_repo = MagicMock()
         mock_repo_cls.return_value = mock_repo
@@ -557,9 +557,9 @@ class TestAdminService:
         assert result[0].role == "admin"
         assert result[1].role == "user"
 
-    @patch("services.admin_service.AdminRepository")
+    @patch("src.services.admin_service.AdminRepository")
     def test_update_user_role_user_not_found(self, mock_repo_cls, mock_db):
-        from services.admin_service import AdminService
+        from src.services.admin_service import AdminService
 
         mock_repo = MagicMock()
         mock_repo_cls.return_value = mock_repo
@@ -571,9 +571,9 @@ class TestAdminService:
         assert exc_info.value.status_code == 404
         assert exc_info.value.detail == "User not found"
 
-    @patch("services.admin_service.AdminRepository")
+    @patch("src.services.admin_service.AdminRepository")
     def test_update_user_role_account_not_found(self, mock_repo_cls, mock_db):
-        from services.admin_service import AdminService
+        from src.services.admin_service import AdminService
 
         mock_repo = MagicMock()
         mock_repo_cls.return_value = mock_repo
@@ -586,9 +586,9 @@ class TestAdminService:
         assert exc_info.value.status_code == 404
         assert exc_info.value.detail == "User account not found"
 
-    @patch("services.admin_service.AdminRepository")
+    @patch("src.services.admin_service.AdminRepository")
     def test_update_user_role_success(self, mock_repo_cls, mock_db):
-        from services.admin_service import AdminService
+        from src.services.admin_service import AdminService
 
         mock_repo = MagicMock()
         mock_repo_cls.return_value = mock_repo
@@ -605,9 +605,9 @@ class TestAdminService:
         mock_repo.commit.assert_called_once()
         assert result.id == 1
 
-    @patch("services.admin_service.AdminRepository")
+    @patch("src.services.admin_service.AdminRepository")
     def test_delete_user_not_found(self, mock_repo_cls, mock_db):
-        from services.admin_service import AdminService
+        from src.services.admin_service import AdminService
 
         mock_repo = MagicMock()
         mock_repo_cls.return_value = mock_repo
@@ -618,9 +618,9 @@ class TestAdminService:
             service.delete_user(999)
         assert exc_info.value.status_code == 404
 
-    @patch("services.admin_service.AdminRepository")
+    @patch("src.services.admin_service.AdminRepository")
     def test_delete_user_success_with_account(self, mock_repo_cls, mock_db):
-        from services.admin_service import AdminService
+        from src.services.admin_service import AdminService
 
         mock_repo = MagicMock()
         mock_repo_cls.return_value = mock_repo
@@ -637,9 +637,9 @@ class TestAdminService:
         mock_repo.delete_user.assert_called_once_with(user)
         mock_repo.commit.assert_called_once()
 
-    @patch("services.admin_service.AdminRepository")
+    @patch("src.services.admin_service.AdminRepository")
     def test_delete_user_success_without_account(self, mock_repo_cls, mock_db):
-        from services.admin_service import AdminService
+        from src.services.admin_service import AdminService
 
         mock_repo = MagicMock()
         mock_repo_cls.return_value = mock_repo
@@ -655,10 +655,10 @@ class TestAdminService:
         mock_repo.delete_user.assert_called_once_with(user)
         mock_repo.commit.assert_called_once()
 
-    @patch("services.admin_service.AdminRepository")
+    @patch("src.services.admin_service.AdminRepository")
     def test_create_event_success(self, mock_repo_cls, mock_db):
         from schemas.admin import CreateEventRequest
-        from services.admin_service import AdminService
+        from src.services.admin_service import AdminService
 
         mock_repo = MagicMock()
         mock_repo_cls.return_value = mock_repo
@@ -681,10 +681,10 @@ class TestAdminService:
         mock_repo.commit.assert_called_once()
         assert result.township == "Springfield"
 
-    @patch("services.admin_service.AdminRepository")
+    @patch("src.services.admin_service.AdminRepository")
     def test_update_event_not_found(self, mock_repo_cls, mock_db):
         from schemas.admin import UpdateEventRequest
-        from services.admin_service import AdminService
+        from src.services.admin_service import AdminService
 
         mock_repo = MagicMock()
         mock_repo_cls.return_value = mock_repo
@@ -695,10 +695,10 @@ class TestAdminService:
             service.update_event(999, UpdateEventRequest(township="New"))
         assert exc_info.value.status_code == 404
 
-    @patch("services.admin_service.AdminRepository")
+    @patch("src.services.admin_service.AdminRepository")
     def test_update_event_success(self, mock_repo_cls, mock_db):
         from schemas.admin import UpdateEventRequest
-        from services.admin_service import AdminService
+        from src.services.admin_service import AdminService
 
         mock_repo = MagicMock()
         mock_repo_cls.return_value = mock_repo
@@ -712,9 +712,9 @@ class TestAdminService:
         mock_repo.commit.assert_called_once()
         assert result.township == "New Town"
 
-    @patch("services.admin_service.AdminRepository")
+    @patch("src.services.admin_service.AdminRepository")
     def test_delete_event_not_found(self, mock_repo_cls, mock_db):
-        from services.admin_service import AdminService
+        from src.services.admin_service import AdminService
 
         mock_repo = MagicMock()
         mock_repo_cls.return_value = mock_repo
@@ -725,9 +725,9 @@ class TestAdminService:
             service.delete_event(999)
         assert exc_info.value.status_code == 404
 
-    @patch("services.admin_service.AdminRepository")
+    @patch("src.services.admin_service.AdminRepository")
     def test_delete_event_success(self, mock_repo_cls, mock_db):
-        from services.admin_service import AdminService
+        from src.services.admin_service import AdminService
 
         mock_repo = MagicMock()
         mock_repo_cls.return_value = mock_repo
@@ -741,9 +741,9 @@ class TestAdminService:
         mock_repo.delete_event.assert_called_once_with(event)
         mock_repo.commit.assert_called_once()
 
-    @patch("services.admin_service.AdminRepository")
+    @patch("src.services.admin_service.AdminRepository")
     def test_get_event_registrations_event_not_found(self, mock_repo_cls, mock_db):
-        from services.admin_service import AdminService
+        from src.services.admin_service import AdminService
 
         mock_repo = MagicMock()
         mock_repo_cls.return_value = mock_repo
@@ -754,9 +754,9 @@ class TestAdminService:
             service.get_event_registrations(999)
         assert exc_info.value.status_code == 404
 
-    @patch("services.admin_service.AdminRepository")
+    @patch("src.services.admin_service.AdminRepository")
     def test_get_event_registrations_success(self, mock_repo_cls, mock_db):
-        from services.admin_service import AdminService
+        from src.services.admin_service import AdminService
 
         mock_repo = MagicMock()
         mock_repo_cls.return_value = mock_repo
@@ -774,10 +774,10 @@ class TestAdminService:
         assert len(result) == 2
         assert result[0].email == "player@test.com"
 
-    @patch("services.admin_service.AdminRepository")
+    @patch("src.services.admin_service.AdminRepository")
     def test_update_banner_messages_success(self, mock_repo_cls, mock_db):
         from schemas.admin import UpdateBannerMessagesRequest
-        from services.admin_service import AdminService
+        from src.services.admin_service import AdminService
 
         mock_repo = MagicMock()
         mock_repo_cls.return_value = mock_repo
@@ -795,10 +795,10 @@ class TestAdminService:
         mock_repo.commit.assert_called_once()
         assert len(result) == 2
 
-    @patch("services.admin_service.AdminRepository")
+    @patch("src.services.admin_service.AdminRepository")
     def test_update_banner_messages_empty(self, mock_repo_cls, mock_db):
         from schemas.admin import UpdateBannerMessagesRequest
-        from services.admin_service import AdminService
+        from src.services.admin_service import AdminService
 
         mock_repo = MagicMock()
         mock_repo_cls.return_value = mock_repo
@@ -820,13 +820,13 @@ class TestAdminDependency:
     """Test the get_admin_user dependency directly."""
 
     def test_admin_user_passes(self, admin_user):
-        from core.dependencies import get_admin_user
+        from src.core.dependencies import get_admin_user
 
         result = get_admin_user(admin_user)
         assert result == admin_user
 
     def test_non_admin_user_rejected(self, non_admin_user):
-        from core.dependencies import get_admin_user
+        from src.core.dependencies import get_admin_user
 
         with pytest.raises(HTTPException) as exc_info:
             get_admin_user(non_admin_user)
@@ -834,7 +834,7 @@ class TestAdminDependency:
         assert exc_info.value.detail == "Admin access required"
 
     def test_user_without_account_rejected(self):
-        from core.dependencies import get_admin_user
+        from src.core.dependencies import get_admin_user
 
         user = MagicMock(spec=User)
         user.account = None

@@ -1,10 +1,13 @@
 from typing_extensions import Annotated
 from typing import Optional
 
+from functools import lru_cache
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
+from src.core.config import settings
 from src.core.database import get_db
 from src.models.user import User
 from src.services.auth_service import AuthService, decode_access_token
@@ -65,3 +68,17 @@ async def get_current_user_optional(
 CurrentUser = Annotated[User, Depends(get_current_user)]
 AdminUser = Annotated[User, Depends(get_admin_user)]
 OptionalUser = Annotated[Optional[User], Depends(get_current_user_optional)]
+
+
+@lru_cache
+def get_north_service():
+    """Create a configured NorthPaymentService singleton."""
+    from src.services.north_payment_service import NorthPaymentService
+
+    return NorthPaymentService(
+        mid=settings.NORTH_MID,
+        developer_key=settings.NORTH_DEVELOPER_KEY,
+        password=settings.NORTH_PASSWORD,
+        base_url=settings.NORTH_BASE_URL,
+        timeout=settings.NORTH_TIMEOUT_SECONDS,
+    )
