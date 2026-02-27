@@ -7,7 +7,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import httpx
 import pytest
 
-from services.north_payment_service import (
+from src.services.north_payment_service import (
     NorthChargeResult,
     NorthPaymentService,
     NorthRefundResult,
@@ -64,7 +64,7 @@ class TestCharge:
         }
         mock_resp = _mock_response(mock_data)
 
-        with patch("services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
+        with patch("src.services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
             mock_client = AsyncMock()
             mock_client.post.return_value = mock_resp
             mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -91,7 +91,7 @@ class TestCharge:
         }
         mock_resp = _mock_response(mock_data)
 
-        with patch("services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
+        with patch("src.services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
             mock_client = AsyncMock()
             mock_client.post.return_value = mock_resp
             mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -115,7 +115,7 @@ class TestCharge:
         }
         mock_resp = _mock_response(mock_data)
 
-        with patch("services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
+        with patch("src.services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
             mock_client = AsyncMock()
             mock_client.post.return_value = mock_resp
             mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -128,7 +128,7 @@ class TestCharge:
 
     @pytest.mark.asyncio
     async def test_charge_timeout(self, service: NorthPaymentService):
-        with patch("services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
+        with patch("src.services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
             mock_client = AsyncMock()
             mock_client.post.side_effect = httpx.TimeoutException("Connection timed out")
             mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -144,7 +144,7 @@ class TestCharge:
 
     @pytest.mark.asyncio
     async def test_charge_network_error(self, service: NorthPaymentService):
-        with patch("services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
+        with patch("src.services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
             mock_client = AsyncMock()
             mock_client.post.side_effect = httpx.ConnectError("Connection refused")
             mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -161,7 +161,7 @@ class TestCharge:
     async def test_charge_sends_correct_payload(self, service: NorthPaymentService):
         mock_resp = _mock_response({"approved": True, "transaction_id": "txn-004"})
 
-        with patch("services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
+        with patch("src.services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
             mock_client = AsyncMock()
             mock_client.post.return_value = mock_resp
             mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -193,7 +193,7 @@ class TestRefund:
         }
         mock_resp = _mock_response(mock_data)
 
-        with patch("services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
+        with patch("src.services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
             mock_client = AsyncMock()
             mock_client.post.return_value = mock_resp
             mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -208,7 +208,7 @@ class TestRefund:
 
     @pytest.mark.asyncio
     async def test_refund_timeout(self, service: NorthPaymentService):
-        with patch("services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
+        with patch("src.services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
             mock_client = AsyncMock()
             mock_client.post.side_effect = httpx.TimeoutException("Timeout")
             mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -223,7 +223,7 @@ class TestRefund:
 
     @pytest.mark.asyncio
     async def test_refund_network_error(self, service: NorthPaymentService):
-        with patch("services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
+        with patch("src.services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
             mock_client = AsyncMock()
             mock_client.post.side_effect = httpx.ConnectError("Connection refused")
             mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -239,7 +239,7 @@ class TestRefund:
     async def test_refund_sends_correct_payload(self, service: NorthPaymentService):
         mock_resp = _mock_response({"approved": True, "transaction_id": "ref-002"})
 
-        with patch("services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
+        with patch("src.services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
             mock_client = AsyncMock()
             mock_client.post.return_value = mock_resp
             mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -268,7 +268,7 @@ class TestVoid:
         }
         mock_resp = _mock_response(mock_data)
 
-        with patch("services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
+        with patch("src.services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
             mock_client = AsyncMock()
             mock_client.post.return_value = mock_resp
             mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -283,7 +283,7 @@ class TestVoid:
 
     @pytest.mark.asyncio
     async def test_void_timeout(self, service: NorthPaymentService):
-        with patch("services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
+        with patch("src.services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
             mock_client = AsyncMock()
             mock_client.post.side_effect = httpx.TimeoutException("Timeout")
             mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -298,7 +298,7 @@ class TestVoid:
 
     @pytest.mark.asyncio
     async def test_void_network_error(self, service: NorthPaymentService):
-        with patch("services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
+        with patch("src.services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
             mock_client = AsyncMock()
             mock_client.post.side_effect = httpx.ConnectError("Connection refused")
             mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -314,7 +314,7 @@ class TestVoid:
     async def test_void_sends_correct_payload(self, service: NorthPaymentService):
         mock_resp = _mock_response({"approved": True, "transaction_id": "void-002"})
 
-        with patch("services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
+        with patch("src.services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
             mock_client = AsyncMock()
             mock_client.post.return_value = mock_resp
             mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -347,7 +347,7 @@ class TestSensitiveDataNotLogged:
         }
         mock_resp = _mock_response(mock_data)
 
-        with patch("services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
+        with patch("src.services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
             mock_client = AsyncMock()
             mock_client.post.return_value = mock_resp
             mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -369,7 +369,7 @@ class TestSensitiveDataNotLogged:
     ):
         mock_resp = _mock_response({"approved": True, "transaction_id": "ref-010"})
 
-        with patch("services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
+        with patch("src.services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
             mock_client = AsyncMock()
             mock_client.post.return_value = mock_resp
             mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -389,7 +389,7 @@ class TestSensitiveDataNotLogged:
     ):
         mock_resp = _mock_response({"approved": True, "transaction_id": "void-010"})
 
-        with patch("services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
+        with patch("src.services.north_payment_service.httpx.AsyncClient") as mock_client_cls:
             mock_client = AsyncMock()
             mock_client.post.return_value = mock_resp
             mock_client.__aenter__ = AsyncMock(return_value=mock_client)
