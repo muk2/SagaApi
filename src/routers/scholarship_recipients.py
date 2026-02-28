@@ -75,7 +75,6 @@ def create_recipient(
     recipient = ScholarshipRecipient(
         full_name=recipient_data.full_name,
         year=recipient_data.year,
-        bio=recipient_data.bio,
         display_order=recipient_data.display_order
     )
     
@@ -112,8 +111,6 @@ def update_recipient(
         recipient.full_name = recipient_data.full_name
     if recipient_data.year is not None:
         recipient.year = recipient_data.year
-    if recipient_data.bio is not None:
-        recipient.bio = recipient_data.bio
     if recipient_data.display_order is not None:
         recipient.display_order = recipient_data.display_order
     
