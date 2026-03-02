@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from src.core.database import get_db
-from src.core.dependencies import CurrentUser
-from src.schemas.user import (
+from core.database import get_db
+from core.dependencies import CurrentUser
+from schemas.user import (
     EventRegistrationCreateResponse,
     EventRegistrationRequest,
     PasswordResetRequest,
@@ -12,7 +12,7 @@ from src.schemas.user import (
     UserProfileUpdateRequest,
     UserProfileUpdateResponse,
 )
-from src.services.user_service import UserService
+from services.user_service import UserService
 
 router = APIRouter(prefix="/api/users", tags=["Users"])
 
@@ -74,18 +74,20 @@ def register_for_event(
 ) -> EventRegistrationCreateResponse:
     """Register the current user for an event."""
     service = UserService(db)
-    
-    # Get the user_account_id from the user
+
     user_account = service.repo.get_user_account_by_user_id(current_user.id)
     if not user_account:
         raise HTTPException(status_code=404, detail="User account not found")
-    
+
     registration = service.register_for_event(
-        user_account_id=user_account.id,  
+        user_account_id=user_account.id,
         event_id=data.event_id,
         email=data.email,
         phone=data.phone,
-        handicap=data.handicap
+        handicap=data.handicap,
+        is_sponsor=data.is_sponsor,
+        sponsor_amount=data.sponsor_amount,
+        company_name=data.company_name,
     )
     return EventRegistrationCreateResponse(
         message="Successfully registered for event", registration=registration

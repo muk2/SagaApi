@@ -5,9 +5,9 @@ from typing import List
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status, Query
 from sqlalchemy.orm import Session
 
-from src.core.database import get_db
-from src.core.dependencies import AdminUser
-from src.schemas.admin import (
+from core.database import get_db
+from core.dependencies import AdminUser
+from schemas.admin import (
     BannerResponse,
     CarouselImagesResponse,
     ContentResponse,
@@ -28,9 +28,9 @@ from src.schemas.admin import (
     UpdateUserRoleRequest,
     UpdateUserRoleResponse
 )
-from src.services.admin_service import AdminService
+from services.admin_service import AdminService
 
-from src.schemas.partner import PartnerCreate, PartnerUpdate, PartnerResponse, PartnerListResponse
+from schemas.partner import PartnerCreate, PartnerUpdate, PartnerResponse, PartnerListResponse
 
 
 router = APIRouter(prefix="/api/admin", tags=["Admin"])
@@ -215,7 +215,9 @@ def get_all_albums(
     """
     service = AdminService(db)
     albums = service.get_all_photo_albums()
-    return PhotoAlbumListResponse(albums=albums)
+    return PhotoAlbumListResponse(
+        albums=[PhotoAlbumResponse.model_validate(a) for a in albums]
+    )
 
 
 @router.post("/photo-albums", response_model=PhotoAlbumResponse, status_code=status.HTTP_201_CREATED)
@@ -228,7 +230,7 @@ def create_album(
     """
     service = AdminService(db)
     album = service.create_photo_album(data.model_dump())
-    return album
+    return PhotoAlbumResponse.model_validate(album)
 
 
 @router.put("/photo-albums/{album_id}", response_model=PhotoAlbumResponse)
@@ -244,7 +246,7 @@ def update_album(
     """
     service = AdminService(db)
     album = service.update_photo_album(album_id, data.model_dump(exclude_none=True))
-    return album
+    return PhotoAlbumResponse.model_validate(album)
 
 
 @router.delete("/photo-albums/{album_id}", status_code=status.HTTP_204_NO_CONTENT)

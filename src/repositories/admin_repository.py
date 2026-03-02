@@ -4,13 +4,13 @@ from typing import Optional, List, Tuple, Dict
 from sqlalchemy import select, desc, asc
 from sqlalchemy.orm import Session, joinedload
 
-from src.models.banner_message import Banner
-from src.models.carousel_image import CarouselImage
-from src.models.event import Event
-from src.models.event_registration import EventRegistration
-from src.models.photo_album import PhotoAlbum
-from src.models.site_content import SiteContent
-from src.models.user import User, UserAccount
+from models.banner_message import Banner
+from models.carousel_image import CarouselImage
+from models.event import Event
+from models.event_registration import EventRegistration
+from models.photo_album import PhotoAlbum
+from models.site_content import SiteContent
+from models.user import User, UserAccount
 
 
 class AdminRepository:
@@ -133,8 +133,20 @@ class AdminRepository:
         stmt = select(PhotoAlbum).order_by(PhotoAlbum.date.desc())
         return list(self.db.execute(stmt).scalars().all())
 
+
+    @staticmethod
+    def _normalize_photo_album_data(data: dict) -> dict:
+        """Translate camelCase keys to snake_case for the PhotoAlbum model."""
+        key_map = {
+            "coverImage": "cover_image",
+            "googleDriveLink": "google_drive_link",
+            "photoCount": "photo_count",
+        }
+        return {key_map.get(k, k): v for k, v in data.items()}
+
     def create_photo_album(self, album_data: dict) -> PhotoAlbum:
         """Create a new photo album."""
+        album_data = self._normalize_photo_album_data(album_data)
         if "images" in album_data and album_data["images"]:
             album_data["images"] = json.dumps(album_data["images"])
         album = PhotoAlbum(**album_data)
@@ -145,6 +157,7 @@ class AdminRepository:
 
     def update_photo_album(self, album_id: int, album_data: dict) -> Optional[PhotoAlbum]:
         """Update a photo album."""
+        album_data = self._normalize_photo_album_data(album_data)
         album = self.db.get(PhotoAlbum, album_id)
         if album:
             for key, value in album_data.items():

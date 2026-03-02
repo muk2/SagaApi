@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
-from src.repositories.event_repository import get_events
-from src.models.event_registration import EventRegistration
+from repositories.event_repository import get_events
+from models.event_registration import EventRegistration
 
 def list_events(db: Session):
     events = get_events(db)

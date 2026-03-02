@@ -1,9 +1,9 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
-from src.models.event import Event
-from src.models.event_registration import EventRegistration
-from src.models.user import User, UserAccount
+from models.event import Event
+from models.event_registration import EventRegistration
+from models.user import User, UserAccount
 from typing import Optional, List
 
 class UserRepository:
@@ -49,26 +49,31 @@ class UserRepository:
         return list(result)
 
     def create_event_registration(
-        self, 
-        user_id: int, 
+        self,
+        user_id: int,
         event_id: int,
         email: str,
         phone: str,
-        handicap: Optional[str] = None
+        handicap: Optional[str] = None,
+        is_sponsor: bool = False,
+        sponsor_amount: Optional[float] = None,
+        company_name: Optional[str] = None,
     ) -> Optional[EventRegistration]:
         """Create a new event registration for a user."""
-        # Check if registration already exists
         existing = self.get_registration_by_user_and_event(user_id, event_id)
         if existing:
             return None
 
         registration = EventRegistration(
-            user_id=user_id, 
+            user_id=user_id,
             event_id=event_id,
             email=email,
             phone=phone,
             handicap=handicap,
-            payment_status="pending"  
+            payment_status="pending",
+            is_sponsor=is_sponsor,
+            sponsor_amount=sponsor_amount if is_sponsor else None,
+            company_name=company_name if is_sponsor else None,
         )
         self.db.add(registration)
         self.db.flush()

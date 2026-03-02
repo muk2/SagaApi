@@ -5,7 +5,7 @@
 
 from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime
 from sqlalchemy.sql import func
-from src.core.database import Base
+from core.database import Base
 
 class FAQ(Base):
     __tablename__ = "faq"

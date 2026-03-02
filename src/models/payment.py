@@ -2,18 +2,18 @@ from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, List
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, Numeric, String
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.core.database import Base
+from core.database import Base
 
 if TYPE_CHECKING:
-    from src.models.event_registration import EventRegistration
-    from src.models.member_membership import MemberMembership
-    from src.models.payment_method import PaymentMethod
+    from models.event_registration import EventRegistration
+    from models.member_membership import MemberMembership
+    from models.payment_method import PaymentMethod
 
 
 class Payment(Base):

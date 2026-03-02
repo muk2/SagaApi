@@ -7,10 +7,10 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
-from src.core.config import settings
-from src.models.user import User, UserAccount
-from src.repositories.auth_repository import AuthRepository
-from src.schemas.auth import (
+from core.config import settings
+from models.user import User, UserAccount
+from repositories.auth_repository import AuthRepository
+from schemas.auth import (
     ForgotPasswordRequest,
     LoginRequest,
     ResetPasswordRequest,

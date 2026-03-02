@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 
-from src.repositories.banner_repository import (
+from repositories.banner_repository import (
     get_banners, 
     get_banner_display_count,  
     update_banner_display_count,

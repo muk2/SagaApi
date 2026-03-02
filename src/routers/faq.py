@@ -6,10 +6,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
-from src.core.database import get_db
-from src.core.dependencies import AdminUser
-from src.models.faq import FAQ
-from src.schemas.faq import FAQCreate, FAQUpdate, FAQResponse, FAQPublic
+from core.database import get_db
+from core.dependencies import AdminUser
+from models.faq import FAQ
+from schemas.faq import FAQCreate, FAQUpdate, FAQResponse, FAQPublic
 
 router = APIRouter(prefix="/api", tags=["FAQ"])
 

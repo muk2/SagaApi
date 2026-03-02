@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from src.models.partner import Partner
+from models.partner import Partner
 from typing import List, Optional
 
 

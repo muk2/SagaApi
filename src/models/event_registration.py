@@ -4,10 +4,10 @@ from datetime import datetime
 from decimal import Decimal
 from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import DateTime, ForeignKey, Integer, Numeric, String
+from sqlalchemy import DateTime, ForeignKey, Integer, Numeric, String, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.core.database import Base
+from core.database import Base
 
 if TYPE_CHECKING:
     from src.models.event import Event
@@ -48,3 +48,7 @@ class EventRegistration(Base):
     )
     guest: Mapped[Optional["Guest"]] = relationship("Guest", foreign_keys=[guest_id])
     event: Mapped["Event"] = relationship("Event", foreign_keys=[event_id])
+    
+    is_sponsor: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    sponsor_amount: Mapped[Optional[Decimal]] = mapped_column(Numeric(10, 2), nullable=True)
+    company_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)

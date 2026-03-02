@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Date
-from src.core.database import Base
+from core.database import Base
 
 class PhotoAlbum(Base):
     __tablename__ = "photo_albums"

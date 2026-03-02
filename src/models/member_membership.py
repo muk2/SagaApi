@@ -1,17 +1,17 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Optional
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.core.database import Base
+from core.database import Base
 
 if TYPE_CHECKING:
-    from src.models.membership_tier import MembershipTier
-    from src.models.payment import Payment
-    from src.models.user import User
+    from models.membership_tier import MembershipTier
+    from models.payment import Payment
+    from models.user import User
 
 
 class MemberMembership(Base):
@@ -33,7 +33,7 @@ class MemberMembership(Base):
     tier_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("saga.membership_tiers.id"), nullable=False
     )
-    payment_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    payment_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     season_year: Mapped[int] = mapped_column(Integer, nullable=False)
     status: Mapped[str] = mapped_column(String(30), nullable=False, default="pending")
     marked_paid_by_admin: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
@@ -47,4 +47,4 @@ class MemberMembership(Base):
     # Relationships
     user: Mapped[User] = relationship("User", foreign_keys=[user_id])
     tier: Mapped[MembershipTier] = relationship("MembershipTier", back_populates="memberships")
-    payments: Mapped[list[Payment]] = relationship("Payment", back_populates="membership")
+    payments: Mapped[List[Payment]] = relationship("Payment", back_populates="membership")

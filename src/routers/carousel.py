@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from src.core.database import get_db
-from src.repositories.carousel_repository import CarouselRepository
+from core.database import get_db
+from repositories.carousel_repository import CarouselRepository
 
 router = APIRouter(prefix="/api/carousel", tags=["Carousel"])
 

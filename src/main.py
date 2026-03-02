@@ -4,8 +4,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
-from src.core.config import settings
-from src.routers import (
+from core.config import settings
+from routers import (
     admin_router,
     auth_router,
     banner_messages_router,
@@ -18,6 +18,7 @@ from src.routers import (
     photos_router,
     scholarship_recipients_router,
     users_router,
+    standings_router
 )
 
 os.makedirs("uploads", exist_ok=True)
@@ -51,6 +52,7 @@ app.include_router(contact_router)
 app.include_router(faq_router)
 app.include_router(scholarship_recipients_router)
 app.include_router(membership_options_router)
+app.include_router(standings_router)
 
 @app.get("/health")
 def health_check() -> dict[str, str]:

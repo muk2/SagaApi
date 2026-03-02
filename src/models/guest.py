@@ -2,7 +2,7 @@
 
 from sqlalchemy import Column, Integer, String, DateTime
 from datetime import datetime
-from src.core.database import Base
+from core.database import Base
 
 class Guest(Base):
     __tablename__ = "guest"

@@ -10,5 +10,5 @@ from .membership_options import router as membership_options_router
 from .partners import router as partners_router
 from .photos import router as photos_router
 from .scholarship_recipients import router as scholarship_recipients_router
-
-__all__ = ["auth_router", "events_router", "users_router", "banner_messages_router", "admin_router", "carousel_router", "contact_router", "faq_router", "membership_options_router", "partners_router", "photos_router", "scholarship_recipients_router"]
+from .standings import router as standings_router
+__all__ = ["auth_router", "events_router", "users_router", "banner_messages_router", "admin_router", "carousel_router", "contact_router", "faq_router", "membership_options_router", "partners_router", "photos_router", "scholarship_recipients_router", "standings_router"]

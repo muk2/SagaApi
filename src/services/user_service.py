@@ -1,13 +1,13 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from typing import Tuple, Optional, List
-from src.repositories.user_repository import UserRepository
-from src.schemas.user import (
+from repositories.user_repository import UserRepository
+from schemas.user import (
     EventRegistrationResponse,
     PasswordResetRequest,
     UserProfileUpdateRequest,
 )
-from src.services.auth_service import hash_password, verify_password
+from services.auth_service import hash_password, verify_password
 from sqlalchemy.exc import IntegrityError
 
 class UserService:
@@ -34,11 +34,10 @@ class UserService:
                 state=reg.event.state,
                 golf_course=reg.event.golf_course,
                 date=reg.event.date,
-                start_time = reg.event.start_time,
+                start_time=reg.event.start_time,
             )
             for reg in registrations
         ]
-
 
     def update_user_profile(
         self, user_id: int, data: UserProfileUpdateRequest
@@ -56,7 +55,6 @@ class UserService:
             return "Profile updated successfully", updated_user.handicap if updated_user else None
         except IntegrityError as e:
             self.repo.rollback()
-            # Check if it's the check constraint violation
             if "check_valid_chars" in str(e):
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
@@ -81,14 +79,12 @@ class UserService:
                 status_code=status.HTTP_404_NOT_FOUND, detail="User account not found"
             )
 
-        # Verify current password
         if not verify_password(data.current_password, account.password_hash):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Current password is incorrect",
             )
 
-        # Validate new password is different
         if data.current_password == data.new_password:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -108,15 +104,17 @@ class UserService:
             ) from e
 
     def register_for_event(
-        self, 
-        user_account_id: int, 
+        self,
+        user_account_id: int,
         event_id: int,
         email: str,
         phone: str,
-        handicap: Optional[str] = None
+        handicap: Optional[str] = None,
+        is_sponsor: bool = False,
+        sponsor_amount: Optional[float] = None,
+        company_name: Optional[str] = None,
     ) -> EventRegistrationResponse:
         """Register a user for an event."""
-        # Verify event exists
         event = self.repo.get_event_by_id(event_id)
         if not event:
             raise HTTPException(
@@ -125,11 +123,14 @@ class UserService:
 
         try:
             registration = self.repo.create_event_registration(
-                user_id=user_account_id,  
+                user_id=user_account_id,
                 event_id=event_id,
                 email=email,
                 phone=phone,
-                handicap=handicap
+                handicap=handicap,
+                is_sponsor=is_sponsor,
+                sponsor_amount=sponsor_amount,
+                company_name=company_name,
             )
             if not registration:
                 raise HTTPException(
@@ -144,6 +145,9 @@ class UserService:
                 event_id=registration.event_id,
                 township=event.township,
                 golf_course=event.golf_course,
+                date=event.date,
+                state=event.state,
+                start_time=event.start_time,
             )
         except HTTPException:
             self.repo.rollback()

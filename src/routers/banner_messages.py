@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
 from pydantic import BaseModel
-from src.core.database import get_db
-from src.schemas.banner_message import BannerRead
-from src.services.banner_service import list_banners, update_display_count, update_messages
+from core.database import get_db
+from schemas.banner_message import BannerRead
+from services.banner_service import list_banners, update_display_count, update_messages
 
 
 router = APIRouter(prefix="/api/banner_messages", tags=["Banner Messages"])

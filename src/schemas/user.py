@@ -62,6 +62,14 @@ class EventRegistrationRequest(BaseModel):
     email: EmailStr
     phone: str
     handicap: Optional[str] = None
+    name: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    user_id: Optional[int] = None
+    # Sponsor fields
+    is_sponsor: bool = False
+    sponsor_amount: Optional[float] = None
+    company_name: Optional[str] = None
 
 class EventRegistrationCreateResponse(BaseModel):
     """Response schema for creating an event registration."""

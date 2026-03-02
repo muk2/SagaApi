@@ -2,14 +2,14 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import Optional
 
-from src.core.database import get_db
-from src.core.dependencies import OptionalUser
-from src.services.event_service import list_events
-from src.models.event_registration import EventRegistration
-from src.models.guest import Guest
-from src.models.user import User, UserAccount
+from core.database import get_db
+from core.dependencies import OptionalUser
+from services.event_service import list_events
+from models.event_registration import EventRegistration
+from models.guest import Guest
+from models.user import User, UserAccount
 from pydantic import BaseModel, EmailStr
-from src.models.event import Event
+from models.event import Event
 
 router = APIRouter(prefix="/api/events", tags=["Events"])
 
@@ -21,9 +21,14 @@ class EventRegistrationRequest(BaseModel):
     phone: str
     handicap: Optional[str] = None
     
-    # ✅ For guest registrations
+    # For guest registrations
     first_name: Optional[str] = None
     last_name: Optional[str] = None
+
+    # Sponsor fields
+    is_sponsor: bool = False
+    sponsor_amount: Optional[float] = None
+    company_name: Optional[str] = None
 
 
 @router.get("/")
@@ -45,7 +50,7 @@ async def register_for_event(
         db.query(EventRegistration)
         .filter(
             EventRegistration.event_id == data.event_id,
-            EventRegistration.email == data.email.lower()  # Case-insensitive check
+            EventRegistration.email == data.email.lower()
         )
         .first()
     )
@@ -77,25 +82,23 @@ async def register_for_event(
         if not account:
             raise HTTPException(status_code=404, detail="User account not found")
         
-        user_id = account.id
-        
-        # Create registration with user_id
         registration = EventRegistration(
             event_id=data.event_id,
-            user_id=user_id,
+            user_id=account.id,
             email=data.email,
             phone=data.phone,
-            handicap=data.handicap
+            handicap=data.handicap,
+            is_sponsor=data.is_sponsor,
+            sponsor_amount=data.sponsor_amount if data.is_sponsor else None,
+            company_name=data.company_name if data.is_sponsor else None,
         )
     else:
-        # ✅ Guest registration - must have first_name and last_name
         if not data.first_name or not data.last_name:
             raise HTTPException(
                 status_code=400,
                 detail="First name and last name are required for guest registration"
             )
         
-        # Create guest record
         guest = Guest(
             first_name=data.first_name,
             last_name=data.last_name,
@@ -104,15 +107,17 @@ async def register_for_event(
             handicap_index=data.handicap if data.handicap else 0
         )
         db.add(guest)
-        db.flush()  # Get the guest ID
+        db.flush()
         
-        # Create registration with guest_id
         registration = EventRegistration(
             event_id=data.event_id,
             guest_id=guest.id,
             email=data.email,
             phone=data.phone,
-            handicap=data.handicap if data.handicap else 0
+            handicap=data.handicap if data.handicap else 0,
+            is_sponsor=data.is_sponsor,
+            sponsor_amount=data.sponsor_amount if data.is_sponsor else None,
+            company_name=data.company_name if data.is_sponsor else None,
         )
     
     db.add(registration)
