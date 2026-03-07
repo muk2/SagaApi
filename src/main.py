@@ -20,6 +20,7 @@ from routers import (
     users_router,
     standings_router
 )
+from routers.registrations import router as registrations_router
 
 os.makedirs("uploads", exist_ok=True)
 
@@ -53,6 +54,7 @@ app.include_router(faq_router)
 app.include_router(scholarship_recipients_router)
 app.include_router(membership_options_router)
 app.include_router(standings_router)
+app.include_router(registrations_router)
 
 @app.get("/health")
 def health_check() -> dict[str, str]:

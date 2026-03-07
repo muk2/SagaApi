@@ -33,9 +33,38 @@ class EventRegistration(Base):
     handicap: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     email: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     phone: Mapped[Optional[str]] = mapped_column(String, nullable=True)
-    payment_status: Mapped[str] = mapped_column(String, nullable=False, default="paid")
+
+    # ── Payment fields ──────────────────────────────────────────────────────────
+    payment_status: Mapped[str] = mapped_column(
+        String, nullable=False, default="pending"
+        # Values: "pending" | "paid" | "failed" | "refunded" | "voided"
+    )
     payment_method: Mapped[Optional[str]] = mapped_column(String, nullable=True)
-    amount_paid: Mapped[Optional[Decimal]] = mapped_column(Numeric, nullable=True)
+    amount_paid: Mapped[Optional[Decimal]] = mapped_column(Numeric(10, 2), nullable=True)
+
+    # North transaction fields — stored for refunds, voids, and audit trail
+    transaction_id: Mapped[Optional[str]] = mapped_column(
+        String(64), nullable=True,
+        comment="Numeric transaction ID (uniq_id with 'ccs_' prefix stripped)"
+    )
+    north_uniq_id: Mapped[Optional[str]] = mapped_column(
+        String(64), nullable=True,
+        comment="Raw uniq_id returned by North, e.g. 'ccs_87654321'"
+    )
+    north_account_id: Mapped[Optional[str]] = mapped_column(
+        String(64), nullable=True,
+        comment="accountId from North auth response — required for refunds/voids"
+    )
+    card_last_four: Mapped[Optional[str]] = mapped_column(
+        String(4), nullable=True,
+        comment="Last 4 digits of the card used"
+    )
+    idempotency_key: Mapped[Optional[str]] = mapped_column(
+        String(64), nullable=True, unique=True,
+        comment="UUID v4 from client — prevents duplicate charges on retry"
+    )
+    # ───────────────────────────────────────────────────────────────────────────
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, default=lambda: datetime.now()
     )
@@ -48,7 +77,7 @@ class EventRegistration(Base):
     )
     guest: Mapped[Optional["Guest"]] = relationship("Guest", foreign_keys=[guest_id])
     event: Mapped["Event"] = relationship("Event", foreign_keys=[event_id])
-    
+
     is_sponsor: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     sponsor_amount: Mapped[Optional[Decimal]] = mapped_column(Numeric(10, 2), nullable=True)
     company_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
