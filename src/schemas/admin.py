@@ -36,6 +36,27 @@ class DeleteUserResponse(BaseModel):
     message: str
 
 
+class CreateUserRequest(BaseModel):
+    first_name:   str
+    last_name:    str
+    email:        EmailStr
+    phone_number: str
+    membership:   str
+    role:         str = "user"
+    handicap:     Optional[str] = None
+
+
+class CreateUserResponse(BaseModel):
+    id:           int
+    first_name:   str
+    last_name:    str
+    email:        str
+    phone_number: Optional[str] = None
+    membership:   Optional[str] = None
+    role:         Optional[str] = None
+    handicap:     Optional[str] = None
+
+
 class EventRegistrationDetail(BaseModel):
     id: int
     user_id: Optional[int] = None
@@ -71,6 +92,7 @@ class CreateEventRequest(BaseModel):
     guest_price: float
     capacity: int
     image_url: Optional[str] = None
+    event_type: str = "regular"
 
 
 class UpdateEventRequest(BaseModel):
@@ -80,10 +102,12 @@ class UpdateEventRequest(BaseModel):
     golf_course: Optional[str] = None
     date: Optional[dt_date] = None
     start_time: Optional[str] = None
-    member_price: Optional[float] = 0
-    guest_price: Optional[float] = 0
-    capacity: Optional[int] = 1
+    member_price: Optional[float] = None
+    guest_price: Optional[float] = None
+    capacity: Optional[int] = None
     image_url: Optional[str] = None
+    registration_open: Optional[bool] = None
+    event_type: Optional[str] = None
 
 
 class EventResponse(BaseModel):
@@ -99,6 +123,8 @@ class EventResponse(BaseModel):
     capacity: int
     registered: int = 0
     image_url: Optional[str] = None
+    registration_open: bool = True
+    event_type: str = "regular"
     model_config = {"from_attributes": True}
 
     @field_serializer("date")
@@ -119,38 +145,28 @@ class BannerResponse(BaseModel):
     data: Optional[dict] = None
 
 
-# ── Photo Albums ──────────────────────────────────────────────────
-# Frontend sends/receives camelCase; SQLAlchemy model uses snake_case.
-# Field aliases bridge the gap in both directions.
-
 class PhotoAlbumCreate(BaseModel):
-    """Accepts camelCase from the frontend; model_dump() returns snake_case for the ORM."""
     title: str
     date: dt_date
     cover_image: str = Field(alias="coverImage")
     google_drive_link: str = Field(alias="googleDriveLink")
-
     model_config = {"populate_by_name": True}
 
 
 class PhotoAlbumUpdate(BaseModel):
-    """Accepts camelCase from the frontend; model_dump() returns snake_case for the ORM."""
     title: Optional[str] = None
     date: Optional[dt_date] = None
     cover_image: Optional[str] = Field(default=None, alias="coverImage")
     google_drive_link: Optional[str] = Field(default=None, alias="googleDriveLink")
-
     model_config = {"populate_by_name": True}
 
 
 class PhotoAlbumResponse(BaseModel):
-    """Returns camelCase to the frontend, read from snake_case ORM attributes."""
     id: int
     title: str
     date: dt_date
     coverImage: str = Field(alias="cover_image", default="")
     googleDriveLink: str = Field(alias="google_drive_link", default="")
-
     model_config = {"from_attributes": True, "populate_by_name": True}
 
 
@@ -158,7 +174,6 @@ class PhotoAlbumListResponse(BaseModel):
     albums: List[PhotoAlbumResponse]
 
 
-# ── Content ───────────────────────────────────────────────────────
 class ContentItem(BaseModel):
     key: str
     value: Optional[str] = None

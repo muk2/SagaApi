@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, Time, Numeric
+from sqlalchemy import Column, Integer, String, Date, Time, Numeric, Boolean
 from core.database import Base
 
 
@@ -17,4 +17,5 @@ class Event(Base):
     guest_price = Column(Numeric(10, 2), nullable=False)
     capacity = Column(Integer, nullable=False)
     image_url = Column(String, nullable=True)
-
+    registration_open = Column(Boolean, nullable=False, default=True, server_default="true")
+    event_type = Column(String, nullable=False, default="regular", server_default="regular")

@@ -1,6 +1,5 @@
 # Python
 __pycache__/
-*.pyc
 *.pyo
 *.pyd
 .Python
@@ -10,6 +9,11 @@ venv/
 Venv/
 venv.bak/
 .env
+.env.local
+.env.production
+*.env
+pycache/
+*.pyc
 .flaskenv
 instance/
 .pytest_cache/

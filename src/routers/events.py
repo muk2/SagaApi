@@ -64,7 +64,13 @@ async def register_for_event(
     event = db.query(Event).filter(Event.id == data.event_id).first()
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
-    
+
+    if not event.registration_open:
+        raise HTTPException(
+            status_code=400,
+            detail="Registration for this event is currently closed."
+        )
+
     registration_count = (
         db.query(EventRegistration)
         .filter(EventRegistration.event_id == data.event_id)

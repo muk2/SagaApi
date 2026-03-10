@@ -49,5 +49,6 @@ class Settings(BaseSettings):
     NORTH_BASE_URL: str = os.getenv("NORTH_BASE_URL", "https://secure.networkmerchants.com/api/transact.php")
     NORTH_TIMEOUT_SECONDS: int = int(os.getenv("NORTH_TIMEOUT_SECONDS", "30"))
 
+    RECAPTCHA_SECRET_KEY: str = os.getenv("RECAPTCHA_SECRET_KEY")
 
 settings = Settings()

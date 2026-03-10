@@ -16,10 +16,12 @@ class EventRead(BaseModel):
     capacity: int
     registered: int = 0
     image_url: Optional[str] = None
+    registration_open: bool = True
+    event_type: str = "regular"
 
     class Config:
-        from_attributes = True  # Pydantic v2 (ORM mode)
+        from_attributes = True
 
     @field_serializer('date')
     def serialize_date(self, date_val: dt_date, _info):
-        return date_val.strftime("%m/%d/%Y") 
+        return date_val.strftime("%m/%d/%Y")

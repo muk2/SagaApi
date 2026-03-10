@@ -28,6 +28,50 @@ class AdminRepository:
         result = self.db.execute(stmt).all()
         return [(row[0], row[1]) for row in result]
 
+    def get_user_account_by_email(self, email: str) -> Optional[UserAccount]:
+        """Get user account by email address."""
+        stmt = select(UserAccount).where(UserAccount.email == email)
+        return self.db.execute(stmt).scalar_one_or_none()
+
+    def create_user_with_account(
+        self,
+        first_name: str,
+        last_name: str,
+        email: str,
+        phone_number: Optional[str],
+        membership: Optional[str],
+        role: str,
+        handicap: Optional[str],
+        setup_token: str,
+        setup_token_expires,
+    ):
+        """Create a User + UserAccount row. Returns (user, account)."""
+        user = User(
+            first_name=first_name,
+            last_name=last_name,
+            phone_number=phone_number,
+            membership=membership,
+            handicap=handicap,
+        )
+        self.db.add(user)
+        self.db.flush()
+
+        account = UserAccount(
+            user_id=user.id,
+            email=email,
+            password_hash="__unset__",
+            role=role,
+            reset_token=setup_token,
+            reset_token_expires=setup_token_expires,
+        )
+        self.db.add(account)
+        self.db.flush()
+
+        user.user_account_id = account.id
+        self.db.flush()
+
+        return user, account
+
     def get_user_account_by_id(self, user_id: int) -> Optional[UserAccount]:
         """Get user account by user ID."""
         stmt = select(UserAccount).where(UserAccount.user_id == user_id)
@@ -91,7 +135,7 @@ class AdminRepository:
         event = self.db.get(Event, event_id)
         if event:
             for key, value in event_data.items():
-                if value is not None:
+                if value is not None or isinstance(value, bool):
                     setattr(event, key, value)
             self.db.flush()
             self.db.refresh(event)
@@ -258,7 +302,6 @@ class AdminRepository:
         Delete an event registration.
         Returns True if registration was found and deleted, False otherwise.
         """
-        from src.models.event_registration import EventRegistration
 
         registration = self.db.query(EventRegistration).filter(
             EventRegistration.id == registration_id

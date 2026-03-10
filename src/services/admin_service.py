@@ -171,7 +171,8 @@ class AdminService:
                     capacity=event.capacity,
                     registered=registered_count,
                     image_url=getattr(event, 'image_url', None),
-                    description=getattr(event, 'description', None),
+                    registration_open=getattr(event, 'registration_open', True),
+                    event_type=getattr(event, 'event_type', 'regular'),
                 )
             )
 
@@ -200,8 +201,10 @@ class AdminService:
                 "member_price": event.member_price,
                 "guest_price": event.guest_price,
                 "capacity": event.capacity,
+                "registered": 0,
                 "image_url": getattr(event, 'image_url', None),
-                "description": getattr(event, 'description', None),
+                "registration_open": getattr(event, 'registration_open', True),
+                "event_type": getattr(event, 'event_type', 'regular'),
             }
         except Exception as e:
             self.repo.rollback()
@@ -246,6 +249,7 @@ class AdminService:
                     status_code=status.HTTP_404_NOT_FOUND,
                     detail="Event not found",
                 )
+
             self.repo.commit()
             return {
                 "id": event.id,
@@ -258,8 +262,10 @@ class AdminService:
                 "member_price": event.member_price,
                 "guest_price": event.guest_price,
                 "capacity": event.capacity,
+                "registered": 0,
                 "image_url": getattr(event, 'image_url', None),
-                "description": getattr(event, 'description', None),
+                "registration_open": getattr(event, 'registration_open', True),
+                "event_type": getattr(event, 'event_type', 'regular'),
             }
         except HTTPException:
             self.repo.rollback()

@@ -1,8 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException
+from typing import List, Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from core.database import get_db
 from core.dependencies import CurrentUser
+from models.user import User, UserAccount
 from schemas.user import (
     EventRegistrationCreateResponse,
     EventRegistrationRequest,
@@ -15,6 +19,47 @@ from schemas.user import (
 from services.user_service import UserService
 
 router = APIRouter(prefix="/api/users", tags=["Users"])
+
+
+class MemberSearchResult(BaseModel):
+    user_id: int
+    first_name: str
+    last_name: str
+    email: str
+    phone: Optional[str] = None
+    handicap: Optional[str] = None
+
+
+@router.get("/members/search", response_model=List[MemberSearchResult])
+def search_members(
+    current_user: CurrentUser,
+    q: str = Query(..., min_length=1),
+    db: Session = Depends(get_db),
+):
+    """Search members by name. Requires authentication."""
+    search = f"%{q.strip()}%"
+    results = (
+        db.query(User, UserAccount)
+        .join(UserAccount, UserAccount.user_id == User.id)
+        .filter(
+            (User.first_name.ilike(search))
+            | (User.last_name.ilike(search))
+            | ((User.first_name + " " + User.last_name).ilike(search))
+        )
+        .limit(10)
+        .all()
+    )
+    return [
+        MemberSearchResult(
+            user_id=u.id,
+            first_name=u.first_name,
+            last_name=u.last_name,
+            email=ua.email,
+            phone=u.phone_number,
+            handicap=u.handicap,
+        )
+        for u, ua in results
+    ]
 
 
 @router.get("/events", response_model=UserEventsResponse)

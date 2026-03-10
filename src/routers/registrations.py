@@ -1,13 +1,3 @@
-"""
-Registrations Router
-Handles event registration for both authenticated members and guests.
-Payment via North is required — registration is only saved after a successful charge.
-
-Endpoints:
-  POST /api/registrations              — authenticated member registers
-  POST /api/registrations/guest        — unauthenticated guest registers
-  POST /api/registrations/{id}/retry-payment  — retry a failed/pending payment
-"""
 from __future__ import annotations
 
 import logging
@@ -23,6 +13,7 @@ from core.dependencies import CurrentUser
 from models.event import Event
 from models.event_registration import EventRegistration
 from models.guest import Guest
+from models.user import User, UserAccount
 from services.north_payment_service import (
     NorthDeclinedError,
     NorthGatewayError,
@@ -35,28 +26,41 @@ router = APIRouter(prefix="/api/registrations", tags=["Registrations"])
 
 # ── Schemas ─────────────────────────────────────────────────────────────────────
 
+class AdditionalGolfer(BaseModel):
+    """An additional golfer added by the registrant."""
+    is_member:   bool = False
+    user_id:     Optional[int]   = None   # set when is_member=True
+    first_name:  Optional[str]   = None   # set when is_member=False (guest)
+    last_name:   Optional[str]   = None
+    email:       Optional[EmailStr] = None
+    phone:       Optional[str]   = None
+    handicap:    Optional[str]   = None
+
+
 class MemberRegistrationRequest(BaseModel):
-    event_id:        int
-    payment_token:   str
-    idempotency_key: str = Field(min_length=10)
-    handicap:        Optional[str]   = None
-    is_sponsor:      bool            = False
-    sponsor_amount:  Optional[float] = None
-    company_name:    Optional[str]   = None
+    event_id:           int
+    payment_token:      str
+    idempotency_key:    str = Field(min_length=10)
+    handicap:           Optional[str]   = None
+    is_sponsor:         bool            = False
+    sponsor_amount:     Optional[float] = None
+    company_name:       Optional[str]   = None
+    additional_golfers: list[AdditionalGolfer] = []
 
 
 class GuestRegistrationRequest(BaseModel):
-    event_id:        int
-    payment_token:   str
-    idempotency_key: str = Field(min_length=10)
-    first_name:      str
-    last_name:       str
-    email:           EmailStr
-    phone:           str
-    handicap:        Optional[str]   = None
-    is_sponsor:      bool            = False
-    sponsor_amount:  Optional[float] = None
-    company_name:    Optional[str]   = None
+    event_id:           int
+    payment_token:      str
+    idempotency_key:    str = Field(min_length=10)
+    first_name:         str
+    last_name:          str
+    email:              EmailStr
+    phone:              str
+    handicap:           Optional[str]   = None
+    is_sponsor:         bool            = False
+    sponsor_amount:     Optional[float] = None
+    company_name:       Optional[str]   = None
+    additional_golfers: list[AdditionalGolfer] = []
 
 
 class RetryPaymentRequest(BaseModel):
@@ -65,13 +69,14 @@ class RetryPaymentRequest(BaseModel):
 
 
 class RegistrationResponse(BaseModel):
-    registration_id: int
-    confirmation_id: str
-    event_id:        int
-    amount_charged:  float
-    transaction_id:  Optional[str] = None
-    card_last_four:  Optional[str] = None
-    message:         str = "Registration confirmed"
+    registration_id:  int
+    confirmation_id:  str
+    event_id:         int
+    amount_charged:   float
+    transaction_id:   Optional[str] = None
+    card_last_four:   Optional[str] = None
+    message:          str = "Registration confirmed"
+    additional_ids:   list[int] = []
 
 
 # ── Helpers ─────────────────────────────────────────────────────────────────────
@@ -83,14 +88,21 @@ def _get_event_or_404(db: Session, event_id: int) -> Event:
     return event
 
 
-def _check_capacity(db: Session, event: Event) -> None:
+def _check_capacity(db: Session, event: Event, additional_spots: int = 1) -> None:
     registered = (
         db.query(EventRegistration)
         .filter(EventRegistration.event_id == event.id)
         .count()
     )
-    if registered >= event.capacity:
-        raise HTTPException(status_code=409, detail="This event is fully booked.")
+    if registered + additional_spots > event.capacity:
+        remaining = event.capacity - registered
+        if remaining <= 0:
+            raise HTTPException(status_code=409, detail="This event is fully booked.")
+        raise HTTPException(
+            status_code=409,
+            detail=f"Only {remaining} spot(s) remaining. Cannot register {additional_spots} golfer(s).",
+        )
+
 
 
 def _check_duplicate_member(db: Session, event_id: int, user_id: int) -> None:
@@ -128,6 +140,74 @@ def _confirmation_id(registration_id: int) -> str:
 
 # ── Member registration ─────────────────────────────────────────────────────────
 
+def _calculate_additional_golfer_price(
+    db: Session, event: Event, golfer: "AdditionalGolfer",
+) -> Decimal:
+    """Return the price for one additional golfer (member rate or guest rate)."""
+    if golfer.is_member and golfer.user_id:
+        return Decimal(str(event.member_price or event.guest_price))
+    return Decimal(str(event.guest_price))
+
+
+def _create_additional_registrations(
+    db: Session, event: Event, golfers: list["AdditionalGolfer"],
+    charge, total_amount: float, idempotency_key: str,
+) -> list[int]:
+    """Create EventRegistration rows for each additional golfer. Returns list of IDs."""
+    additional_ids: list[int] = []
+    for i, golfer in enumerate(golfers):
+        if golfer.is_member and golfer.user_id:
+            # Member golfer — look up their info
+            user = db.query(User).filter(User.id == golfer.user_id).first()
+            ua = db.query(UserAccount).filter(UserAccount.user_id == golfer.user_id).first()
+            reg = EventRegistration(
+                event_id=event.id,
+                user_id=golfer.user_id,
+                email=ua.email if ua else None,
+                phone=user.phone_number if user else None,
+                handicap=golfer.handicap or (user.handicap if user else None),
+                payment_status="paid",
+                payment_method="card",
+                amount_paid=float(_calculate_additional_golfer_price(db, event, golfer)),
+                transaction_id=charge.transaction_id,
+                north_uniq_id=charge.uniq_id,
+                north_account_id=charge.account_id,
+                card_last_four=charge.card_last_four,
+                idempotency_key=f"{idempotency_key}-add-{i}",
+            )
+        else:
+            # Guest golfer
+            guest = db.query(Guest).filter(Guest.email == golfer.email).first() if golfer.email else None
+            if not guest and golfer.email:
+                guest = Guest(
+                    first_name=golfer.first_name or "",
+                    last_name=golfer.last_name or "",
+                    email=golfer.email,
+                    phone=golfer.phone or "",
+                )
+                db.add(guest)
+                db.flush()
+            reg = EventRegistration(
+                event_id=event.id,
+                guest_id=guest.id if guest else None,
+                email=golfer.email,
+                phone=golfer.phone,
+                handicap=golfer.handicap,
+                payment_status="paid",
+                payment_method="card",
+                amount_paid=float(_calculate_additional_golfer_price(db, event, golfer)),
+                transaction_id=charge.transaction_id,
+                north_uniq_id=charge.uniq_id,
+                north_account_id=charge.account_id,
+                card_last_four=charge.card_last_four,
+                idempotency_key=f"{idempotency_key}-add-{i}",
+            )
+        db.add(reg)
+        db.flush()
+        additional_ids.append(reg.id)
+    return additional_ids
+
+
 @router.post(
     "",
     response_model=RegistrationResponse,
@@ -139,17 +219,22 @@ async def register_member(
     db: Session = Depends(get_db),
 ) -> RegistrationResponse:
     """
-    Register an authenticated member.
-    Charges member_price (+ optional sponsorship amount).
-    Registration row is only inserted after a successful payment.
+    Register an authenticated member (+ optional additional golfers).
+    Charges member_price for the registrant, plus member or guest price
+    for each additional golfer depending on their type.
     """
     event = _get_event_or_404(db, data.event_id)
-    _check_capacity(db, event)
+    total_spots = 1 + len(data.additional_golfers)
+    _check_capacity(db, event, total_spots)
     _check_duplicate_member(db, data.event_id, current_user.id)
 
     base    = Decimal(str(event.member_price or event.guest_price))
     sponsor = Decimal(str(data.sponsor_amount or 0)) if data.is_sponsor else Decimal("0")
     total   = base + sponsor
+
+    # Add prices for additional golfers
+    for golfer in data.additional_golfers:
+        total += _calculate_additional_golfer_price(db, event, golfer)
 
     try:
         charge = await charge_card(data.payment_token, float(total))
@@ -171,7 +256,7 @@ async def register_member(
         handicap=data.handicap,
         payment_status="paid",
         payment_method="card",
-        amount_paid=float(total),
+        amount_paid=float(base + sponsor),
         transaction_id=charge.transaction_id,
         north_uniq_id=charge.uniq_id,
         north_account_id=charge.account_id,
@@ -182,12 +267,18 @@ async def register_member(
         company_name=data.company_name if data.is_sponsor else None,
     )
     db.add(registration)
+    db.flush()
+
+    additional_ids = _create_additional_registrations(
+        db, event, data.additional_golfers, charge, float(total), data.idempotency_key,
+    )
+
     db.commit()
     db.refresh(registration)
 
     logger.info(
-        "Member registered: registration_id=%s user_id=%s event_id=%s amount=%s",
-        registration.id, current_user.id, data.event_id, total,
+        "Member registered: registration_id=%s user_id=%s event_id=%s amount=%s additional=%d",
+        registration.id, current_user.id, data.event_id, total, len(additional_ids),
     )
 
     return RegistrationResponse(
@@ -197,6 +288,7 @@ async def register_member(
         amount_charged=float(total),
         transaction_id=charge.transaction_id,
         card_last_four=charge.card_last_four,
+        additional_ids=additional_ids,
     )
 
 
@@ -212,17 +304,20 @@ async def register_guest(
     db: Session = Depends(get_db),
 ) -> RegistrationResponse:
     """
-    Register an unauthenticated guest.
-    Charges guest_price (+ optional sponsorship amount).
-    Registration row is only inserted after a successful payment.
+    Register an unauthenticated guest (+ optional additional golfers).
+    All additional golfers are charged at guest_price.
     """
     event = _get_event_or_404(db, data.event_id)
-    _check_capacity(db, event)
+    total_spots = 1 + len(data.additional_golfers)
+    _check_capacity(db, event, total_spots)
     _check_duplicate_guest(db, data.event_id, data.email)
 
-    base    = Decimal(str(event.guest_price))
+    guest_price = Decimal(str(event.guest_price))
     sponsor = Decimal(str(data.sponsor_amount or 0)) if data.is_sponsor else Decimal("0")
-    total   = base + sponsor
+    total   = guest_price + sponsor
+
+    # Additional golfers all pay guest rate
+    total += guest_price * len(data.additional_golfers)
 
     try:
         charge = await charge_card(data.payment_token, float(total))
@@ -255,7 +350,7 @@ async def register_guest(
         handicap=data.handicap,
         payment_status="paid",
         payment_method="card",
-        amount_paid=float(total),
+        amount_paid=float(guest_price + sponsor),
         transaction_id=charge.transaction_id,
         north_uniq_id=charge.uniq_id,
         north_account_id=charge.account_id,
@@ -266,12 +361,30 @@ async def register_guest(
         company_name=data.company_name if data.is_sponsor else None,
     )
     db.add(registration)
+    db.flush()
+
+    # Force all additional golfers to guest rate (is_member=False)
+    guest_golfers = [
+        AdditionalGolfer(
+            is_member=False,
+            first_name=g.first_name,
+            last_name=g.last_name,
+            email=g.email,
+            phone=g.phone,
+            handicap=g.handicap,
+        )
+        for g in data.additional_golfers
+    ]
+    additional_ids = _create_additional_registrations(
+        db, event, guest_golfers, charge, float(total), data.idempotency_key,
+    )
+
     db.commit()
     db.refresh(registration)
 
     logger.info(
-        "Guest registered: registration_id=%s email=%s event_id=%s amount=%s",
-        registration.id, data.email, data.event_id, total,
+        "Guest registered: registration_id=%s email=%s event_id=%s amount=%s additional=%d",
+        registration.id, data.email, data.event_id, total, len(additional_ids),
     )
 
     return RegistrationResponse(
@@ -281,6 +394,7 @@ async def register_guest(
         amount_charged=float(total),
         transaction_id=charge.transaction_id,
         card_last_four=charge.card_last_four,
+        additional_ids=additional_ids,
     )
 
 

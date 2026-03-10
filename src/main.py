@@ -18,7 +18,8 @@ from routers import (
     photos_router,
     scholarship_recipients_router,
     users_router,
-    standings_router
+    standings_router,
+    past_champions_router
 )
 from routers.registrations import router as registrations_router
 
@@ -55,6 +56,7 @@ app.include_router(scholarship_recipients_router)
 app.include_router(membership_options_router)
 app.include_router(standings_router)
 app.include_router(registrations_router)
+app.include_router(past_champions_router)
 
 @app.get("/health")
 def health_check() -> dict[str, str]:

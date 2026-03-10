@@ -5,15 +5,13 @@ from models.event_registration import EventRegistration
 
 def list_events(db: Session):
     events = get_events(db)
-    
-    
+
     result = []
     for event in events:
         registered_count = db.query(EventRegistration)\
             .filter(EventRegistration.event_id == event.id)\
             .count()
-        
-        # Create a dict with event data plus registered count
+
         event_dict = {
             'id': event.id,
             'township': event.township,
@@ -27,7 +25,9 @@ def list_events(db: Session):
             'capacity': event.capacity,
             'registered': registered_count,
             'image_url': event.image_url if hasattr(event, 'image_url') else None,
+            'registration_open': event.registration_open if hasattr(event, 'registration_open') else True,
+            'event_type': event.event_type if hasattr(event, 'event_type') else 'regular',
         }
         result.append(event_dict)
-    
+
     return result
