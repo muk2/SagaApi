@@ -1,24 +1,28 @@
-fastapi
-uvicorn[standard]
-python-multipart
+# Core Framework
+fastapi[all]>=0.128.0
+uvicorn[standard]>=0.40.0
+python-multipart>=0.0.21
 
-# CORS support for React frontend
-fastapi[all]
+# Data Validation & Settings
+pydantic[email]>=2.12.5
+pydantic-settings>=2.0.0
 
-# Optional but recommended for future API features
-pydantic
-pydantic[email]
+# Database
+sqlalchemy>=2.0.45
+psycopg2-binary>=2.9.11
 
-# Database (you said you're using Postgres now, MySQL later)
-sqlalchemy
-psycopg2-binary
+# Authentication & Security
+python-jose[cryptography]>=3.5.0
+passlib[bcrypt]>=1.7.4
 
-# If you plan JWT auth soon
-python-jose
-passlib[bcrypt]
+# HTTP Clients
+requests>=2.32.5
+aiohttp>=3.13.3
+httpx>=0.27.0
 
-# If scraping code uses aiohttp or requests, include these:
-requests
-beautifulsoup4
-lxml
-aiohttp
+# Web Scraping / HTML Parsing
+beautifulsoup4>=4.14.3
+lxml>=6.0.2
+
+# Environment Variables
+python-dotenv>=1.0.0
