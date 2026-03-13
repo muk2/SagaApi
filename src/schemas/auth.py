@@ -9,6 +9,8 @@ class SignUpRequest(BaseModel):
     password: str
     handicap: Optional[str] = None
     membership: str
+    payment_token: Optional[str] = None
+    idempotency_key: Optional[str] = None
 
 
 class LoginRequest(BaseModel):

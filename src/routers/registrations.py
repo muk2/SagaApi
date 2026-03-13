@@ -14,6 +14,7 @@ from models.event import Event
 from models.event_registration import EventRegistration
 from models.guest import Guest
 from models.user import User, UserAccount
+from services.email_service import EmailService
 from services.north_payment_service import (
     NorthDeclinedError,
     NorthGatewayError,
@@ -281,6 +282,35 @@ async def register_member(
         registration.id, current_user.id, data.event_id, total, len(additional_ids),
     )
 
+    # Send confirmation email
+    try:
+        registrant_name = f"{current_user.first_name} {current_user.last_name}"
+        email_addr = getattr(current_user, "email", None)
+        if email_addr:
+            add_golfer_details = []
+            for golfer in data.additional_golfers:
+                price = float(_calculate_additional_golfer_price(db, event, golfer))
+                if golfer.is_member and golfer.user_id:
+                    u = db.query(User).filter(User.id == golfer.user_id).first()
+                    name = f"{u.first_name} {u.last_name}" if u else "Member Golfer"
+                else:
+                    name = f"{golfer.first_name or ''} {golfer.last_name or ''}".strip() or "Guest Golfer"
+                add_golfer_details.append({"name": name, "price": price})
+
+            EmailService().send_event_registration_email(
+                to_email=email_addr,
+                registrant_name=registrant_name,
+                event_name=event.golf_course,
+                event_date=str(event.date),
+                confirmation_id=_confirmation_id(registration.id),
+                base_price=float(base + sponsor),
+                additional_golfers=add_golfer_details if add_golfer_details else None,
+                sponsor_amount=float(data.sponsor_amount) if data.is_sponsor and data.sponsor_amount else None,
+                total=float(total),
+            )
+    except Exception:
+        logger.exception("Failed to send event registration email for registration_id=%s", registration.id)
+
     return RegistrationResponse(
         registration_id=registration.id,
         confirmation_id=_confirmation_id(registration.id),
@@ -386,6 +416,28 @@ async def register_guest(
         "Guest registered: registration_id=%s email=%s event_id=%s amount=%s additional=%d",
         registration.id, data.email, data.event_id, total, len(additional_ids),
     )
+
+    # Send confirmation email
+    try:
+        registrant_name = f"{data.first_name} {data.last_name}"
+        add_golfer_details = []
+        for g in data.additional_golfers:
+            name = f"{g.first_name or ''} {g.last_name or ''}".strip() or "Guest Golfer"
+            add_golfer_details.append({"name": name, "price": float(guest_price)})
+
+        EmailService().send_event_registration_email(
+            to_email=data.email,
+            registrant_name=registrant_name,
+            event_name=event.golf_course,
+            event_date=str(event.date),
+            confirmation_id=_confirmation_id(registration.id),
+            base_price=float(guest_price + sponsor),
+            additional_golfers=add_golfer_details if add_golfer_details else None,
+            sponsor_amount=float(data.sponsor_amount) if data.is_sponsor and data.sponsor_amount else None,
+            total=float(total),
+        )
+    except Exception:
+        logger.exception("Failed to send event registration email for registration_id=%s", registration.id)
 
     return RegistrationResponse(
         registration_id=registration.id,

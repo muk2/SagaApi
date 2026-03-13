@@ -89,3 +89,12 @@ class AuthRepository:
 
     def update_password(self, account: UserAccount, password_hash: str) -> None:
         account.password_hash = password_hash
+
+    def delete_user(self, user_id: int) -> None:
+        """Delete a user and their account (for rollback on failed payment)."""
+        account = self.get_user_account_by_user_id(user_id)
+        if account:
+            self.db.delete(account)
+        user = self.get_user_by_id(user_id)
+        if user:
+            self.db.delete(user)
