@@ -30,10 +30,10 @@ class Settings(BaseSettings):
     CORS_ORIGINS: List[str] = [
     "https://sagafe.vercel.app",
     "http://localhost:3000",
-    "https://swallowable-lucie-terminably.ngrok-free.dev"
+    "https://sagagolf.com"
 ]
 
-    FRONTEND_URL: str = "https://swallowable-lucie-terminably.ngrok-free.dev"
+    FRONTEND_URL: str = "https://sagagolf.com"
     SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 587
     SMTP_USERNAME: Optional[str] = os.getenv("SMTP_EMAIL")
