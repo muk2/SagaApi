@@ -4,7 +4,7 @@ from datetime import datetime, time
 from typing import Optional, List, Tuple, Dict
 
 from fastapi import HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from repositories.admin_repository import AdminRepository
 from schemas.admin import (
@@ -99,9 +99,10 @@ class AdminService:
 
         registrations = (
             self.repo.db.query(EventRegistration)
-            .outerjoin(UserAccount, EventRegistration.user_id == UserAccount.id)
-            .outerjoin(User, UserAccount.user_id == User.id)
-            .outerjoin(Guest, EventRegistration.guest_id == Guest.id)
+            .options(
+                joinedload(EventRegistration.user_account).joinedload(UserAccount.user),
+                joinedload(EventRegistration.guest),
+            )
             .filter(EventRegistration.event_id == event_id)
             .all()
         )

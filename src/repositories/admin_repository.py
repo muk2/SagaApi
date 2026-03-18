@@ -93,13 +93,13 @@ class AdminRepository:
 
         # Use your existing method to get the account
         account = self.get_user_account_by_id(user_id)
-        if account:
-            self.db.delete(account)
 
-        # Delete event registrations
-        self.db.query(EventRegistration).filter(
-            EventRegistration.user_id == user_id
-        ).delete(synchronize_session=False)
+        # Delete event registrations (FK references user_account.id, not user.id)
+        if account:
+            self.db.query(EventRegistration).filter(
+                EventRegistration.user_id == account.id
+            ).delete(synchronize_session=False)
+            self.db.delete(account)
 
         # Delete the user
         self.db.delete(user)

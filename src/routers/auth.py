@@ -39,6 +39,7 @@ async def signup(data: SignUpRequest, db: Session = Depends(get_db)) -> SignUpRe
     user, _ = service.signup(data)
 
     # Process membership payment if token provided
+    amount = 0.0
     if data.payment_token:
         try:
             # Look up the membership price from the database
@@ -90,16 +91,16 @@ async def signup(data: SignUpRequest, db: Session = Depends(get_db)) -> SignUpRe
                 detail=str(e) or "Payment processing failed. Please try again.",
             )
 
-        # Send membership confirmation email (after successful payment)
-        try:
-            EmailService().send_membership_confirmation_email(
-                to_email=data.email,
-                member_name=f"{user.first_name} {user.last_name}",
-                membership_type=user.membership,
-                price=amount,
-            )
-        except Exception:
-            logger.exception("Failed to send membership email for user_id=%s", user.id)
+    # Send membership confirmation email (for both paid and free signups)
+    try:
+        EmailService().send_membership_confirmation_email(
+            to_email=data.email,
+            member_name=f"{user.first_name} {user.last_name}",
+            membership_type=user.membership,
+            price=amount,
+        )
+    except Exception:
+        logger.exception("Failed to send membership email for user_id=%s", user.id)
 
     user_response = UserResponse(
         id=user.id,

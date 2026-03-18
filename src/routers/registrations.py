@@ -159,11 +159,12 @@ def _create_additional_registrations(
     for i, golfer in enumerate(golfers):
         if golfer.is_member and golfer.user_id:
             # Member golfer — look up their info
+            # golfer.user_id is User.id; we need UserAccount.id for the FK
             user = db.query(User).filter(User.id == golfer.user_id).first()
             ua = db.query(UserAccount).filter(UserAccount.user_id == golfer.user_id).first()
             reg = EventRegistration(
                 event_id=event.id,
-                user_id=golfer.user_id,
+                user_id=ua.id if ua else None,
                 email=ua.email if ua else None,
                 phone=user.phone_number if user else None,
                 handicap=golfer.handicap or (user.handicap if user else None),
@@ -216,7 +217,7 @@ def _create_additional_registrations(
 )
 async def register_member(
     data: MemberRegistrationRequest,
-    current_user=Depends(CurrentUser),
+    current_user: CurrentUser,
     db: Session = Depends(get_db),
 ) -> RegistrationResponse:
     """
@@ -224,10 +225,17 @@ async def register_member(
     Charges member_price for the registrant, plus member or guest price
     for each additional golfer depending on their type.
     """
+    print(f"[DEBUG] register_member called: event_id={data.event_id} user_id={current_user.id}")
+
+    # Look up the user_account linked to this user — event_registration.user_id references user_account.id
+    user_account = db.query(UserAccount).filter(UserAccount.user_id == current_user.id).first()
+    if not user_account:
+        raise HTTPException(status_code=400, detail="No account found. Please complete your profile first.")
+
     event = _get_event_or_404(db, data.event_id)
     total_spots = 1 + len(data.additional_golfers)
     _check_capacity(db, event, total_spots)
-    _check_duplicate_member(db, data.event_id, current_user.id)
+    _check_duplicate_member(db, data.event_id, user_account.id)
 
     base    = Decimal(str(event.member_price or event.guest_price))
     sponsor = Decimal(str(data.sponsor_amount or 0)) if data.is_sponsor else Decimal("0")
@@ -251,8 +259,8 @@ async def register_member(
 
     registration = EventRegistration(
         event_id=data.event_id,
-        user_id=current_user.id,
-        email=getattr(current_user, "email", None),
+        user_id=user_account.id,
+        email=user_account.email,
         phone=getattr(current_user, "phone_number", None),
         handicap=data.handicap,
         payment_status="paid",
@@ -285,7 +293,7 @@ async def register_member(
     # Send confirmation email
     try:
         registrant_name = f"{current_user.first_name} {current_user.last_name}"
-        email_addr = getattr(current_user, "email", None)
+        email_addr = user_account.email
         if email_addr:
             add_golfer_details = []
             for golfer in data.additional_golfers:

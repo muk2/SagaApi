@@ -9,9 +9,6 @@ from core.config import settings
 
 logger = logging.getLogger(__name__)
 
-# SAGA logo hosted on the frontend's public directory
-LOGO_URL = f"{settings.FRONTEND_URL}/sagalogo.png"
-
 
 class EmailService:
     """Transactional email service with SAGA branding.
@@ -52,13 +49,12 @@ class EmailService:
 
     @staticmethod
     def _header_html() -> str:
-        return f"""
+        return """
         <div style="text-align:center; padding:24px 0 16px 0; background-color:#1a472a;">
-            <img src="{LOGO_URL}" alt="SAGA" style="height:60px; margin-bottom:8px;" />
-            <h1 style="margin:0; color:#ffffff; font-family:Georgia,serif; font-size:22px; letter-spacing:1px;">
+            <h1 style="margin:0; color:#ffffff; font-family:Georgia,serif; font-size:28px; letter-spacing:2px;">
                 SAGA
             </h1>
-            <p style="margin:4px 0 0 0; color:#0d94873b; font-family:Arial,sans-serif; font-size:12px;">
+            <p style="margin:6px 0 0 0; color:rgba(255,255,255,0.85); font-family:Arial,sans-serif; font-size:13px; letter-spacing:0.5px;">
                 South Asian Golf Association
             </p>
         </div>
@@ -169,7 +165,7 @@ class EmailService:
         </table>
 
         <p style="color:#666; margin-top:24px; font-size:13px;">
-            If you have any questions, reply to this email or contact us at {settings.SMTP_FROM_EMAIL}.
+            If you have any questions, reply to this email or contact us at sagaevents@sagagolf.com.
         </p>
         """
 
