@@ -1,0 +1,477 @@
+INFO:     Started server process [21186]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+Loading env from: /var/www/html/sagagolf.com/public_html/SagaApi/.env
+INFO:     100.8.148.56:0 - "OPTIONS /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "OPTIONS /api/events/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "OPTIONS /api/carousel HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "OPTIONS /api/events/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "OPTIONS /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "OPTIONS /api/partners HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/partners HTTP/1.0" 307 Temporary Redirect
+INFO:     100.8.148.56:0 - "GET /api/carousel HTTP/1.0" 307 Temporary Redirect
+/var/www/html/sagagolf.com/public_html/SagaApi/src/repositories/event_repository.py:7: SAWarning: relationship 'User.user_account' will copy column user.id to column user_account.user_id, which conflicts with relationship(s): 'User.account' (copies user.id to user_account.user_id). If this is not the intention, consider if these relationships should be linked with back_populates, or if viewonly=True should be applied to one or more if they are read-only. For the less common case that foreign key constraints are partially overlapping, the orm.foreign() annotation can be used to isolate the columns that should be written towards.   To silence this warning, add the parameter 'overlaps="account"' to the 'User.user_account' relationship. (Background on this warning at: https://sqlalche.me/e/20/qzyx) (This warning originated from the `configure_mappers()` process, which was invoked automatically in response to a user-initiated operation.)
+  return db.query(Event).all()
+INFO:     100.8.148.56:0 - "OPTIONS /api/carousel/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "OPTIONS /api/partners/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/carousel/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/partners/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "OPTIONS /api/round-winners/1 HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/round-winners/1 HTTP/1.0" 404 Not Found
+INFO:     100.8.148.56:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/carousel HTTP/1.0" 307 Temporary Redirect
+INFO:     100.8.148.56:0 - "GET /api/partners HTTP/1.0" 307 Temporary Redirect
+INFO:     100.8.148.56:0 - "GET /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/partners/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/carousel/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/round-winners/1 HTTP/1.0" 404 Not Found
+INFO:     109.94.170.62:0 - "GET /api/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php HTTP/1.0" 404 Not Found
+INFO:     100.8.148.56:0 - "OPTIONS /api/photo-albums HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/photo-albums HTTP/1.0" 307 Temporary Redirect
+INFO:     100.8.148.56:0 - "OPTIONS /api/photo-albums/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/photo-albums/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "OPTIONS /api/scholarship-recipients HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/scholarship-recipients HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/carousel HTTP/1.0" 307 Temporary Redirect
+INFO:     100.8.148.56:0 - "GET /api/partners HTTP/1.0" 307 Temporary Redirect
+INFO:     100.8.148.56:0 - "GET /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/partners/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/carousel/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/round-winners/1 HTTP/1.0" 404 Not Found
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [21186]
+INFO:     Started server process [21382]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [21382]
+Loading env from: /var/www/html/sagagolf.com/public_html/SagaApi/.env
+INFO:     Started server process [21396]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+Loading env from: /var/www/html/sagagolf.com/public_html/SagaApi/.env
+INFO:     100.8.148.56:0 - "GET /api/carousel HTTP/1.0" 307 Temporary Redirect
+INFO:     100.8.148.56:0 - "GET /api/partners HTTP/1.0" 307 Temporary Redirect
+/var/www/html/sagagolf.com/public_html/SagaApi/src/repositories/banner_repository.py:7: SAWarning: relationship 'User.user_account' will copy column user.id to column user_account.user_id, which conflicts with relationship(s): 'User.account' (copies user.id to user_account.user_id). If this is not the intention, consider if these relationships should be linked with back_populates, or if viewonly=True should be applied to one or more if they are read-only. For the less common case that foreign key constraints are partially overlapping, the orm.foreign() annotation can be used to isolate the columns that should be written towards.   To silence this warning, add the parameter 'overlaps="account"' to the 'User.user_account' relationship. (Background on this warning at: https://sqlalche.me/e/20/qzyx) (This warning originated from the `configure_mappers()` process, which was invoked automatically in response to a user-initiated operation.)
+  return db.query(Banner).all()
+INFO:     100.8.148.56:0 - "GET /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/carousel/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/partners/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/round-winners/1 HTTP/1.0" 404 Not Found
+INFO:     100.8.148.56:0 - "OPTIONS /api/admin/users HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "OPTIONS /api/membership-options HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/membership-options HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/admin/users HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "OPTIONS /api/admin/photo-albums HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/admin/photo-albums HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "OPTIONS /api/admin/media/carousel HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/admin/media/carousel HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "OPTIONS /api/admin/events?order_by=date&order=asc HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/admin/events?order_by=date&order=asc HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "OPTIONS /auth/logout HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "POST /auth/logout HTTP/1.0" 200 OK
+INFO:     2600:4041:4394:2e00:dd9b:3f48:6988:b90e:0 - "GET /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     2600:4041:4394:2e00:dd9b:3f48:6988:b90e:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     2600:4041:4394:2e00:dd9b:3f48:6988:b90e:0 - "GET /api/partners HTTP/1.0" 307 Temporary Redirect
+INFO:     2600:4041:4394:2e00:dd9b:3f48:6988:b90e:0 - "GET /api/carousel HTTP/1.0" 307 Temporary Redirect
+INFO:     2600:4041:4394:2e00:dd9b:3f48:6988:b90e:0 - "GET /api/partners/ HTTP/1.0" 200 OK
+INFO:     2600:4041:4394:2e00:dd9b:3f48:6988:b90e:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     2600:4041:4394:2e00:dd9b:3f48:6988:b90e:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     2600:4041:4394:2e00:dd9b:3f48:6988:b90e:0 - "GET /api/carousel/ HTTP/1.0" 200 OK
+INFO:     2600:4041:4394:2e00:dd9b:3f48:6988:b90e:0 - "GET /api/round-winners/1 HTTP/1.0" 404 Not Found
+INFO:     2600:4041:4394:2e00:dd9b:3f48:6988:b90e:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     149.57.180.1:0 - "OPTIONS /api/carousel HTTP/1.0" 200 OK
+INFO:     149.57.180.1:0 - "OPTIONS /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     149.57.180.1:0 - "OPTIONS /api/events/ HTTP/1.0" 200 OK
+INFO:     149.57.180.1:0 - "OPTIONS /api/events/ HTTP/1.0" 200 OK
+INFO:     149.57.180.1:0 - "OPTIONS /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     149.57.180.1:0 - "OPTIONS /api/partners HTTP/1.0" 200 OK
+INFO:     149.57.180.1:0 - "GET /api/carousel HTTP/1.0" 307 Temporary Redirect
+INFO:     149.57.180.1:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     149.57.180.1:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     149.57.180.1:0 - "GET /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     149.57.180.1:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     149.57.180.1:0 - "GET /api/partners HTTP/1.0" 307 Temporary Redirect
+INFO:     149.57.180.1:0 - "OPTIONS /api/carousel/ HTTP/1.0" 200 OK
+INFO:     149.57.180.1:0 - "OPTIONS /api/partners/ HTTP/1.0" 200 OK
+INFO:     149.57.180.1:0 - "GET /api/carousel/ HTTP/1.0" 200 OK
+INFO:     149.57.180.1:0 - "GET /api/partners/ HTTP/1.0" 200 OK
+INFO:     149.57.180.1:0 - "OPTIONS /api/round-winners/1 HTTP/1.0" 200 OK
+INFO:     149.57.180.1:0 - "GET /api/round-winners/1 HTTP/1.0" 404 Not Found
+INFO:     217.216.123.80:0 - "OPTIONS /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     217.216.123.80:0 - "OPTIONS /api/carousel HTTP/1.0" 200 OK
+INFO:     217.216.123.80:0 - "OPTIONS /api/events/ HTTP/1.0" 200 OK
+INFO:     217.216.123.80:0 - "OPTIONS /api/events/ HTTP/1.0" 200 OK
+INFO:     217.216.123.80:0 - "OPTIONS /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     217.216.123.80:0 - "OPTIONS /api/partners HTTP/1.0" 200 OK
+INFO:     217.216.123.80:0 - "GET /api/carousel HTTP/1.0" 307 Temporary Redirect
+INFO:     217.216.123.80:0 - "GET /api/partners HTTP/1.0" 307 Temporary Redirect
+INFO:     217.216.123.80:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     217.216.123.80:0 - "OPTIONS /api/carousel/ HTTP/1.0" 200 OK
+INFO:     217.216.123.80:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     217.216.123.80:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     217.216.123.80:0 - "OPTIONS /api/partners/ HTTP/1.0" 200 OK
+INFO:     217.216.123.80:0 - "GET /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     217.216.123.80:0 - "OPTIONS /api/round-winners/1 HTTP/1.0" 200 OK
+INFO:     217.216.123.80:0 - "GET /api/carousel/ HTTP/1.0" 200 OK
+INFO:     217.216.123.80:0 - "GET /api/partners/ HTTP/1.0" 200 OK
+INFO:     217.216.123.80:0 - "GET /api/round-winners/1 HTTP/1.0" 404 Not Found
+INFO:     217.216.123.80:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     217.216.123.80:0 - "OPTIONS /api/membership-options HTTP/1.0" 200 OK
+INFO:     217.216.123.80:0 - "GET /api/membership-options HTTP/1.0" 200 OK
+INFO:     217.216.123.80:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     217.216.123.80:0 - "GET /api/carousel HTTP/1.0" 307 Temporary Redirect
+INFO:     217.216.123.80:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     217.216.123.80:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     217.216.123.80:0 - "GET /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     217.216.123.80:0 - "GET /api/partners HTTP/1.0" 307 Temporary Redirect
+INFO:     217.216.123.80:0 - "GET /api/carousel/ HTTP/1.0" 200 OK
+INFO:     217.216.123.80:0 - "GET /api/round-winners/1 HTTP/1.0" 404 Not Found
+INFO:     217.216.123.80:0 - "GET /api/partners/ HTTP/1.0" 200 OK
+INFO:     217.216.123.80:0 - "GET /api/membership-options HTTP/1.0" 200 OK
+INFO:     35.161.55.221:0 - "OPTIONS /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     35.161.55.221:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     18.221.27.1:0 - "OPTIONS /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     18.221.27.1:0 - "OPTIONS /api/carousel HTTP/1.0" 200 OK
+INFO:     18.221.27.1:0 - "OPTIONS /api/events/ HTTP/1.0" 200 OK
+INFO:     18.221.27.1:0 - "OPTIONS /api/partners HTTP/1.0" 200 OK
+INFO:     18.221.27.1:0 - "OPTIONS /api/events/ HTTP/1.0" 200 OK
+INFO:     18.221.27.1:0 - "OPTIONS /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     18.221.27.1:0 - "GET /api/carousel HTTP/1.0" 307 Temporary Redirect
+INFO:     18.221.27.1:0 - "GET /api/partners HTTP/1.0" 307 Temporary Redirect
+INFO:     18.221.27.1:0 - "GET /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     18.221.27.1:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     18.221.27.1:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     18.221.27.1:0 - "OPTIONS /api/carousel/ HTTP/1.0" 200 OK
+INFO:     18.221.27.1:0 - "OPTIONS /api/partners/ HTTP/1.0" 200 OK
+INFO:     18.221.27.1:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     18.221.27.1:0 - "GET /api/partners/ HTTP/1.0" 200 OK
+INFO:     18.221.27.1:0 - "GET /api/carousel/ HTTP/1.0" 200 OK
+INFO:     18.221.27.1:0 - "OPTIONS /api/round-winners/1 HTTP/1.0" 200 OK
+INFO:     18.221.27.1:0 - "GET /api/round-winners/1 HTTP/1.0" 404 Not Found
+INFO:     18.221.27.1:0 - "OPTIONS /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     18.221.27.1:0 - "OPTIONS /api/faqs HTTP/1.0" 200 OK
+INFO:     18.221.27.1:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     18.221.27.1:0 - "GET /api/faqs HTTP/1.0" 200 OK
+INFO:     18.221.27.1:0 - "OPTIONS /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     18.221.27.1:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     147.93.179.130:0 - "GET /api/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php HTTP/1.0" 404 Not Found
+INFO:     2601:84:8d84:22b0:f19f:e5d8:291d:147:0 - "OPTIONS /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     2601:84:8d84:22b0:f19f:e5d8:291d:147:0 - "OPTIONS /api/carousel HTTP/1.0" 200 OK
+INFO:     2601:84:8d84:22b0:f19f:e5d8:291d:147:0 - "OPTIONS /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     2601:84:8d84:22b0:f19f:e5d8:291d:147:0 - "OPTIONS /api/events/ HTTP/1.0" 200 OK
+INFO:     2601:84:8d84:22b0:f19f:e5d8:291d:147:0 - "OPTIONS /api/partners HTTP/1.0" 200 OK
+INFO:     2601:84:8d84:22b0:f19f:e5d8:291d:147:0 - "OPTIONS /api/events/ HTTP/1.0" 200 OK
+INFO:     2601:84:8d84:22b0:f19f:e5d8:291d:147:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     2601:84:8d84:22b0:f19f:e5d8:291d:147:0 - "GET /api/carousel HTTP/1.0" 307 Temporary Redirect
+INFO:     2601:84:8d84:22b0:f19f:e5d8:291d:147:0 - "GET /api/partners HTTP/1.0" 307 Temporary Redirect
+INFO:     2601:84:8d84:22b0:f19f:e5d8:291d:147:0 - "GET /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     2601:84:8d84:22b0:f19f:e5d8:291d:147:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     2601:84:8d84:22b0:f19f:e5d8:291d:147:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     2601:84:8d84:22b0:f19f:e5d8:291d:147:0 - "OPTIONS /api/carousel/ HTTP/1.0" 200 OK
+INFO:     2601:84:8d84:22b0:f19f:e5d8:291d:147:0 - "OPTIONS /api/partners/ HTTP/1.0" 200 OK
+INFO:     2601:84:8d84:22b0:f19f:e5d8:291d:147:0 - "OPTIONS /api/round-winners/1 HTTP/1.0" 200 OK
+INFO:     2601:84:8d84:22b0:f19f:e5d8:291d:147:0 - "GET /api/partners/ HTTP/1.0" 200 OK
+INFO:     2601:84:8d84:22b0:f19f:e5d8:291d:147:0 - "GET /api/carousel/ HTTP/1.0" 200 OK
+INFO:     2601:84:8d84:22b0:f19f:e5d8:291d:147:0 - "GET /api/round-winners/1 HTTP/1.0" 404 Not Found
+INFO:     106.13.224.150:0 - "GET /api/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php HTTP/1.0" 404 Not Found
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "OPTIONS /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "OPTIONS /api/carousel HTTP/1.0" 200 OK
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "OPTIONS /api/events/ HTTP/1.0" 200 OK
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "OPTIONS /api/events/ HTTP/1.0" 200 OK
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "OPTIONS /api/partners HTTP/1.0" 200 OK
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "GET /api/carousel HTTP/1.0" 307 Temporary Redirect
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "OPTIONS /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "GET /api/partners HTTP/1.0" 307 Temporary Redirect
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "OPTIONS /api/carousel/ HTTP/1.0" 200 OK
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "GET /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "OPTIONS /api/partners/ HTTP/1.0" 200 OK
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "GET /api/carousel/ HTTP/1.0" 200 OK
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "GET /api/partners/ HTTP/1.0" 200 OK
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "OPTIONS /api/round-winners/1 HTTP/1.0" 200 OK
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "GET /api/round-winners/1 HTTP/1.0" 404 Not Found
+INFO:     2401:4900:8fdb:bdd:f43c:afb8:bc4e:cde7:0 - "OPTIONS /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:f43c:afb8:bc4e:cde7:0 - "OPTIONS /api/partners HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:f43c:afb8:bc4e:cde7:0 - "OPTIONS /api/carousel HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:f43c:afb8:bc4e:cde7:0 - "OPTIONS /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:f43c:afb8:bc4e:cde7:0 - "OPTIONS /api/events/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:f43c:afb8:bc4e:cde7:0 - "OPTIONS /api/events/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:f43c:afb8:bc4e:cde7:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:f43c:afb8:bc4e:cde7:0 - "GET /api/partners HTTP/1.0" 307 Temporary Redirect
+INFO:     2401:4900:8fdb:bdd:f43c:afb8:bc4e:cde7:0 - "GET /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:f43c:afb8:bc4e:cde7:0 - "GET /api/carousel HTTP/1.0" 307 Temporary Redirect
+INFO:     2401:4900:8fdb:bdd:f43c:afb8:bc4e:cde7:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:f43c:afb8:bc4e:cde7:0 - "OPTIONS /api/partners/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:f43c:afb8:bc4e:cde7:0 - "OPTIONS /api/carousel/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:f43c:afb8:bc4e:cde7:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:f43c:afb8:bc4e:cde7:0 - "GET /api/partners/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:f43c:afb8:bc4e:cde7:0 - "GET /api/carousel/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:f43c:afb8:bc4e:cde7:0 - "OPTIONS /api/round-winners/1 HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:f43c:afb8:bc4e:cde7:0 - "GET /api/round-winners/1 HTTP/1.0" 404 Not Found
+INFO:     100.8.148.56:0 - "OPTIONS /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "OPTIONS /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "OPTIONS /api/carousel HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "OPTIONS /api/events/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "OPTIONS /api/events/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "OPTIONS /api/partners HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/carousel HTTP/1.0" 307 Temporary Redirect
+INFO:     100.8.148.56:0 - "GET /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/partners HTTP/1.0" 307 Temporary Redirect
+INFO:     100.8.148.56:0 - "OPTIONS /api/carousel/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "OPTIONS /api/partners/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/carousel/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/partners/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "OPTIONS /api/round-winners/1 HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/round-winners/1 HTTP/1.0" 404 Not Found
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "OPTIONS /api/faqs HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/faqs HTTP/1.0" 200 OK
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "GET /api/carousel HTTP/1.0" 307 Temporary Redirect
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "GET /api/partners HTTP/1.0" 307 Temporary Redirect
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "GET /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "GET /api/carousel/ HTTP/1.0" 200 OK
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "GET /api/round-winners/1 HTTP/1.0" 404 Not Found
+INFO:     2600:4040:e087:4400:2d31:6546:7f5a:cb20:0 - "GET /api/partners/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "OPTIONS /api/photo-albums HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/photo-albums HTTP/1.0" 307 Temporary Redirect
+INFO:     100.8.148.56:0 - "OPTIONS /api/photo-albums/ HTTP/1.0" 200 OK
+INFO:     100.8.148.56:0 - "GET /api/photo-albums/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "OPTIONS /api/events/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "OPTIONS /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "OPTIONS /api/carousel HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "OPTIONS /api/events/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "OPTIONS /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "OPTIONS /api/partners HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/carousel HTTP/1.0" 307 Temporary Redirect
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/partners HTTP/1.0" 307 Temporary Redirect
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "OPTIONS /api/carousel/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "OPTIONS /api/partners/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/carousel/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "OPTIONS /api/round-winners/1 HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/partners/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/round-winners/1 HTTP/1.0" 404 Not Found
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/carousel HTTP/1.0" 307 Temporary Redirect
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/partners HTTP/1.0" 307 Temporary Redirect
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/carousel/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/partners/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/round-winners/1 HTTP/1.0" 404 Not Found
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "OPTIONS /api/past-champions HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "OPTIONS /api/membership-options HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/membership-options HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/past-champions HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "OPTIONS /api/scholarship-recipients HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/scholarship-recipients HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/scholarship-recipients HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/partners HTTP/1.0" 307 Temporary Redirect
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/carousel HTTP/1.0" 307 Temporary Redirect
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/partners/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/carousel/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/round-winners/1 HTTP/1.0" 404 Not Found
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/scholarship-recipients HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "OPTIONS /auth/login HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "POST /auth/login HTTP/1.0" 401 Unauthorized
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/carousel HTTP/1.0" 307 Temporary Redirect
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/partners HTTP/1.0" 307 Temporary Redirect
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/carousel/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/partners/ HTTP/1.0" 200 OK
+INFO:     2401:4900:8fdb:bdd:d803:b835:8938:31c0:0 - "GET /api/round-winners/1 HTTP/1.0" 404 Not Found
+INFO:     2a09:bac2:8d7c:f23::182:123:0 - "OPTIONS /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     2a09:bac2:8d7c:f23::182:123:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     2a09:bac2:8d7c:f23::182:123:0 - "OPTIONS /api/partners HTTP/1.0" 200 OK
+INFO:     2a09:bac2:8d7c:f23::182:123:0 - "OPTIONS /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     2a09:bac2:8d7c:f23::182:123:0 - "OPTIONS /api/events/ HTTP/1.0" 200 OK
+INFO:     2a09:bac2:8d7c:f23::182:123:0 - "OPTIONS /api/events/ HTTP/1.0" 200 OK
+INFO:     2a09:bac2:8d7c:f23::182:123:0 - "OPTIONS /api/carousel HTTP/1.0" 200 OK
+INFO:     2a09:bac2:8d7c:f23::182:123:0 - "GET /api/partners HTTP/1.0" 307 Temporary Redirect
+INFO:     2a09:bac2:8d7c:f23::182:123:0 - "GET /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     2a09:bac2:8d7c:f23::182:123:0 - "GET /api/carousel HTTP/1.0" 307 Temporary Redirect
+INFO:     2a09:bac2:8d7c:f23::182:123:0 - "OPTIONS /api/partners/ HTTP/1.0" 200 OK
+INFO:     2a09:bac2:8d7c:f23::182:123:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     2a09:bac2:8d7c:f23::182:123:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     2a09:bac2:8d7c:f23::182:123:0 - "OPTIONS /api/carousel/ HTTP/1.0" 200 OK
+INFO:     2a09:bac2:8d7c:f23::182:123:0 - "GET /api/partners/ HTTP/1.0" 200 OK
+INFO:     2a09:bac2:8d7c:f23::182:123:0 - "GET /api/carousel/ HTTP/1.0" 200 OK
+INFO:     2a09:bac2:8d7c:f23::182:123:0 - "OPTIONS /api/round-winners/1 HTTP/1.0" 200 OK
+INFO:     2a09:bac2:8d7c:f23::182:123:0 - "GET /api/round-winners/1 HTTP/1.0" 404 Not Found
+INFO:     2a09:bac2:8d7c:f23::182:123:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     2a09:bac2:8d7c:f23::182:123:0 - "OPTIONS /auth/login HTTP/1.0" 200 OK
+INFO:     2a09:bac2:8d7c:f23::182:123:0 - "POST /auth/login HTTP/1.0" 401 Unauthorized
+INFO:     2a09:bac2:8d7c:f23::182:123:0 - "POST /auth/login HTTP/1.0" 401 Unauthorized
+INFO:     2a09:bac2:8d7c:f23::182:123:0 - "POST /auth/login HTTP/1.0" 401 Unauthorized
+INFO:     2a09:bac2:8d7c:f23::182:123:0 - "OPTIONS /auth/forgot-password HTTP/1.0" 200 OK
+INFO:     2a09:bac2:8d7c:f23::182:123:0 - "POST /auth/forgot-password HTTP/1.0" 200 OK
+INFO:     52.11.171.121:0 - "GET /api/carousel HTTP/1.0" 307 Temporary Redirect
+INFO:     52.11.171.121:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     52.11.171.121:0 - "GET /api/partners HTTP/1.0" 307 Temporary Redirect
+INFO:     52.11.171.121:0 - "GET /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     52.11.171.121:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     52.11.171.121:0 - "GET /api/carousel/ HTTP/1.0" 200 OK
+INFO:     52.11.171.121:0 - "GET /api/partners/ HTTP/1.0" 200 OK
+INFO:     52.11.171.121:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     52.11.171.121:0 - "GET /api/round-winners/1 HTTP/1.0" 404 Not Found
+INFO:     54.191.250.224:0 - "OPTIONS /api/carousel HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "OPTIONS /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "OPTIONS /api/events/ HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "OPTIONS /api/events/ HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "OPTIONS /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "OPTIONS /api/partners HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "GET /api/carousel HTTP/1.0" 307 Temporary Redirect
+INFO:     54.191.250.224:0 - "GET /api/partners HTTP/1.0" 307 Temporary Redirect
+INFO:     54.191.250.224:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "GET /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "OPTIONS /api/carousel/ HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "OPTIONS /api/partners/ HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "OPTIONS /api/round-winners/1 HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "GET /api/carousel/ HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "GET /api/partners/ HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "GET /api/round-winners/1 HTTP/1.0" 404 Not Found
+INFO:     54.191.250.224:0 - "OPTIONS /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "OPTIONS /api/carousel HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "OPTIONS /api/events/ HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "OPTIONS /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "OPTIONS /api/events/ HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "OPTIONS /api/partners HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "GET /api/partners HTTP/1.0" 307 Temporary Redirect
+INFO:     54.191.250.224:0 - "GET /api/carousel HTTP/1.0" 307 Temporary Redirect
+INFO:     54.191.250.224:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "GET /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     52.11.171.121:0 - "GET /api/carousel HTTP/1.0" 307 Temporary Redirect
+INFO:     52.11.171.121:0 - "GET /api/partners HTTP/1.0" 307 Temporary Redirect
+INFO:     52.11.171.121:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     52.11.171.121:0 - "GET /api/leaderboard/pdf HTTP/1.0" 200 OK
+INFO:     52.11.171.121:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "OPTIONS /api/carousel/ HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "OPTIONS /api/partners/ HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "GET /api/carousel/ HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "GET /api/partners/ HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     52.11.171.121:0 - "GET /api/carousel/ HTTP/1.0" 200 OK
+INFO:     52.11.171.121:0 - "GET /api/partners/ HTTP/1.0" 200 OK
+INFO:     52.11.171.121:0 - "GET /api/events/ HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "OPTIONS /api/round-winners/1 HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "GET /api/round-winners/1 HTTP/1.0" 404 Not Found
+INFO:     52.11.171.121:0 - "GET /api/round-winners/1 HTTP/1.0" 404 Not Found
+INFO:     54.218.246.223:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     44.249.178.1:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     18.237.107.80:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     44.246.255.105:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     54.203.52.94:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     44.249.178.1:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     54.218.246.223:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     44.248.206.10:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     52.12.22.5:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     44.249.144.173:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     44.249.144.173:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     35.86.127.187:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     18.237.107.80:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     44.249.144.173:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     18.237.107.80:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     18.237.107.80:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     54.214.198.227:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     54.203.52.94:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     34.221.113.203:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     54.214.198.227:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     54.203.52.94:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     34.222.95.144:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     34.222.95.144:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     54.218.3.53:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     54.218.3.53:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     54.218.246.223:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     44.249.178.1:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     35.94.169.105:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     44.248.206.10:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     35.86.127.187:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     54.203.52.94:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     44.246.255.105:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     18.237.107.80:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     54.218.246.223:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     54.184.234.84:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     54.213.9.210:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     44.246.255.105:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     44.248.206.10:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     54.203.52.94:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     44.246.255.105:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     34.219.45.250:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     34.219.45.250:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     54.187.142.222:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     54.187.142.222:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     35.85.35.131:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     54.244.67.121:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     35.85.35.131:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     54.244.67.121:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     54.191.250.224:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     34.222.252.101:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     18.237.88.183:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     34.222.252.101:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     18.237.88.183:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     52.12.122.46:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     34.219.76.194:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     52.12.122.46:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     34.219.76.194:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     44.255.0.136:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     44.255.0.136:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     52.11.171.121:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     34.216.71.211:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     52.11.171.121:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     34.216.71.211:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     54.244.60.131:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     54.244.60.131:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     44.255.0.136:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     44.255.0.136:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     52.12.122.46:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     52.12.122.46:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     34.222.252.101:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     34.222.252.101:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     34.222.252.101:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     34.222.252.101:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     34.216.71.211:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     34.216.71.211:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     35.90.157.177:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     35.90.157.177:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     34.219.138.5:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
+INFO:     34.219.138.5:0 - "GET /api/banner_messages/ HTTP/1.0" 200 OK
