@@ -19,7 +19,7 @@ from schemas.auth import (
 )
 from services.auth_service import AuthService
 from services.email_service import EmailService
-from services.north_payment_service import charge_card, NorthDeclinedError, NorthGatewayError
+from services.paypal_service import capture_order, PayPalCaptureDeclined, PayPalError
 
 logger = logging.getLogger(__name__)
 
@@ -32,17 +32,16 @@ async def signup(data: SignUpRequest, db: Session = Depends(get_db)) -> SignUpRe
     Register a new user.
 
     Creates both a User record (profile data) and a UserAccount record (credentials).
-    If a payment_token is provided, charges the membership fee before finalizing.
+    If a paypal_order_id is provided, captures the PayPal order before finalizing.
     Returns the created user information without sensitive data.
     """
     service = AuthService(db)
     user, _ = service.signup(data)
 
-    # Process membership payment if token provided
+    # Process membership payment via PayPal if order ID provided
     amount = 0.0
-    if data.payment_token:
+    if data.paypal_order_id:
         try:
-            # Look up the membership price from the database
             from models.membership_option import MembershipOption
             membership_option = db.query(MembershipOption).filter(
                 MembershipOption.name == data.membership,
@@ -58,32 +57,21 @@ async def signup(data: SignUpRequest, db: Session = Depends(get_db)) -> SignUpRe
                 )
 
             amount = float(membership_option.price)
-            result = await charge_card(data.payment_token, amount)
-
-            if not result.approved:
-                # Rollback user creation on payment failure
-                service.repo.delete_user(user.id)
-                service.repo.commit()
-                raise HTTPException(
-                    status_code=status.HTTP_402_PAYMENT_REQUIRED,
-                    detail="Payment was declined. Please try a different card.",
-                )
+            capture = await capture_order(data.paypal_order_id)
 
             logger.info(
-                "Membership payment approved for user %s: transaction_id=%s amount=%s",
-                user.id, result.transaction_id, amount,
+                "Membership payment captured for user %s: capture_id=%s amount=%s",
+                user.id, capture.capture_id, amount,
             )
 
-        except NorthDeclinedError as e:
-            # Rollback user creation on decline
+        except PayPalCaptureDeclined as e:
             service.repo.delete_user(user.id)
             service.repo.commit()
             raise HTTPException(
                 status_code=status.HTTP_402_PAYMENT_REQUIRED,
-                detail=str(e) or "Payment was declined. Please try a different card.",
+                detail=str(e) or "Payment was declined. Please try again.",
             )
-        except NorthGatewayError as e:
-            # Rollback user creation on gateway error
+        except PayPalError as e:
             service.repo.delete_user(user.id)
             service.repo.commit()
             raise HTTPException(

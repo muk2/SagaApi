@@ -250,21 +250,25 @@ async def _authenticate() -> tuple[str, str]:
         "password":     NORTH_PASSWORD,
     }
 
-    print(f"[NORTH DEBUG] base_url={NORTH_BASE_URL}")
-    print(f"[NORTH DEBUG] mid={NORTH_MID}")
-    print(f"[NORTH DEBUG] dev_key={NORTH_DEV_KEY}")
-    print(f"[NORTH DEBUG] password={NORTH_PASSWORD}")
-    print(f"[NORTH DEBUG] password length={len(NORTH_PASSWORD)}")
-    print(f"[NORTH DEBUG] appsource={NORTH_APPSOURCE}")
-
     headers = {"Content-Type": "application/json"}
     if NORTH_APPSOURCE:
         headers["x-nabwss-appsource"] = NORTH_APPSOURCE
 
+    auth_url = f"{NORTH_BASE_URL}/auth"
+
+    import json as _json
+    print("\n" + "=" * 80)
+    print("[NORTH] POST /auth REQUEST")
+    print("=" * 80)
+    print(f"URL: {auth_url}")
+    print(f"Headers: {_json.dumps(headers, indent=2)}")
+    print(f"Body:\n{_json.dumps(payload, indent=2)}")
+    print("=" * 80)
+
     try:
         async with httpx.AsyncClient(timeout=NORTH_TIMEOUT) as client:
             resp = await client.post(
-                f"{NORTH_BASE_URL}/auth",
+                auth_url,
                 json=payload,
                 headers=headers,
             )
@@ -273,7 +277,13 @@ async def _authenticate() -> tuple[str, str]:
     except httpx.RequestError as exc:
         raise NorthGatewayError(f"Could not reach payment gateway: {exc}")
 
-    print(f"[NORTH DEBUG] auth response: status={resp.status_code} body={resp.text[:300]}")
+    print("\n" + "=" * 80)
+    print("[NORTH] POST /auth RESPONSE")
+    print("=" * 80)
+    print(f"Status: {resp.status_code}")
+    print(f"Headers: {_json.dumps(dict(resp.headers), indent=2)}")
+    print(f"Body:\n{resp.text}")
+    print("=" * 80 + "\n")
 
     if resp.status_code not in (200, 201):
         logger.error(
@@ -330,10 +340,21 @@ async def charge_card(payment_token: str, amount: float | Decimal) -> NorthCharg
     if NORTH_APPSOURCE:
         charge_headers["x-nabwss-appsource"] = NORTH_APPSOURCE
 
+    charge_url = f"{NORTH_BASE_URL}/mids/{NORTH_MID}/gateways/payment"
+
+    import json as _json
+    print("\n" + "=" * 80)
+    print("[NORTH] POST /mids/.../gateways/payment REQUEST")
+    print("=" * 80)
+    print(f"URL: {charge_url}")
+    print(f"Headers: {_json.dumps(charge_headers, indent=2)}")
+    print(f"Body:\n{_json.dumps(payload, indent=2)}")
+    print("=" * 80)
+
     try:
         async with httpx.AsyncClient(timeout=NORTH_TIMEOUT) as client:
             resp = await client.post(
-                f"{NORTH_BASE_URL}/mids/{NORTH_MID}/gateways/payment",
+                charge_url,
                 json=payload,
                 headers=charge_headers,
             )
@@ -342,7 +363,13 @@ async def charge_card(payment_token: str, amount: float | Decimal) -> NorthCharg
     except httpx.RequestError as exc:
         raise NorthGatewayError(f"Could not reach payment gateway: {exc}")
 
-    print(f"[NORTH DEBUG] charge response: status={resp.status_code} body={resp.text[:500]}")
+    print("\n" + "=" * 80)
+    print("[NORTH] POST /mids/.../gateways/payment RESPONSE")
+    print("=" * 80)
+    print(f"Status: {resp.status_code}")
+    print(f"Headers: {_json.dumps(dict(resp.headers), indent=2)}")
+    print(f"Body:\n{resp.text}")
+    print("=" * 80 + "\n")
 
     data = resp.json()
 

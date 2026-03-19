@@ -15,10 +15,10 @@ from models.event_registration import EventRegistration
 from models.guest import Guest
 from models.user import User, UserAccount
 from services.email_service import EmailService
-from services.north_payment_service import (
-    NorthDeclinedError,
-    NorthGatewayError,
-    charge_card,
+from services.paypal_service import (
+    PayPalCaptureDeclined,
+    PayPalError,
+    capture_order,
 )
 
 logger = logging.getLogger(__name__)
@@ -40,8 +40,7 @@ class AdditionalGolfer(BaseModel):
 
 class MemberRegistrationRequest(BaseModel):
     event_id:           int
-    payment_token:      str
-    idempotency_key:    str = Field(min_length=10)
+    paypal_order_id:    Optional[str]   = None
     handicap:           Optional[str]   = None
     is_sponsor:         bool            = False
     sponsor_amount:     Optional[float] = None
@@ -51,8 +50,7 @@ class MemberRegistrationRequest(BaseModel):
 
 class GuestRegistrationRequest(BaseModel):
     event_id:           int
-    payment_token:      str
-    idempotency_key:    str = Field(min_length=10)
+    paypal_order_id:    Optional[str]   = None
     first_name:         str
     last_name:          str
     email:              EmailStr
@@ -65,8 +63,7 @@ class GuestRegistrationRequest(BaseModel):
 
 
 class RetryPaymentRequest(BaseModel):
-    payment_token:   str
-    idempotency_key: str = Field(min_length=10)
+    paypal_order_id: str
 
 
 class RegistrationResponse(BaseModel):
@@ -152,14 +149,12 @@ def _calculate_additional_golfer_price(
 
 def _create_additional_registrations(
     db: Session, event: Event, golfers: list["AdditionalGolfer"],
-    charge, total_amount: float, idempotency_key: str,
+    capture_id: str | None, total_amount: float,
 ) -> list[int]:
     """Create EventRegistration rows for each additional golfer. Returns list of IDs."""
     additional_ids: list[int] = []
     for i, golfer in enumerate(golfers):
         if golfer.is_member and golfer.user_id:
-            # Member golfer — look up their info
-            # golfer.user_id is User.id; we need UserAccount.id for the FK
             user = db.query(User).filter(User.id == golfer.user_id).first()
             ua = db.query(UserAccount).filter(UserAccount.user_id == golfer.user_id).first()
             reg = EventRegistration(
@@ -169,16 +164,11 @@ def _create_additional_registrations(
                 phone=user.phone_number if user else None,
                 handicap=golfer.handicap or (user.handicap if user else None),
                 payment_status="paid",
-                payment_method="card",
+                payment_method="paypal",
                 amount_paid=float(_calculate_additional_golfer_price(db, event, golfer)),
-                transaction_id=charge.transaction_id,
-                north_uniq_id=charge.uniq_id,
-                north_account_id=charge.account_id,
-                card_last_four=charge.card_last_four,
-                idempotency_key=f"{idempotency_key}-add-{i}",
+                transaction_id=capture_id,
             )
         else:
-            # Guest golfer
             guest = db.query(Guest).filter(Guest.email == golfer.email).first() if golfer.email else None
             if not guest and golfer.email:
                 guest = Guest(
@@ -196,13 +186,9 @@ def _create_additional_registrations(
                 phone=golfer.phone,
                 handicap=golfer.handicap,
                 payment_status="paid",
-                payment_method="card",
+                payment_method="paypal",
                 amount_paid=float(_calculate_additional_golfer_price(db, event, golfer)),
-                transaction_id=charge.transaction_id,
-                north_uniq_id=charge.uniq_id,
-                north_account_id=charge.account_id,
-                card_last_four=charge.card_last_four,
-                idempotency_key=f"{idempotency_key}-add-{i}",
+                transaction_id=capture_id,
             )
         db.add(reg)
         db.flush()
@@ -222,12 +208,9 @@ async def register_member(
 ) -> RegistrationResponse:
     """
     Register an authenticated member (+ optional additional golfers).
-    Charges member_price for the registrant, plus member or guest price
-    for each additional golfer depending on their type.
+    Captures the PayPal order, then creates the registration records.
     """
-    print(f"[DEBUG] register_member called: event_id={data.event_id} user_id={current_user.id}")
-
-    # Look up the user_account linked to this user — event_registration.user_id references user_account.id
+    # Look up the user_account linked to this user
     user_account = db.query(UserAccount).filter(UserAccount.user_id == current_user.id).first()
     if not user_account:
         raise HTTPException(status_code=400, detail="No account found. Please complete your profile first.")
@@ -241,21 +224,20 @@ async def register_member(
     sponsor = Decimal(str(data.sponsor_amount or 0)) if data.is_sponsor else Decimal("0")
     total   = base + sponsor
 
-    # Add prices for additional golfers
     for golfer in data.additional_golfers:
         total += _calculate_additional_golfer_price(db, event, golfer)
 
-    try:
-        charge = await charge_card(data.payment_token, float(total))
-    except NorthDeclinedError as exc:
-        logger.warning(
-            "Member payment declined: user_id=%s event_id=%s",
-            current_user.id, data.event_id,
-        )
-        raise HTTPException(status_code=402, detail=str(exc))
-    except NorthGatewayError as exc:
-        logger.error("North gateway error (member): %s", exc)
-        raise HTTPException(status_code=502, detail=str(exc))
+    # Capture PayPal order (skip for free events)
+    capture = None
+    if data.paypal_order_id:
+        try:
+            capture = await capture_order(data.paypal_order_id)
+        except PayPalCaptureDeclined as exc:
+            logger.warning("Member payment declined: user_id=%s event_id=%s", current_user.id, data.event_id)
+            raise HTTPException(status_code=402, detail=str(exc))
+        except PayPalError as exc:
+            logger.error("PayPal error (member): %s", exc)
+            raise HTTPException(status_code=502, detail=str(exc))
 
     registration = EventRegistration(
         event_id=data.event_id,
@@ -263,14 +245,10 @@ async def register_member(
         email=user_account.email,
         phone=getattr(current_user, "phone_number", None),
         handicap=data.handicap,
-        payment_status="paid",
-        payment_method="card",
+        payment_status="paid" if capture else "free",
+        payment_method="paypal" if capture else "none",
         amount_paid=float(base + sponsor),
-        transaction_id=charge.transaction_id,
-        north_uniq_id=charge.uniq_id,
-        north_account_id=charge.account_id,
-        card_last_four=charge.card_last_four,
-        idempotency_key=data.idempotency_key,
+        transaction_id=capture.capture_id if capture else None,
         is_sponsor=data.is_sponsor,
         sponsor_amount=float(data.sponsor_amount) if data.is_sponsor and data.sponsor_amount else None,
         company_name=data.company_name if data.is_sponsor else None,
@@ -279,7 +257,7 @@ async def register_member(
     db.flush()
 
     additional_ids = _create_additional_registrations(
-        db, event, data.additional_golfers, charge, float(total), data.idempotency_key,
+        db, event, data.additional_golfers, capture.capture_id, float(total),
     )
 
     db.commit()
@@ -324,8 +302,7 @@ async def register_member(
         confirmation_id=_confirmation_id(registration.id),
         event_id=data.event_id,
         amount_charged=float(total),
-        transaction_id=charge.transaction_id,
-        card_last_four=charge.card_last_four,
+        transaction_id=capture.capture_id if capture else None,
         additional_ids=additional_ids,
     )
 
@@ -353,20 +330,19 @@ async def register_guest(
     guest_price = Decimal(str(event.guest_price))
     sponsor = Decimal(str(data.sponsor_amount or 0)) if data.is_sponsor else Decimal("0")
     total   = guest_price + sponsor
-
-    # Additional golfers all pay guest rate
     total += guest_price * len(data.additional_golfers)
 
-    try:
-        charge = await charge_card(data.payment_token, float(total))
-    except NorthDeclinedError as exc:
-        logger.warning(
-            "Guest payment declined: email=%s event_id=%s", data.email, data.event_id
-        )
-        raise HTTPException(status_code=402, detail=str(exc))
-    except NorthGatewayError as exc:
-        logger.error("North gateway error (guest): %s", exc)
-        raise HTTPException(status_code=502, detail=str(exc))
+    # Capture PayPal order (skip for free events)
+    capture = None
+    if data.paypal_order_id:
+        try:
+            capture = await capture_order(data.paypal_order_id)
+        except PayPalCaptureDeclined as exc:
+            logger.warning("Guest payment declined: email=%s event_id=%s", data.email, data.event_id)
+            raise HTTPException(status_code=402, detail=str(exc))
+        except PayPalError as exc:
+            logger.error("PayPal error (guest): %s", exc)
+            raise HTTPException(status_code=502, detail=str(exc))
 
     # Reuse existing Guest record or create one
     guest = db.query(Guest).filter(Guest.email == data.email).first()
@@ -386,14 +362,10 @@ async def register_guest(
         email=data.email,
         phone=data.phone,
         handicap=data.handicap,
-        payment_status="paid",
-        payment_method="card",
+        payment_status="paid" if capture else "free",
+        payment_method="paypal" if capture else "none",
         amount_paid=float(guest_price + sponsor),
-        transaction_id=charge.transaction_id,
-        north_uniq_id=charge.uniq_id,
-        north_account_id=charge.account_id,
-        card_last_four=charge.card_last_four,
-        idempotency_key=data.idempotency_key,
+        transaction_id=capture.capture_id if capture else None,
         is_sponsor=data.is_sponsor,
         sponsor_amount=float(data.sponsor_amount) if data.is_sponsor and data.sponsor_amount else None,
         company_name=data.company_name if data.is_sponsor else None,
@@ -401,7 +373,6 @@ async def register_guest(
     db.add(registration)
     db.flush()
 
-    # Force all additional golfers to guest rate (is_member=False)
     guest_golfers = [
         AdditionalGolfer(
             is_member=False,
@@ -414,7 +385,7 @@ async def register_guest(
         for g in data.additional_golfers
     ]
     additional_ids = _create_additional_registrations(
-        db, event, guest_golfers, charge, float(total), data.idempotency_key,
+        db, event, guest_golfers, capture.capture_id, float(total),
     )
 
     db.commit()
@@ -452,8 +423,7 @@ async def register_guest(
         confirmation_id=_confirmation_id(registration.id),
         event_id=data.event_id,
         amount_charged=float(total),
-        transaction_id=charge.transaction_id,
-        card_last_four=charge.card_last_four,
+        transaction_id=capture.capture_id if capture else None,
         additional_ids=additional_ids,
     )
 
@@ -471,9 +441,7 @@ async def retry_payment(
     db: Session = Depends(get_db),
 ) -> RegistrationResponse:
     """
-    Retry payment on a pending or failed registration.
-    The frontend stores the registration_id when a first attempt is created
-    but payment fails, then calls this endpoint with a new card token.
+    Retry payment on a pending or failed registration using a new PayPal order.
     """
     registration = (
         db.query(EventRegistration)
@@ -490,19 +458,15 @@ async def retry_payment(
     total = Decimal(str(registration.amount_paid or event.guest_price))
 
     try:
-        charge = await charge_card(data.payment_token, float(total))
-    except NorthDeclinedError as exc:
+        capture = await capture_order(data.paypal_order_id)
+    except PayPalCaptureDeclined as exc:
         raise HTTPException(status_code=402, detail=str(exc))
-    except NorthGatewayError as exc:
+    except PayPalError as exc:
         raise HTTPException(status_code=502, detail=str(exc))
 
     registration.payment_status  = "paid"
-    registration.payment_method  = "card"
-    registration.transaction_id  = charge.transaction_id
-    registration.north_uniq_id   = charge.uniq_id
-    registration.north_account_id = charge.account_id
-    registration.card_last_four  = charge.card_last_four
-    registration.idempotency_key = data.idempotency_key
+    registration.payment_method  = "paypal"
+    registration.transaction_id  = capture.capture_id
     db.commit()
     db.refresh(registration)
 
@@ -511,6 +475,5 @@ async def retry_payment(
         confirmation_id=_confirmation_id(registration.id),
         event_id=registration.event_id,
         amount_charged=float(total),
-        transaction_id=charge.transaction_id,
-        card_last_four=charge.card_last_four,
+        transaction_id=capture.capture_id,
     )
