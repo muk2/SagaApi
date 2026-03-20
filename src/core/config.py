@@ -32,11 +32,10 @@ class Settings(BaseSettings):
     "http://localhost:3000",
     "http://sagagolf.com",
     "https://sagagolf.com",
-    "https://www.sagagolf.com",
-    "https://swallowable-lucie-terminably.ngrok-free.dev"
+    "https://www.sagagolf.com"
 ]
 
-    FRONTEND_URL: str = "https://swallowable-lucie-terminably.ngrok-free.dev"
+    FRONTEND_URL: str = "https://sagagolf.com"
     SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 587
     SMTP_USERNAME: Optional[str] = os.getenv("SMTP_EMAIL")
@@ -56,7 +55,7 @@ class Settings(BaseSettings):
     # PayPal
     PAYPAL_CLIENT_ID: str = os.getenv("PAYPAL_CLIENT_ID", "")
     PAYPAL_CLIENT_SECRET: str = os.getenv("PAYPAL_CLIENT_SECRET", "")
-    PAYPAL_BASE_URL: str = os.getenv("PAYPAL_BASE_URL", "https://api-m.sandbox.paypal.com")
+    PAYPAL_BASE_URL: str = os.getenv("PAYPAL_BASE_URL", "https://api-m.paypal.com")
     PAYPAL_TIMEOUT_SECONDS: int = int(os.getenv("PAYPAL_TIMEOUT_SECONDS", "30"))
 
     RECAPTCHA_SECRET_KEY: str = os.getenv("RECAPTCHA_SECRET_KEY")

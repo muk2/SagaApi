@@ -33,3 +33,6 @@ build/
 # Logs and temporary files
 *.log
 tmp/
+
+# Config with production URLs
+src/core/config.py

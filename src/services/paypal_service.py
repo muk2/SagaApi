@@ -42,9 +42,6 @@ async def _get_access_token() -> str:
     client_id = settings.PAYPAL_CLIENT_ID
     client_secret = settings.PAYPAL_CLIENT_SECRET
 
-    print(f"\n[PayPal Auth] URL: {url}")
-    print(f"[PayPal Auth] Client ID: {client_id[:12]}...{client_id[-6:]}" if len(client_id) > 18 else f"[PayPal Auth] Client ID: {client_id!r}")
-    print(f"[PayPal Auth] Secret length: {len(client_secret)}")
 
     if not client_id or not client_secret:
         raise PayPalError("PayPal credentials not configured (PAYPAL_CLIENT_ID / PAYPAL_CLIENT_SECRET)")
@@ -58,8 +55,6 @@ async def _get_access_token() -> str:
             timeout=settings.PAYPAL_TIMEOUT_SECONDS,
         )
 
-    print(f"[PayPal Auth] Response status: {resp.status_code}")
-    print(f"[PayPal Auth] Response body: {resp.text[:500]}")
 
     if resp.status_code != 200:
         logger.error("PayPal auth failed: %s %s", resp.status_code, resp.text)
