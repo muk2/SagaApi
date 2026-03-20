@@ -28,6 +28,7 @@ class UserResponse(BaseModel):
     handicap: Optional[str] = None
     ghin_number: Optional[str] = None
     membership: str
+    membership_expired: bool = False
     model_config = {"from_attributes": True}
 
 

@@ -25,6 +25,19 @@ from email.mime.multipart import MIMEMultipart
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
 
+def get_membership_expiration() -> datetime:
+    """Return Dec 31 23:59:59 UTC of the current year."""
+    now = datetime.now(timezone.utc)
+    return datetime(now.year, 12, 31, 23, 59, 59, tzinfo=timezone.utc)
+
+
+def is_membership_expired(user) -> bool:
+    """Check if a user's membership has expired."""
+    if not user.membership_expires_at:
+        return False
+    return datetime.now(timezone.utc) > user.membership_expires_at
+
+
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
@@ -80,6 +93,7 @@ class AuthService:
                 handicap=data.handicap,
                 membership=data.membership,
                 ghin_number=data.ghin_number,
+                membership_expires_at=get_membership_expiration(),
             )
 
             account = self.repo.create_user_account(
@@ -123,12 +137,13 @@ class AuthService:
             id=account.user.id,
             first_name=account.user.first_name,
             last_name=account.user.last_name,
-            email = account.email,
+            email=account.email,
             role=account.role or "user",
             handicap=account.user.handicap,
             ghin_number=account.user.ghin_number,
             phone_number=account.user.phone_number,
-            membership=account.user.membership
+            membership=account.user.membership,
+            membership_expired=is_membership_expired(account.user),
         )
 
         return token, user_response

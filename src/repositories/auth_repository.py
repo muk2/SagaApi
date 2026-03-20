@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -35,6 +35,7 @@ class AuthRepository:
         handicap: Optional[str],
         membership: str,
         ghin_number: Optional[str] = None,
+        membership_expires_at: Optional[datetime] = None,
     ) -> User:
         user = User(
             first_name=first_name,
@@ -43,10 +44,17 @@ class AuthRepository:
             handicap=handicap,
             membership=membership,
             ghin_number=ghin_number,
+            membership_expires_at=membership_expires_at,
         )
         self.db.add(user)
         self.db.flush()
         return user
+
+    def update_membership_expiration(self, user_id: int, expires_at: datetime) -> None:
+        """Update membership expiration date (for renewals)."""
+        user = self.get_user_by_id(user_id)
+        if user:
+            user.membership_expires_at = expires_at
 
     def create_user_account(
         self,

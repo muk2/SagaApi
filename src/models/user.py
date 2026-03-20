@@ -5,6 +5,7 @@ from sqlalchemy import DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import Optional
 from core.database import Base
+from datetime import timezone
 
 
 class User(Base):
@@ -23,6 +24,9 @@ class User(Base):
     handicap: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     membership: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
     ghin_number: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    membership_expires_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     user_account_id: Mapped[Optional[int]] = mapped_column(
         Integer, ForeignKey("saga.user_account.id"), nullable=True
     )

@@ -1,6 +1,7 @@
+import logging
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -17,6 +18,10 @@ from schemas.user import (
     UserProfileUpdateResponse,
 )
 from services.user_service import UserService
+from services.auth_service import get_membership_expiration, is_membership_expired
+from services.paypal_service import capture_order, PayPalCaptureDeclined, PayPalError
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/users", tags=["Users"])
 
@@ -136,4 +141,93 @@ def register_for_event(
     )
     return EventRegistrationCreateResponse(
         message="Successfully registered for event", registration=registration
+    )
+
+
+class RenewMembershipRequest(BaseModel):
+    membership: str
+    paypal_order_id: Optional[str] = None
+
+
+class RenewMembershipResponse(BaseModel):
+    message: str
+    membership: str
+    membership_expired: bool
+
+
+@router.post("/renew-membership", response_model=RenewMembershipResponse)
+async def renew_membership(
+    data: RenewMembershipRequest,
+    current_user: CurrentUser,
+    db: Session = Depends(get_db),
+) -> RenewMembershipResponse:
+    """Renew the current user's membership with payment."""
+    user = db.query(User).filter(User.id == current_user.id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Look up membership price
+    from models.membership_option import MembershipOption
+    membership_option = db.query(MembershipOption).filter(
+        MembershipOption.name == data.membership,
+        MembershipOption.is_active == True,
+    ).first()
+
+    if not membership_option:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Membership type '{data.membership}' not found",
+        )
+
+    amount = float(membership_option.price)
+
+    # Process PayPal payment if required (paid tiers)
+    if data.paypal_order_id:
+        try:
+            capture = await capture_order(data.paypal_order_id)
+            logger.info(
+                "Membership renewal payment captured for user %s: capture_id=%s amount=%s",
+                user.id, capture.capture_id, amount,
+            )
+        except PayPalCaptureDeclined as e:
+            raise HTTPException(
+                status_code=status.HTTP_402_PAYMENT_REQUIRED,
+                detail=str(e) or "Payment was declined. Please try again.",
+            )
+        except PayPalError as e:
+            raise HTTPException(
+                status_code=status.HTTP_502_BAD_GATEWAY,
+                detail=str(e) or "Payment processing failed. Please try again.",
+            )
+    elif amount > 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Payment required for this membership tier",
+        )
+
+    # Update membership and expiration
+    user.membership = data.membership
+    user.membership_expires_at = get_membership_expiration()
+    db.commit()
+
+    # Send confirmation email
+    try:
+        from services.email_service import EmailService
+        from repositories.auth_repository import AuthRepository
+        repo = AuthRepository(db)
+        account = repo.get_user_account_by_user_id(user.id)
+        if account:
+            EmailService().send_membership_confirmation_email(
+                to_email=account.email,
+                member_name=f"{user.first_name} {user.last_name}",
+                membership_type=user.membership,
+                price=amount,
+            )
+    except Exception:
+        logger.exception("Failed to send renewal email for user_id=%s", user.id)
+
+    return RenewMembershipResponse(
+        message="Membership renewed successfully",
+        membership=user.membership,
+        membership_expired=False,
     )

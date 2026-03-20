@@ -14,6 +14,7 @@ from models.event import Event
 from models.event_registration import EventRegistration
 from models.guest import Guest
 from models.user import User, UserAccount
+from services.auth_service import is_membership_expired
 from services.email_service import EmailService
 from services.paypal_service import (
     PayPalCaptureDeclined,
@@ -143,7 +144,10 @@ def _calculate_additional_golfer_price(
 ) -> Decimal:
     """Return the price for one additional golfer (member rate or guest rate)."""
     if golfer.is_member and golfer.user_id:
-        return Decimal(str(event.member_price or event.guest_price))
+        # Check if this member's membership is still active
+        member = db.query(User).filter(User.id == golfer.user_id).first()
+        if member and not is_membership_expired(member):
+            return Decimal(str(event.member_price or event.guest_price))
     return Decimal(str(event.guest_price))
 
 
@@ -220,7 +224,12 @@ async def register_member(
     _check_capacity(db, event, total_spots)
     _check_duplicate_member(db, data.event_id, user_account.id)
 
-    base    = Decimal(str(event.member_price or event.guest_price))
+    # Charge guest price if membership has expired
+    registrant = db.query(User).filter(User.id == current_user.id).first()
+    if registrant and not is_membership_expired(registrant):
+        base = Decimal(str(event.member_price or event.guest_price))
+    else:
+        base = Decimal(str(event.guest_price))
     sponsor = Decimal(str(data.sponsor_amount or 0)) if data.is_sponsor else Decimal("0")
     total   = base + sponsor
 
