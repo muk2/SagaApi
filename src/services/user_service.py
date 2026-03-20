@@ -41,8 +41,8 @@ class UserService:
 
     def update_user_profile(
         self, user_id: int, data: UserProfileUpdateRequest
-    ) -> Tuple[str, Optional[int]]:
-        """Update user profile (currently only handicap)."""
+    ) -> Tuple[str, Optional[str], Optional[str]]:
+        """Update user profile (handicap, ghin_number)."""
         user = self.repo.get_user_by_id(user_id)
         if not user:
             raise HTTPException(
@@ -50,9 +50,13 @@ class UserService:
             )
 
         try:
-            updated_user = self.repo.update_user_handicap(user_id, data.handicap)
+            updated_user = self.repo.update_user_profile_fields(user_id, data.handicap, data.ghin_number)
             self.repo.commit()
-            return "Profile updated successfully", updated_user.handicap if updated_user else None
+            return (
+                "Profile updated successfully",
+                updated_user.handicap if updated_user else None,
+                updated_user.ghin_number if updated_user else None,
+            )
         except IntegrityError as e:
             self.repo.rollback()
             if "check_valid_chars" in str(e):

@@ -6,9 +6,10 @@ from pydantic import field_serializer
 
 
 class UserProfileUpdateRequest(BaseModel):
-    """Request schema for updating user profile (handicap)."""
+    """Request schema for updating user profile."""
 
     handicap: Optional[str] = None
+    ghin_number: Optional[str] = None
 
 
 class UserProfileUpdateResponse(BaseModel):
@@ -16,6 +17,7 @@ class UserProfileUpdateResponse(BaseModel):
 
     message: str
     handicap: Optional[str] = None
+    ghin_number: Optional[str] = None
 
 
 class PasswordResetRequest(BaseModel):

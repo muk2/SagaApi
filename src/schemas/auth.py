@@ -8,6 +8,7 @@ class SignUpRequest(BaseModel):
     email: EmailStr
     password: str
     handicap: Optional[str] = None
+    ghin_number: Optional[str] = None
     membership: str
     paypal_order_id: Optional[str] = None
 
@@ -25,6 +26,7 @@ class UserResponse(BaseModel):
     email: str
     phone_number: Optional[str] = None
     handicap: Optional[str] = None
+    ghin_number: Optional[str] = None
     membership: str
     model_config = {"from_attributes": True}
 

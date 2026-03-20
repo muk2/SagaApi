@@ -90,8 +90,8 @@ def update_user_profile(
     Requires authentication.
     """
     service = UserService(db)
-    message, handicap = service.update_user_profile(current_user.id, data)
-    return UserProfileUpdateResponse(message=message, handicap=handicap)
+    message, handicap, ghin_number = service.update_user_profile(current_user.id, data)
+    return UserProfileUpdateResponse(message=message, handicap=handicap, ghin_number=ghin_number)
 
 
 @router.put("/password", response_model=PasswordResetResponse)

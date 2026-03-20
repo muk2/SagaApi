@@ -22,6 +22,7 @@ class User(Base):
     phone_number: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     handicap: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     membership: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
+    ghin_number: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     user_account_id: Mapped[Optional[int]] = mapped_column(
         Integer, ForeignKey("saga.user_account.id"), nullable=True
     )

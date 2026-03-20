@@ -78,7 +78,8 @@ class AuthService:
                 last_name=data.last_name,
                 phone_number=data.phone_number,
                 handicap=data.handicap,
-                membership=data.membership
+                membership=data.membership,
+                ghin_number=data.ghin_number,
             )
 
             account = self.repo.create_user_account(
@@ -125,6 +126,7 @@ class AuthService:
             email = account.email,
             role=account.role or "user",
             handicap=account.user.handicap,
+            ghin_number=account.user.ghin_number,
             phone_number=account.user.phone_number,
             membership=account.user.membership
         )

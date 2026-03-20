@@ -28,7 +28,17 @@ class UserRepository:
         if user:
             user.handicap = handicap
             self.db.commit()
-            self.db.refresh(user) 
+            self.db.refresh(user)
+        return user
+
+    def update_user_profile_fields(self, user_id: int, handicap: Optional[str] = None, ghin_number: Optional[str] = None) -> Optional[User]:
+        """Update a user's profile fields (handicap, ghin_number)."""
+        user = self.get_user_by_id(user_id)
+        if user:
+            user.handicap = handicap
+            user.ghin_number = ghin_number
+            self.db.commit()
+            self.db.refresh(user)
         return user
 
     def update_user_password(self, user_id: int, new_password_hash: str) -> None:

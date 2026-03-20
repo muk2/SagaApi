@@ -47,6 +47,7 @@ class AdminService:
                     role=account.role if account else None,
                     phone_number=user.phone_number,
                     handicap=user.handicap,
+                    ghin_number=user.ghin_number,
                     last_logged_in=account.last_logged_in if account else None,
                     membership=str(user.membership)
                 )

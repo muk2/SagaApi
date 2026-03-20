@@ -98,6 +98,7 @@ async def signup(data: SignUpRequest, db: Session = Depends(get_db)) -> SignUpRe
         email=data.email,
         phone_number=user.phone_number,
         handicap=user.handicap,
+        ghin_number=user.ghin_number,
         membership=user.membership
     )
 

@@ -13,6 +13,7 @@ class UserListItem(BaseModel):
     role: Optional[str] = None
     phone_number: Optional[str] = None
     handicap: Optional[str] = None
+    ghin_number: Optional[str] = None
     membership: str
     last_logged_in: Optional[datetime] = None
     model_config = {"from_attributes": True}
@@ -44,6 +45,7 @@ class CreateUserRequest(BaseModel):
     membership:   str
     role:         str = "user"
     handicap:     Optional[str] = None
+    ghin_number:  Optional[str] = None
 
 
 class CreateUserResponse(BaseModel):
@@ -55,6 +57,7 @@ class CreateUserResponse(BaseModel):
     membership:   Optional[str] = None
     role:         Optional[str] = None
     handicap:     Optional[str] = None
+    ghin_number:  Optional[str] = None
 
 
 class EventRegistrationDetail(BaseModel):

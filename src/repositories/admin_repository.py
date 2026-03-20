@@ -44,6 +44,7 @@ class AdminRepository:
         handicap: Optional[str],
         setup_token: str,
         setup_token_expires,
+        ghin_number: Optional[str] = None,
     ):
         """Create a User + UserAccount row. Returns (user, account)."""
         user = User(
@@ -52,6 +53,7 @@ class AdminRepository:
             phone_number=phone_number,
             membership=membership,
             handicap=handicap,
+            ghin_number=ghin_number,
         )
         self.db.add(user)
         self.db.flush()
