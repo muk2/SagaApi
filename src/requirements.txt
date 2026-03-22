@@ -22,3 +22,5 @@ requests
 beautifulsoup4
 lxml
 aiohttp
+
+resend

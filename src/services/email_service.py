@@ -234,3 +234,4 @@ class EmailService:
             text_body,
             self._wrap(inner),
         )
+

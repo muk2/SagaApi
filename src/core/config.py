@@ -36,7 +36,7 @@ class Settings(BaseSettings):
     "https://swallowable-lucie-terminably.ngrok-free.dev"
 ]
 
-    FRONTEND_URL: str = "https://swallowable-lucie-terminably.ngrok-free.dev"
+    FRONTEND_URL: str = "https://sagagolf.com"
     SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 587
     SMTP_USERNAME: Optional[str] = os.getenv("SMTP_EMAIL")
@@ -45,8 +45,7 @@ class Settings(BaseSettings):
     SMTP_TLS: bool = True
     SMTP_SSL: bool = False
     SMTP_PASSWORD: Optional[str] = os.getenv("SMTP_PASSWORD")
-
-    # North Payment Gateway (hidden — kept for reference)
+   # North Payment Gateway (hidden — kept for reference)
     NORTH_MID: Optional[str] = os.getenv("NORTH_MID")
     NORTH_DEVELOPER_KEY: Optional[str] = os.getenv("NORTH_DEVELOPER_KEY")
     NORTH_PASSWORD: Optional[str] = os.getenv("NORTH_PASSWORD")
