@@ -36,6 +36,7 @@ class AuthRepository:
         membership: str,
         ghin_number: Optional[str] = None,
         membership_expires_at: Optional[datetime] = None,
+        membership_exempt: bool = False,
     ) -> User:
         user = User(
             first_name=first_name,
@@ -45,6 +46,7 @@ class AuthRepository:
             membership=membership,
             ghin_number=ghin_number,
             membership_expires_at=membership_expires_at,
+            membership_exempt=membership_exempt,
         )
         self.db.add(user)
         self.db.flush()

@@ -18,6 +18,10 @@ class EmailService:
     """
 
     def _send_email(self, to_email: str, subject: str, text_body: str, html_body: str) -> bool:
+        # Emails temporarily disabled
+        logger.info("Email sending disabled — skipping email to %s: %s", to_email, subject)
+        return True
+
         msg = MIMEMultipart("alternative")
         msg["Subject"] = subject
         msg["From"] = f"{settings.SMTP_FROM_NAME} <{settings.SMTP_FROM_EMAIL}>"

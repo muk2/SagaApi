@@ -10,6 +10,8 @@ from repositories.admin_repository import AdminRepository
 from schemas.admin import (
     CarouselImageItem,
     ContentItem,
+    CreateUserRequest,
+    CreateUserResponse,
     EventRegistrationDetail,
     PhotoAlbumResponse,
     UserListItem,
@@ -49,10 +51,76 @@ class AdminService:
                     handicap=user.handicap,
                     ghin_number=user.ghin_number,
                     last_logged_in=account.last_logged_in if account else None,
-                    membership=str(user.membership)
+                    membership=str(user.membership),
+                    membership_exempt=bool(getattr(user, 'membership_exempt', False))
                 )
             )
         return result
+
+    def create_user(self, data: CreateUserRequest) -> CreateUserResponse:
+        """Create a new user via admin and send password setup email."""
+        from services.auth_service import get_membership_expiration, AuthService
+        import secrets
+        from datetime import datetime, timezone, timedelta
+
+        existing = self.repo.get_user_account_by_email(data.email)
+        if existing:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email already registered",
+            )
+
+        setup_token = secrets.token_urlsafe(32)
+        setup_token_expires = datetime.now(timezone.utc) + timedelta(days=7)
+
+        membership_expires_at = get_membership_expiration() if not data.membership_exempt else get_membership_expiration()
+
+        try:
+            user, account = self.repo.create_user_with_account(
+                first_name=data.first_name,
+                last_name=data.last_name,
+                email=data.email,
+                phone_number=data.phone_number,
+                membership=data.membership,
+                role=data.role,
+                handicap=data.handicap,
+                ghin_number=data.ghin_number,
+                setup_token=setup_token,
+                setup_token_expires=setup_token_expires,
+                membership_exempt=data.membership_exempt,
+                membership_expires_at=membership_expires_at,
+            )
+            self.repo.commit()
+
+            # Send password setup email
+            try:
+                from core.config import settings
+                auth_service = AuthService(self.repo.db)
+                reset_link = f"{settings.FRONTEND_URL}/reset-password?token={setup_token}"
+                auth_service._send_reset_email(account.email, reset_link)
+            except Exception as e:
+                print(f"Failed to send setup email: {e}")
+
+            return CreateUserResponse(
+                id=user.id,
+                first_name=user.first_name,
+                last_name=user.last_name,
+                email=account.email,
+                phone_number=user.phone_number,
+                membership=user.membership,
+                role=account.role,
+                handicap=user.handicap,
+                ghin_number=user.ghin_number,
+            )
+        except HTTPException:
+            self.repo.rollback()
+            raise
+        except Exception as e:
+            self.repo.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Failed to create user: {e!s}",
+            ) from e
 
     def update_user_role(self, user_id: int, role: str) -> Tuple[int, str]:
         """Update a user's role."""

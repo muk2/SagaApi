@@ -33,14 +33,45 @@ async def signup(data: SignUpRequest, db: Session = Depends(get_db)) -> SignUpRe
 
     Creates both a User record (profile data) and a UserAccount record (credentials).
     If a paypal_order_id is provided, captures the PayPal order before finalizing.
+    If an exemption_code is provided, validates it and marks user as exempt.
     Returns the created user information without sensitive data.
     """
-    service = AuthService(db)
-    user, _ = service.signup(data)
+    # Validate exemption code if provided
+    is_exempt = False
+    if data.exemption_code:
+        from models.exemption_code import ExemptionCode
+        from datetime import datetime, timezone as tz
 
-    # Process membership payment via PayPal if order ID provided
+        code = db.query(ExemptionCode).filter(
+            ExemptionCode.code == data.exemption_code.strip(),
+            ExemptionCode.is_active == True,
+        ).first()
+
+        if not code:
+            raise HTTPException(status_code=400, detail="Invalid exemption code")
+        if code.expires_at and datetime.now(tz.utc) > code.expires_at:
+            raise HTTPException(status_code=400, detail="This exemption code has expired")
+        if code.times_used >= code.max_uses:
+            raise HTTPException(status_code=400, detail="This exemption code has reached its usage limit")
+
+        is_exempt = True
+
+    service = AuthService(db)
+    user, _ = service.signup(data, membership_exempt=is_exempt)
+
+    # Increment exemption code usage after successful signup
+    if is_exempt and data.exemption_code:
+        from models.exemption_code import ExemptionCode
+        code = db.query(ExemptionCode).filter(
+            ExemptionCode.code == data.exemption_code.strip(),
+        ).first()
+        if code:
+            code.times_used += 1
+            db.commit()
+
+    # Process membership payment via PayPal if order ID provided (skip if exempt)
     amount = 0.0
-    if data.paypal_order_id:
+    if data.paypal_order_id and not is_exempt:
         try:
             from models.membership_option import MembershipOption
             membership_option = db.query(MembershipOption).filter(
@@ -150,6 +181,33 @@ def forgot_password(data: ForgotPasswordRequest, db: Session = Depends(get_db)) 
     service = AuthService(db)
     service.forgot_password(data)
     return ForgotPasswordResponse(message="Password reset email sent")
+
+
+@router.post("/validate-exemption-code")
+def validate_exemption_code(data: dict, db: Session = Depends(get_db)):
+    """Validate an exemption code for signup. Public endpoint."""
+    from models.exemption_code import ExemptionCode
+    from datetime import datetime, timezone as tz
+
+    code_str = data.get("code", "").strip()
+    if not code_str:
+        raise HTTPException(status_code=400, detail="Code is required")
+
+    code = db.query(ExemptionCode).filter(
+        ExemptionCode.code == code_str,
+        ExemptionCode.is_active == True,
+    ).first()
+
+    if not code:
+        raise HTTPException(status_code=404, detail="Invalid exemption code")
+
+    if code.expires_at and datetime.now(tz.utc) > code.expires_at:
+        raise HTTPException(status_code=400, detail="This code has expired")
+
+    if code.times_used >= code.max_uses:
+        raise HTTPException(status_code=400, detail="This code has reached its usage limit")
+
+    return {"valid": True, "message": "Code is valid"}
 
 
 @router.post("/reset-password", response_model=ResetPasswordResponse)

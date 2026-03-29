@@ -12,11 +12,14 @@ from schemas.admin import (
     CarouselImagesResponse,
     ContentResponse,
     CreateEventRequest,
+    CreateExemptionCodeRequest,
     CreateUserRequest,
     CreateUserResponse,
     DeleteUserResponse,
     EventRegistrationsResponse,
     EventResponse,
+    ExemptionCodeListResponse,
+    ExemptionCodeResponse,
     MediaUploadResponse,
     PhotoAlbumCreate,
     PhotoAlbumListResponse,
@@ -81,6 +84,26 @@ def delete_user(
     service = AdminService(db)
     service.delete_user(user_id)
     return DeleteUserResponse(message="User deleted successfully")
+
+
+@router.put("/users/{user_id}/membership-exempt")
+def toggle_membership_exempt(
+    user_id: int,
+    admin_user: AdminUser,
+    db: Session = Depends(get_db),
+):
+    from models.user import User
+    from services.auth_service import get_membership_expiration
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.membership_exempt = not user.membership_exempt
+    if user.membership_exempt:
+        # Grant membership through end of current year
+        user.membership_expires_at = get_membership_expiration()
+    db.commit()
+    db.refresh(user)
+    return {"message": "Membership exemption updated", "user_id": user_id, "membership_exempt": user.membership_exempt}
 
 
 # ===== Admin Events API =====
@@ -289,3 +312,48 @@ def delete_partner(partner_id: int, admin_user: AdminUser, db: Session = Depends
     service = AdminService(db)
     service.delete_partner(partner_id)
     return {"message": "Partner deleted successfully"}
+
+
+# ===== Exemption Codes API =====
+@router.get("/exemption-codes", response_model=ExemptionCodeListResponse)
+def get_exemption_codes(admin_user: AdminUser, db: Session = Depends(get_db)):
+    from models.exemption_code import ExemptionCode
+    codes = db.query(ExemptionCode).order_by(ExemptionCode.created_at.desc()).all()
+    return ExemptionCodeListResponse(codes=codes)
+
+
+@router.post("/exemption-codes", response_model=ExemptionCodeResponse, status_code=status.HTTP_201_CREATED)
+def create_exemption_code(
+    data: CreateExemptionCodeRequest,
+    admin_user: AdminUser,
+    db: Session = Depends(get_db),
+):
+    import secrets
+    from models.exemption_code import ExemptionCode
+
+    code_str = data.code or secrets.token_urlsafe(8).upper()[:8]
+
+    existing = db.query(ExemptionCode).filter(ExemptionCode.code == code_str).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Code already exists")
+
+    code = ExemptionCode(
+        code=code_str,
+        max_uses=data.max_uses,
+        expires_at=data.expires_at,
+    )
+    db.add(code)
+    db.commit()
+    db.refresh(code)
+    return code
+
+
+@router.delete("/exemption-codes/{code_id}")
+def delete_exemption_code(code_id: int, admin_user: AdminUser, db: Session = Depends(get_db)):
+    from models.exemption_code import ExemptionCode
+    code = db.query(ExemptionCode).filter(ExemptionCode.id == code_id).first()
+    if not code:
+        raise HTTPException(status_code=404, detail="Code not found")
+    db.delete(code)
+    db.commit()
+    return {"message": "Exemption code deleted"}

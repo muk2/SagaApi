@@ -11,6 +11,7 @@ class SignUpRequest(BaseModel):
     ghin_number: Optional[str] = None
     membership: str
     paypal_order_id: Optional[str] = None
+    exemption_code: Optional[str] = None
 
 
 class LoginRequest(BaseModel):

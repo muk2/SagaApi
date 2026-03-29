@@ -15,6 +15,7 @@ class UserListItem(BaseModel):
     handicap: Optional[str] = None
     ghin_number: Optional[str] = None
     membership: str
+    membership_exempt: bool = False
     last_logged_in: Optional[datetime] = None
     model_config = {"from_attributes": True}
 
@@ -46,6 +47,7 @@ class CreateUserRequest(BaseModel):
     role:         str = "user"
     handicap:     Optional[str] = None
     ghin_number:  Optional[str] = None
+    membership_exempt: bool = False
 
 
 class CreateUserResponse(BaseModel):
@@ -210,3 +212,25 @@ class CarouselImagesResponse(BaseModel):
 
 class UpdateCarouselImagesRequest(BaseModel):
     images: List[str]
+
+
+# Exemption Codes Schemas
+class CreateExemptionCodeRequest(BaseModel):
+    code: Optional[str] = None
+    max_uses: int = 1
+    expires_at: Optional[datetime] = None
+
+
+class ExemptionCodeResponse(BaseModel):
+    id: int
+    code: str
+    max_uses: int
+    times_used: int
+    is_active: bool
+    created_at: datetime
+    expires_at: Optional[datetime] = None
+    model_config = {"from_attributes": True}
+
+
+class ExemptionCodeListResponse(BaseModel):
+    codes: List[ExemptionCodeResponse]

@@ -32,7 +32,9 @@ def get_membership_expiration() -> datetime:
 
 
 def is_membership_expired(user) -> bool:
-    """Check if a user's membership has expired."""
+    """Check if a user's membership has expired. Exempt users never expire."""
+    if getattr(user, 'membership_exempt', False):
+        return False
     if not user.membership_expires_at:
         return False
     return datetime.now(timezone.utc) > user.membership_expires_at
@@ -77,7 +79,7 @@ class AuthService:
     def __init__(self, db: Session):
         self.repo = AuthRepository(db)
 
-    def signup(self, data: SignUpRequest) -> tuple[User, UserAccount]:
+    def signup(self, data: SignUpRequest, membership_exempt: bool = False) -> tuple[User, UserAccount]:
         existing = self.repo.get_user_account_by_email(data.email)
         if existing:
             raise HTTPException(
@@ -94,6 +96,7 @@ class AuthService:
                 membership=data.membership,
                 ghin_number=data.ghin_number,
                 membership_expires_at=get_membership_expiration(),
+                membership_exempt=membership_exempt,
             )
 
             account = self.repo.create_user_account(
@@ -195,7 +198,9 @@ class AuthService:
 
     def _send_reset_email(self, to_email: str, reset_link: str):
         """Send password reset email via SMTP."""
-
+        # Emails temporarily disabled
+        print(f"Email sending disabled — skipping reset email to {to_email}")
+        return
 
         msg = MIMEMultipart("alternative")
         msg["Subject"] = "Password Reset Request"
