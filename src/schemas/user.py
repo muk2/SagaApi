@@ -8,6 +8,8 @@ from pydantic import field_serializer
 class UserProfileUpdateRequest(BaseModel):
     """Request schema for updating user profile."""
 
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     handicap: Optional[str] = None
     ghin_number: Optional[str] = None
 
@@ -16,6 +18,8 @@ class UserProfileUpdateResponse(BaseModel):
     """Response schema for profile update."""
 
     message: str
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     handicap: Optional[str] = None
     ghin_number: Optional[str] = None
 

@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import logging
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+
+import resend
 
 from core.config import settings
 
@@ -11,38 +10,20 @@ logger = logging.getLogger(__name__)
 
 
 class EmailService:
-    """Transactional email service with SAGA branding.
+    """Transactional email service with SAGA branding via Resend."""
 
-    Failures are logged but never raised — email should never block
-    the payment response.
-    """
+    def __init__(self):
+        resend.api_key = settings.RESEND_API_KEY
 
     def _send_email(self, to_email: str, subject: str, text_body: str, html_body: str) -> bool:
-        # Emails temporarily disabled
-        logger.info("Email sending disabled — skipping email to %s: %s", to_email, subject)
-        return True
-
-        msg = MIMEMultipart("alternative")
-        msg["Subject"] = subject
-        msg["From"] = f"{settings.SMTP_FROM_NAME} <{settings.SMTP_FROM_EMAIL}>"
-        msg["To"] = to_email
-
-        msg.attach(MIMEText(text_body, "plain"))
-        msg.attach(MIMEText(html_body, "html"))
-
         try:
-            if settings.SMTP_SSL:
-                server = smtplib.SMTP_SSL(settings.SMTP_HOST, settings.SMTP_PORT)
-            else:
-                server = smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT)
-                server.ehlo()
-                if settings.SMTP_TLS:
-                    server.starttls()
-                    server.ehlo()
-
-            server.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
-            server.send_message(msg)
-            server.quit()
+            resend.Emails.send({
+                "from": settings.RESEND_FROM_EMAIL,
+                "to": [to_email],
+                "subject": subject,
+                "html": html_body,
+                "text": text_body,
+            })
             logger.info("Email sent to %s: %s", to_email, subject)
             return True
         except Exception:
@@ -91,6 +72,30 @@ class EmailService:
         </html>
         """
 
+    # ── Password Reset ────────────────────────────────────────────────────────
+
+    def send_password_reset_email(self, to_email: str, reset_link: str) -> bool:
+        """Send password reset email."""
+        inner = f"""
+        <h2 style="color:#1a472a; margin:0 0 16px 0;">Password Reset</h2>
+        <p style="color:#333;">You requested a password reset. Click the button below to set a new password:</p>
+        <div style="text-align:center; margin:24px 0;">
+            <a href="{reset_link}" style="display:inline-block; padding:12px 32px; background:#1a472a; color:#fff; text-decoration:none; border-radius:8px; font-weight:600;">
+                Reset Password
+            </a>
+        </div>
+        <p style="color:#666; font-size:13px;">This link expires in 1 hour. If you didn't request this, you can ignore this email.</p>
+        """
+
+        text_body = f"Click the link to reset your password: {reset_link}\n\nThis link expires in 1 hour."
+
+        return self._send_email(
+            to_email,
+            "SAGA — Password Reset",
+            text_body,
+            self._wrap(inner),
+        )
+
     # ── Event Registration Confirmation ──────────────────────────────────────
 
     def send_event_registration_email(
@@ -105,11 +110,7 @@ class EmailService:
         sponsor_amount: float | None = None,
         total: float = 0.0,
     ) -> bool:
-        """Send event registration confirmation with full price breakdown.
-
-        additional_golfers: list of {"name": str, "price": float}
-        """
-        # Build price breakdown rows
+        """Send event registration confirmation with full price breakdown."""
         rows_html = f"""
         <tr>
             <td style="padding:8px 0; border-bottom:1px solid #eee;">{registrant_name} (You)</td>
@@ -219,7 +220,7 @@ class EmailService:
         <p style="color:#333;">You now have access to member pricing for all SAGA events. We look forward to seeing you on the course!</p>
 
         <p style="color:#666; margin-top:24px; font-size:13px;">
-            If you have any questions, reply to this email or contact us at {settings.SMTP_FROM_EMAIL}.
+            If you have any questions, contact us at sagaevents@sagagolf.com.
         </p>
         """
 

@@ -18,9 +18,6 @@ from schemas.auth import (
     TokenPayload,
     UserResponse,
 )
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
@@ -192,55 +189,10 @@ class AuthService:
 
         # Send reset email
         reset_link = f"{settings.FRONTEND_URL}/reset-password?token={reset_token}"
-        self._send_reset_email(account.email, reset_link)
+        from services.email_service import EmailService
+        EmailService().send_password_reset_email(account.email, reset_link)
 
         return "If an account exists with that email, you will receive a password reset link."
-
-    def _send_reset_email(self, to_email: str, reset_link: str):
-        """Send password reset email via SMTP."""
-        # Emails temporarily disabled
-        print(f"Email sending disabled — skipping reset email to {to_email}")
-        return
-
-        msg = MIMEMultipart("alternative")
-        msg["Subject"] = "Password Reset Request"
-        msg["From"] = f"{settings.SMTP_FROM_NAME} <{settings.SMTP_FROM_EMAIL}>"
-        msg["To"] = to_email
-
-        # Create email body
-        text = f"Click the link to reset your password: {reset_link}\n\nThis link expires in 1 hour."
-        html = f"""
-        <html>
-        <body>
-            <p>Click the link below to reset your password:</p>
-            <p><a href="{reset_link}">Reset Password</a></p>
-            <p>This link expires in 1 hour.</p>
-        </body>
-        </html>
-        """
-
-        msg.attach(MIMEText(text, "plain"))
-        msg.attach(MIMEText(html, "html"))
-
-        # Send email with proper TLS/SSL handling
-        try:
-            if settings.SMTP_SSL:
-                # Use SSL from the start (port 465)
-                server = smtplib.SMTP_SSL(settings.SMTP_HOST, settings.SMTP_PORT)
-            else:
-                # Use regular connection then upgrade to TLS (port 587)
-                server = smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT)
-                server.ehlo()  # Identify ourselves to the server
-                if settings.SMTP_TLS:
-                    server.starttls()
-                    server.ehlo()  # Re-identify after starting TLS
-            
-            server.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
-            server.send_message(msg)
-            server.quit()
-        except Exception as e:
-            print(f"Failed to send email: {e}")
-            raise
 
     def reset_password(self, data: ResetPasswordRequest) -> None:
         """
@@ -271,3 +223,4 @@ class AuthService:
         self.repo.increment_token_version(account.user_id)
 
         self.repo.commit()
+

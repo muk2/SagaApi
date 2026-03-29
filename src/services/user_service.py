@@ -41,8 +41,8 @@ class UserService:
 
     def update_user_profile(
         self, user_id: int, data: UserProfileUpdateRequest
-    ) -> Tuple[str, Optional[str], Optional[str]]:
-        """Update user profile (handicap, ghin_number)."""
+    ) -> Tuple[str, Optional[str], Optional[str], Optional[str], Optional[str]]:
+        """Update user profile."""
         user = self.repo.get_user_by_id(user_id)
         if not user:
             raise HTTPException(
@@ -50,10 +50,18 @@ class UserService:
             )
 
         try:
-            updated_user = self.repo.update_user_profile_fields(user_id, data.handicap, data.ghin_number)
+            updated_user = self.repo.update_user_profile_fields(
+                user_id,
+                first_name=data.first_name,
+                last_name=data.last_name,
+                handicap=data.handicap,
+                ghin_number=data.ghin_number,
+            )
             self.repo.commit()
             return (
                 "Profile updated successfully",
+                updated_user.first_name if updated_user else None,
+                updated_user.last_name if updated_user else None,
                 updated_user.handicap if updated_user else None,
                 updated_user.ghin_number if updated_user else None,
             )

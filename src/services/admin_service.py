@@ -95,9 +95,9 @@ class AdminService:
             # Send password setup email
             try:
                 from core.config import settings
-                auth_service = AuthService(self.repo.db)
+                from services.email_service import EmailService
                 reset_link = f"{settings.FRONTEND_URL}/reset-password?token={setup_token}"
-                auth_service._send_reset_email(account.email, reset_link)
+                EmailService().send_password_reset_email(account.email, reset_link)
             except Exception as e:
                 print(f"Failed to send setup email: {e}")
 

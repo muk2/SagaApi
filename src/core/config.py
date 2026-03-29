@@ -37,15 +37,12 @@ class Settings(BaseSettings):
 ]
 
     FRONTEND_URL: str = "https://sagagolf.com"
-    SMTP_HOST: str = "smtp.gmail.com"
-    SMTP_PORT: int = 587
-    SMTP_USERNAME: Optional[str] = os.getenv("SMTP_EMAIL")
-    SMTP_FROM_NAME: Optional[str] = os.getenv("SMTP_EMAIL")
-    SMTP_FROM_EMAIL: Optional[str] = os.getenv("SMTP_EMAIL")
-    SMTP_TLS: bool = True
-    SMTP_SSL: bool = False
-    SMTP_PASSWORD: Optional[str] = os.getenv("SMTP_PASSWORD")
-   # North Payment Gateway (hidden — kept for reference)
+   
+    # Resend
+    RESEND_API_KEY: Optional[str] = os.getenv("RESEND_API_KEY")
+    RESEND_FROM_EMAIL: str = os.getenv("RESEND_FROM_EMAIL", "SAGA <noreply@sagagolf.com>")
+  
+    # North Payment Gateway (hidden — kept for reference)
     NORTH_MID: Optional[str] = os.getenv("NORTH_MID")
     NORTH_DEVELOPER_KEY: Optional[str] = os.getenv("NORTH_DEVELOPER_KEY")
     NORTH_PASSWORD: Optional[str] = os.getenv("NORTH_PASSWORD")

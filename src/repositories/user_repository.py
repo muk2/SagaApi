@@ -31,10 +31,14 @@ class UserRepository:
             self.db.refresh(user)
         return user
 
-    def update_user_profile_fields(self, user_id: int, handicap: Optional[str] = None, ghin_number: Optional[str] = None) -> Optional[User]:
-        """Update a user's profile fields (handicap, ghin_number)."""
+    def update_user_profile_fields(self, user_id: int, first_name: Optional[str] = None, last_name: Optional[str] = None, handicap: Optional[str] = None, ghin_number: Optional[str] = None) -> Optional[User]:
+        """Update a user's profile fields."""
         user = self.get_user_by_id(user_id)
         if user:
+            if first_name is not None:
+                user.first_name = first_name
+            if last_name is not None:
+                user.last_name = last_name
             user.handicap = handicap
             user.ghin_number = ghin_number
             self.db.commit()
