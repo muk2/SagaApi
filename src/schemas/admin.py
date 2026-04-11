@@ -17,6 +17,7 @@ class UserListItem(BaseModel):
     membership: str
     membership_exempt: bool = False
     last_logged_in: Optional[datetime] = None
+    created_at: Optional[datetime] = None
     model_config = {"from_attributes": True}
 
 

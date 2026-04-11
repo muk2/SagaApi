@@ -1,7 +1,7 @@
 from __future__ import annotations
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import Optional
 from core.database import Base
@@ -29,6 +29,9 @@ class User(Base):
     )
     membership_exempt: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=False, server_default="false"
+    )
+    created_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True, server_default=func.now()
     )
     user_account_id: Mapped[Optional[int]] = mapped_column(
         Integer, ForeignKey("saga.user_account.id"), nullable=True

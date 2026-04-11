@@ -51,6 +51,7 @@ class AdminService:
                     handicap=user.handicap,
                     ghin_number=user.ghin_number,
                     last_logged_in=account.last_logged_in if account else None,
+                    created_at=getattr(user, 'created_at', None),
                     membership=str(user.membership),
                     membership_exempt=bool(getattr(user, 'membership_exempt', False))
                 )
