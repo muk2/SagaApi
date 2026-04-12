@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from typing import Optional
 from models.user import User, UserAccount
@@ -11,7 +11,7 @@ class AuthRepository:
         self.db = db
 
     def get_user_account_by_email(self, email: str) -> Optional[UserAccount]:
-        stmt = select(UserAccount).where(UserAccount.email == email)
+        stmt = select(UserAccount).where(func.lower(UserAccount.email) == email.lower())
         return self.db.execute(stmt).scalar_one_or_none()
 
     def get_user_by_id(self, user_id: int) -> Optional[User]:
@@ -66,7 +66,7 @@ class AuthRepository:
     ) -> UserAccount:
         account = UserAccount(
             user_id=user_id,
-            email=email,
+            email=email.lower(),
             password_hash=password_hash,
         )
         self.db.add(account)

@@ -32,6 +32,9 @@ from schemas.admin import (
     UpdateEventRequest,
     UpdateUserRoleRequest,
     UpdateUserRoleResponse,
+    CreateEventPromoCodeRequest,
+    EventPromoCodeListResponse,
+    EventPromoCodeResponse,
 )
 from services.admin_service import AdminService
 from schemas.partner import PartnerCreate, PartnerUpdate, PartnerResponse, PartnerListResponse
@@ -357,3 +360,89 @@ def delete_exemption_code(code_id: int, admin_user: AdminUser, db: Session = Dep
     db.delete(code)
     db.commit()
     return {"message": "Exemption code deleted"}
+
+
+# ===== Event Promo Codes API =====
+@router.get("/event-promo-codes", response_model=EventPromoCodeListResponse)
+def get_event_promo_codes(admin_user: AdminUser, db: Session = Depends(get_db)):
+    from models.event_promo_code import EventPromoCode
+    codes = db.query(EventPromoCode).order_by(EventPromoCode.created_at.desc()).all()
+    result = []
+    for c in codes:
+        result.append(EventPromoCodeResponse(
+            id=c.id,
+            code=c.code,
+            discount_type=c.discount_type,
+            discount_value=float(c.discount_value) if c.discount_value else None,
+            event_id=c.event_id,
+            event_name=c.event.golf_course if c.event else None,
+            max_uses=c.max_uses,
+            times_used=c.times_used,
+            is_active=c.is_active,
+            created_at=c.created_at,
+            expires_at=c.expires_at,
+        ))
+    return EventPromoCodeListResponse(codes=result)
+
+
+@router.post("/event-promo-codes", response_model=EventPromoCodeResponse, status_code=status.HTTP_201_CREATED)
+def create_event_promo_code(
+    data: CreateEventPromoCodeRequest,
+    admin_user: AdminUser,
+    db: Session = Depends(get_db),
+):
+    import secrets
+    from models.event_promo_code import EventPromoCode
+    from models.event import Event
+
+    if data.discount_type not in ("member_price", "free", "percent"):
+        raise HTTPException(status_code=400, detail="discount_type must be 'member_price', 'free', or 'percent'")
+    if data.discount_type == "percent":
+        if not data.discount_value or data.discount_value <= 0 or data.discount_value > 100:
+            raise HTTPException(status_code=400, detail="discount_value must be between 1 and 100 for percent type")
+    if data.event_id:
+        event = db.query(Event).filter(Event.id == data.event_id).first()
+        if not event:
+            raise HTTPException(status_code=404, detail="Event not found")
+
+    code_str = data.code or secrets.token_urlsafe(8).upper()[:8]
+    existing = db.query(EventPromoCode).filter(EventPromoCode.code == code_str).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Code already exists")
+
+    promo = EventPromoCode(
+        code=code_str,
+        discount_type=data.discount_type,
+        discount_value=data.discount_value if data.discount_type == "percent" else None,
+        event_id=data.event_id,
+        max_uses=data.max_uses,
+        expires_at=data.expires_at,
+    )
+    db.add(promo)
+    db.commit()
+    db.refresh(promo)
+
+    return EventPromoCodeResponse(
+        id=promo.id,
+        code=promo.code,
+        discount_type=promo.discount_type,
+        discount_value=float(promo.discount_value) if promo.discount_value else None,
+        event_id=promo.event_id,
+        event_name=promo.event.golf_course if promo.event else None,
+        max_uses=promo.max_uses,
+        times_used=promo.times_used,
+        is_active=promo.is_active,
+        created_at=promo.created_at,
+        expires_at=promo.expires_at,
+    )
+
+
+@router.delete("/event-promo-codes/{code_id}")
+def delete_event_promo_code(code_id: int, admin_user: AdminUser, db: Session = Depends(get_db)):
+    from models.event_promo_code import EventPromoCode
+    code = db.query(EventPromoCode).filter(EventPromoCode.id == code_id).first()
+    if not code:
+        raise HTTPException(status_code=404, detail="Promo code not found")
+    db.delete(code)
+    db.commit()
+    return {"message": "Promo code deleted"}

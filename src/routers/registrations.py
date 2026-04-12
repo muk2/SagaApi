@@ -47,6 +47,7 @@ class MemberRegistrationRequest(BaseModel):
     sponsor_amount:     Optional[float] = None
     company_name:       Optional[str]   = None
     additional_golfers: list[AdditionalGolfer] = []
+    promo_code:         Optional[str]   = None
 
 
 class GuestRegistrationRequest(BaseModel):
@@ -61,6 +62,12 @@ class GuestRegistrationRequest(BaseModel):
     sponsor_amount:     Optional[float] = None
     company_name:       Optional[str]   = None
     additional_golfers: list[AdditionalGolfer] = []
+    promo_code:         Optional[str]   = None
+
+
+class ValidatePromoCodeRequest(BaseModel):
+    code:     str
+    event_id: int
 
 
 class RetryPaymentRequest(BaseModel):
@@ -135,6 +142,72 @@ def _check_duplicate_guest(db: Session, event_id: int, email: str) -> None:
 
 def _confirmation_id(registration_id: int) -> str:
     return f"SAGA-{registration_id:06d}"
+
+
+def _validate_promo_code(db: Session, code_str: str, event_id: int):
+    """Validate a promo code and return the EventPromoCode object or raise HTTPException."""
+    from models.event_promo_code import EventPromoCode
+    from datetime import datetime, timezone
+
+    promo = db.query(EventPromoCode).filter(EventPromoCode.code == code_str).first()
+    if not promo:
+        raise HTTPException(status_code=400, detail="Invalid promo code.")
+    if not promo.is_active:
+        raise HTTPException(status_code=400, detail="This promo code is no longer active.")
+    if promo.times_used >= promo.max_uses:
+        raise HTTPException(status_code=400, detail="This promo code has been fully used.")
+    if promo.expires_at and promo.expires_at < datetime.now(timezone.utc):
+        raise HTTPException(status_code=400, detail="This promo code has expired.")
+    if promo.event_id and promo.event_id != event_id:
+        raise HTTPException(status_code=400, detail="This promo code is not valid for this event.")
+    return promo
+
+
+def _apply_promo_discount(promo, base_price: Decimal, member_price: Decimal) -> Decimal:
+    """Apply promo discount and return the new price."""
+    if promo.discount_type == "free":
+        return Decimal("0")
+    elif promo.discount_type == "member_price":
+        return member_price
+    elif promo.discount_type == "percent":
+        discount = base_price * Decimal(str(promo.discount_value)) / Decimal("100")
+        return max(base_price - discount, Decimal("0"))
+    return base_price
+
+
+# ── Validate promo code (public) ──────────────────────────────────────────────
+
+@router.post("/validate-promo-code")
+def validate_promo_code(
+    data: ValidatePromoCodeRequest,
+    db: Session = Depends(get_db),
+):
+    from models.event_promo_code import EventPromoCode
+    from datetime import datetime, timezone
+
+    promo = db.query(EventPromoCode).filter(EventPromoCode.code == data.code).first()
+    if not promo:
+        return {"valid": False, "message": "Invalid promo code."}
+    if not promo.is_active:
+        return {"valid": False, "message": "This promo code is no longer active."}
+    if promo.times_used >= promo.max_uses:
+        return {"valid": False, "message": "This promo code has been fully used."}
+    if promo.expires_at and promo.expires_at < datetime.now(timezone.utc):
+        return {"valid": False, "message": "This promo code has expired."}
+    if promo.event_id and promo.event_id != data.event_id:
+        return {"valid": False, "message": "This promo code is not valid for this event."}
+
+    event = _get_event_or_404(db, data.event_id)
+    member_price = Decimal(str(event.member_price or 0))
+    guest_price = Decimal(str(event.guest_price or 0))
+
+    return {
+        "valid": True,
+        "discount_type": promo.discount_type,
+        "discount_value": float(promo.discount_value) if promo.discount_value else None,
+        "discounted_member_price": float(_apply_promo_discount(promo, member_price, member_price)),
+        "discounted_guest_price": float(_apply_promo_discount(promo, guest_price, member_price)),
+    }
 
 
 # ── Member registration ─────────────────────────────────────────────────────────
@@ -230,6 +303,13 @@ async def register_member(
         base = Decimal(str(event.member_price or event.guest_price))
     else:
         base = Decimal(str(event.guest_price))
+
+    # Apply promo code discount
+    promo = None
+    if data.promo_code:
+        promo = _validate_promo_code(db, data.promo_code, data.event_id)
+        base = _apply_promo_discount(promo, base, Decimal(str(event.member_price or 0)))
+
     sponsor = Decimal(str(data.sponsor_amount or 0)) if data.is_sponsor else Decimal("0")
     total   = base + sponsor
 
@@ -269,6 +349,10 @@ async def register_member(
         db, event, data.additional_golfers,
         charge.transaction_id if charge else None, float(total),
     )
+
+    # Increment promo code usage
+    if promo:
+        promo.times_used += 1
 
     db.commit()
     db.refresh(registration)
@@ -338,9 +422,16 @@ async def register_guest(
     _check_duplicate_guest(db, data.event_id, data.email)
 
     guest_price = Decimal(str(event.guest_price))
+
+    # Apply promo code discount
+    promo = None
+    if data.promo_code:
+        promo = _validate_promo_code(db, data.promo_code, data.event_id)
+        guest_price = _apply_promo_discount(promo, guest_price, Decimal(str(event.member_price or 0)))
+
     sponsor = Decimal(str(data.sponsor_amount or 0)) if data.is_sponsor else Decimal("0")
     total   = guest_price + sponsor
-    total += guest_price * len(data.additional_golfers)
+    total += Decimal(str(event.guest_price)) * len(data.additional_golfers)  # additional golfers at original price
 
     # Charge card via North (skip for free events)
     charge = None
@@ -398,6 +489,10 @@ async def register_guest(
         db, event, guest_golfers,
         charge.transaction_id if charge else None, float(total),
     )
+
+    # Increment promo code usage
+    if promo:
+        promo.times_used += 1
 
     db.commit()
     db.refresh(registration)

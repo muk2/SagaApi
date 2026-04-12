@@ -235,3 +235,41 @@ class ExemptionCodeResponse(BaseModel):
 
 class ExemptionCodeListResponse(BaseModel):
     codes: List[ExemptionCodeResponse]
+
+
+# Event Promo Codes Schemas
+class CreateEventPromoCodeRequest(BaseModel):
+    code: Optional[str] = None
+    discount_type: str  # "member_price", "free", "percent"
+    discount_value: Optional[float] = None  # required when discount_type == "percent"
+    event_id: Optional[int] = None  # NULL = all events
+    max_uses: int = 1
+    expires_at: Optional[datetime] = None
+
+
+class EventPromoCodeResponse(BaseModel):
+    id: int
+    code: str
+    discount_type: str
+    discount_value: Optional[float] = None
+    event_id: Optional[int] = None
+    event_name: Optional[str] = None
+    max_uses: int
+    times_used: int
+    is_active: bool
+    created_at: datetime
+    expires_at: Optional[datetime] = None
+    model_config = {"from_attributes": True}
+
+
+class EventPromoCodeListResponse(BaseModel):
+    codes: List[EventPromoCodeResponse]
+
+
+class ValidateEventPromoCodeResponse(BaseModel):
+    valid: bool
+    discount_type: Optional[str] = None
+    discount_value: Optional[float] = None
+    discounted_member_price: Optional[float] = None
+    discounted_guest_price: Optional[float] = None
+    message: Optional[str] = None

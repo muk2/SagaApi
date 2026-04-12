@@ -1,7 +1,7 @@
 import json
 from typing import Optional, List, Tuple, Dict
 
-from sqlalchemy import select, desc, asc
+from sqlalchemy import func, select, desc, asc
 from sqlalchemy.orm import Session, joinedload
 
 from models.banner_message import Banner
@@ -30,7 +30,7 @@ class AdminRepository:
 
     def get_user_account_by_email(self, email: str) -> Optional[UserAccount]:
         """Get user account by email address."""
-        stmt = select(UserAccount).where(UserAccount.email == email)
+        stmt = select(UserAccount).where(func.lower(UserAccount.email) == email.lower())
         return self.db.execute(stmt).scalar_one_or_none()
 
     def create_user_with_account(
@@ -64,7 +64,7 @@ class AdminRepository:
 
         account = UserAccount(
             user_id=user.id,
-            email=email,
+            email=email.lower(),
             password_hash="__unset__",
             role=role,
             reset_token=setup_token,
