@@ -10,7 +10,7 @@ class SignUpRequest(BaseModel):
     handicap: Optional[str] = None
     ghin_number: Optional[str] = None
     membership: str
-    payment_token: Optional[str] = None  # North tokenized card token
+    paypal_order_id: Optional[str] = None
     exemption_code: Optional[str] = None
 
 

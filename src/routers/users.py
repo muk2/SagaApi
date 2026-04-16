@@ -19,7 +19,7 @@ from schemas.user import (
 )
 from services.user_service import UserService
 from services.auth_service import get_membership_expiration, is_membership_expired
-from services.north_payment_service import charge_card, NorthDeclinedError, NorthGatewayError
+from services.paypal_service import capture_order, PayPalCaptureDeclined, PayPalError
 
 logger = logging.getLogger(__name__)
 
@@ -145,7 +145,7 @@ def register_for_event(
 
 class RenewMembershipRequest(BaseModel):
     membership: str
-    payment_token: Optional[str] = None  # North tokenized card token
+    paypal_order_id: Optional[str] = None
 
 
 class RenewMembershipResponse(BaseModel):
@@ -180,20 +180,20 @@ async def renew_membership(
 
     amount = float(membership_option.price)
 
-    # Process North payment if required (paid tiers)
-    if data.payment_token:
+    # Process PayPal payment if required (paid tiers)
+    if data.paypal_order_id:
         try:
-            charge = await charge_card(data.payment_token, amount)
+            capture = await capture_order(data.paypal_order_id)
             logger.info(
-                "Membership renewal payment charged for user %s: transaction_id=%s amount=%s",
-                user.id, charge.transaction_id, amount,
+                "Membership renewal payment captured for user %s: capture_id=%s amount=%s",
+                user.id, capture.capture_id, amount,
             )
-        except NorthDeclinedError as e:
+        except PayPalCaptureDeclined as e:
             raise HTTPException(
                 status_code=status.HTTP_402_PAYMENT_REQUIRED,
                 detail=str(e) or "Payment was declined. Please try again.",
             )
-        except NorthGatewayError as e:
+        except PayPalError as e:
             raise HTTPException(
                 status_code=status.HTTP_502_BAD_GATEWAY,
                 detail=str(e) or "Payment processing failed. Please try again.",

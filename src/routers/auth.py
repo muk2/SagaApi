@@ -19,7 +19,7 @@ from schemas.auth import (
 )
 from services.auth_service import AuthService
 from services.email_service import EmailService
-from services.north_payment_service import charge_card, NorthDeclinedError, NorthGatewayError
+from services.paypal_service import capture_order, PayPalCaptureDeclined, PayPalError
 
 logger = logging.getLogger(__name__)
 
@@ -69,9 +69,9 @@ async def signup(data: SignUpRequest, db: Session = Depends(get_db)) -> SignUpRe
             code.times_used += 1
             db.commit()
 
-    # Process membership payment via North if payment token provided (skip if exempt)
+    # Process membership payment via PayPal if order ID provided (skip if exempt)
     amount = 0.0
-    if data.payment_token and not is_exempt:
+    if data.paypal_order_id and not is_exempt:
         try:
             from models.membership_option import MembershipOption
             membership_option = db.query(MembershipOption).filter(
@@ -88,21 +88,21 @@ async def signup(data: SignUpRequest, db: Session = Depends(get_db)) -> SignUpRe
                 )
 
             amount = float(membership_option.price)
-            charge = await charge_card(data.payment_token, amount)
+            capture = await capture_order(data.paypal_order_id)
 
             logger.info(
-                "Membership payment charged for user %s: transaction_id=%s amount=%s",
-                user.id, charge.transaction_id, amount,
+                "Membership payment captured for user %s: capture_id=%s amount=%s",
+                user.id, capture.capture_id, amount,
             )
 
-        except NorthDeclinedError as e:
+        except PayPalCaptureDeclined as e:
             service.repo.delete_user(user.id)
             service.repo.commit()
             raise HTTPException(
                 status_code=status.HTTP_402_PAYMENT_REQUIRED,
                 detail=str(e) or "Payment was declined. Please try again.",
             )
-        except NorthGatewayError as e:
+        except PayPalError as e:
             service.repo.delete_user(user.id)
             service.repo.commit()
             raise HTTPException(
