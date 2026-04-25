@@ -1,3 +1,4 @@
+import io
 import json
 import os
 import shutil
@@ -9,9 +10,11 @@ from sqlalchemy.orm import Session
 
 from core.database import get_db
 from core.dependencies import AdminUser
+from models.leaderboard_entry import LeaderboardEntry
 from models.leaderboard_pdf import LeaderboardPdf
 from models.round_winners import RoundWinners
 from schemas.standings import (
+    LeaderboardEntryResponse,
     RoundWinnersCreate,
     RoundWinnersUpdate,
     RoundWinnersResponse,
@@ -77,6 +80,169 @@ def upload_leaderboard_pdf(
     db.refresh(record)
 
     return record
+
+
+# ===================================================================
+# LEADERBOARD ENTRIES (XLS UPLOAD) ENDPOINTS
+# ===================================================================
+
+@router.get("/leaderboard/entries", response_model=List[LeaderboardEntryResponse])
+def get_leaderboard_entries(db: Session = Depends(get_db)):
+    """Return all leaderboard entries ordered by position."""
+    entries = (
+        db.query(LeaderboardEntry)
+        .order_by(LeaderboardEntry.position)
+        .all()
+    )
+    return entries
+
+
+@router.post("/admin/leaderboard/upload-xls", response_model=List[LeaderboardEntryResponse], status_code=status.HTTP_201_CREATED)
+def upload_leaderboard_xls(
+    file: UploadFile = File(...),
+    admin_user: AdminUser = None,
+    db: Session = Depends(get_db),
+):
+    """
+    Parse an XLS/XLSX file and replace all leaderboard entries.
+    Expected columns: Pos., Player (Last, First), Stableford Points, Total Gross
+    """
+    if file.content_type not in (
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/octet-stream",
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Only .xls / .xlsx files are accepted.",
+        )
+
+    try:
+        contents = file.file.read()
+        rows: list[tuple] = []
+
+        # Try openpyxl first (.xlsx), fall back to xlrd (.xls)
+        try:
+            import openpyxl
+            wb = openpyxl.load_workbook(io.BytesIO(contents), read_only=True, data_only=True)
+            ws = wb.active
+            rows = list(ws.iter_rows(values_only=True))
+            wb.close()
+        except Exception:
+            try:
+                import xlrd
+                wb_xls = xlrd.open_workbook(file_contents=contents)
+                ws_xls = wb_xls.sheet_by_index(0)
+                rows = [
+                    tuple(ws_xls.cell_value(r, c) for c in range(ws_xls.ncols))
+                    for r in range(ws_xls.nrows)
+                ]
+            except ImportError:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="xlrd is not installed on the server.",
+                )
+
+        if not rows:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Spreadsheet is empty.")
+
+        # Find header row — look for a row containing "Pos" or "Player"
+        header_idx = 0
+        for i, row in enumerate(rows):
+            cells = [str(c).strip().lower() if c else "" for c in row]
+            if any("pos" in c for c in cells) or any("player" in c for c in cells):
+                header_idx = i
+                break
+
+        headers = [str(c).strip().lower() if c else "" for c in rows[header_idx]]
+
+        # Map column indices
+        pos_col = next((i for i, h in enumerate(headers) if "pos" in h), None)
+        player_col = next((i for i, h in enumerate(headers) if "player" in h), None)
+        stableford_col = next((i for i, h in enumerate(headers) if "stableford" in h), None)
+        gross_col = next((i for i, h in enumerate(headers) if "gross" in h), None)
+
+        if pos_col is None or player_col is None or stableford_col is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Could not find required columns: Pos., Player, Stableford Points. "
+                       f"Found headers: {headers}",
+            )
+
+        entries = []
+        for row in rows[header_idx + 1:]:
+            pos_val = row[pos_col] if pos_col < len(row) else None
+            player_val = row[player_col] if player_col < len(row) else None
+            stab_val = row[stableford_col] if stableford_col < len(row) else None
+
+            if not pos_val or not player_val:
+                continue
+
+            # Parse position (xlrd may return floats like 1.0 for integers)
+            try:
+                position = int(float(pos_val))
+            except (ValueError, TypeError):
+                continue
+
+            # Parse player name — expected "Last, First" or "Last First"
+            player_str = str(player_val).strip()
+            if "," in player_str:
+                parts = [p.strip() for p in player_str.split(",", 1)]
+                last_name = parts[0]
+                first_name = parts[1] if len(parts) > 1 else ""
+            else:
+                parts = player_str.split(None, 1)
+                last_name = parts[0]
+                first_name = parts[1] if len(parts) > 1 else ""
+
+            # Parse stableford points
+            try:
+                stableford_points = float(stab_val) if stab_val is not None else 0
+            except (ValueError, TypeError):
+                stableford_points = 0
+
+            # Parse total gross (optional)
+            total_gross = None
+            if gross_col is not None and gross_col < len(row) and row[gross_col] is not None:
+                try:
+                    total_gross = float(row[gross_col])
+                except (ValueError, TypeError):
+                    pass
+
+            entries.append(LeaderboardEntry(
+                position=position,
+                first_name=first_name,
+                last_name=last_name,
+                stableford_points=stableford_points,
+                total_gross=total_gross,
+            ))
+
+        if not entries:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="No valid player rows found in the spreadsheet.",
+            )
+
+        # Replace all existing entries
+        db.query(LeaderboardEntry).delete()
+        db.add_all(entries)
+        db.commit()
+
+        # Re-query to get IDs
+        result = (
+            db.query(LeaderboardEntry)
+            .order_by(LeaderboardEntry.position)
+            .all()
+        )
+        return result
+
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Failed to parse spreadsheet: {exc}",
+        )
 
 
 # ===================================================================

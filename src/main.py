@@ -27,7 +27,7 @@ from routers import (
     past_champions_router
 )
 from routers.registrations import router as registrations_router
-from routers.paypal import router as paypal_router  
+from routers.paypal import router as paypal_router
 
 os.makedirs("uploads", exist_ok=True)
 
