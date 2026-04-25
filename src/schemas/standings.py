@@ -16,6 +16,22 @@ class LeaderboardPdfResponse(BaseModel):
 
 
 # ===================================================================
+# Leaderboard Entry schemas (XLS upload)
+# ===================================================================
+
+class LeaderboardEntryResponse(BaseModel):
+    id: int
+    position: int
+    first_name: str
+    last_name: str
+    stableford_points: float
+    total_gross: Optional[float] = None
+
+    class Config:
+        from_attributes = True
+
+
+# ===================================================================
 # Sponsor entry schema
 # ===================================================================
 

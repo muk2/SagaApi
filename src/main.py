@@ -27,7 +27,7 @@ from routers import (
     past_champions_router
 )
 from routers.registrations import router as registrations_router
-# from routers.paypal import router as paypal_router  # PayPal disabled — using North
+from routers.paypal import router as paypal_router
 
 os.makedirs("uploads", exist_ok=True)
 
@@ -63,7 +63,7 @@ app.include_router(membership_options_router)
 app.include_router(standings_router)
 app.include_router(registrations_router)
 app.include_router(past_champions_router)
-# app.include_router(paypal_router)  # PayPal disabled — using North
+app.include_router(paypal_router)
 
 @app.get("/health")
 def health_check() -> dict[str, str]:

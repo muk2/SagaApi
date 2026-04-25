@@ -10,6 +10,7 @@ from .payment import Payment
 from .payment_method import PaymentMethod
 from .photo_album import PhotoAlbum
 from .site_content import SiteContent
+from .leaderboard_entry import LeaderboardEntry
 from .user import User, UserAccount
 
 __all__ = [
@@ -25,6 +26,7 @@ __all__ = [
     "PaymentMethod",
     "PhotoAlbum",
     "SiteContent",
+    "LeaderboardEntry",
     "User",
     "UserAccount",
 ]
