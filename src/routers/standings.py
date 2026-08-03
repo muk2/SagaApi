@@ -104,68 +104,77 @@ def upload_leaderboard_xls(
     db: Session = Depends(get_db),
 ):
     """
-    Parse an XLS/XLSX file and replace all leaderboard entries.
-    Expected columns: Pos., Player (Last, First), Stableford Points, Total Gross
+    Parse an XLS/XLSX/CSV file and upsert leaderboard entries.
+    XLS/XLSX: Pos., Player (Last, First), Stableford Points, Total Gross
+    CSV: Rank, Player (Last, First), Best 5 Total
     """
-    if file.content_type not in (
-        "application/vnd.ms-excel",
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "application/octet-stream",
-    ):
+    import csv as csv_module
+
+    filename = (file.filename or "").lower()
+    is_csv = filename.endswith(".csv")
+    is_xls = filename.endswith(".xls") or filename.endswith(".xlsx")
+
+    if not is_csv and not is_xls:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Only .xls / .xlsx files are accepted.",
+            detail="Only .xls, .xlsx, or .csv files are accepted.",
         )
 
     try:
         contents = file.file.read()
         rows: list[tuple] = []
 
-        # Try openpyxl first (.xlsx), fall back to xlrd (.xls)
-        try:
-            import openpyxl
-            wb = openpyxl.load_workbook(io.BytesIO(contents), read_only=True, data_only=True)
-            ws = wb.active
-            rows = list(ws.iter_rows(values_only=True))
-            wb.close()
-        except Exception:
+        if is_csv:
+            import io as _io
+            text = contents.decode("utf-8-sig")  # strip BOM if present
+            reader = csv_module.reader(_io.StringIO(text))
+            rows = [tuple(row) for row in reader]
+        else:
+            # Try openpyxl first (.xlsx), fall back to xlrd (.xls)
             try:
-                import xlrd
-                wb_xls = xlrd.open_workbook(file_contents=contents)
-                ws_xls = wb_xls.sheet_by_index(0)
-                rows = [
-                    tuple(ws_xls.cell_value(r, c) for c in range(ws_xls.ncols))
-                    for r in range(ws_xls.nrows)
-                ]
-            except ImportError:
-                raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail="xlrd is not installed on the server.",
-                )
+                import openpyxl
+                wb = openpyxl.load_workbook(io.BytesIO(contents), read_only=True, data_only=True)
+                ws = wb.active
+                rows = list(ws.iter_rows(values_only=True))
+                wb.close()
+            except Exception:
+                try:
+                    import xlrd
+                    wb_xls = xlrd.open_workbook(file_contents=contents)
+                    ws_xls = wb_xls.sheet_by_index(0)
+                    rows = [
+                        tuple(ws_xls.cell_value(r, c) for c in range(ws_xls.ncols))
+                        for r in range(ws_xls.nrows)
+                    ]
+                except ImportError:
+                    raise HTTPException(
+                        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                        detail="xlrd is not installed on the server.",
+                    )
 
         if not rows:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Spreadsheet is empty.")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File is empty.")
 
-        # Find header row — look for a row containing "Pos" or "Player"
+        # Find header row — look for a row containing "Pos", "Rank", or "Player"
         header_idx = 0
         for i, row in enumerate(rows):
             cells = [str(c).strip().lower() if c else "" for c in row]
-            if any("pos" in c for c in cells) or any("player" in c for c in cells):
+            if any(c in ("pos", "rank", "player") or "pos" in c or "player" in c for c in cells):
                 header_idx = i
                 break
 
         headers = [str(c).strip().lower() if c else "" for c in rows[header_idx]]
 
-        # Map column indices
-        pos_col = next((i for i, h in enumerate(headers) if "pos" in h), None)
+        # Map column indices — support both XLS ("pos.", "stableford points") and CSV ("rank", "best 5 total")
+        pos_col = next((i for i, h in enumerate(headers) if "pos" in h or h == "rank"), None)
         player_col = next((i for i, h in enumerate(headers) if "player" in h), None)
-        stableford_col = next((i for i, h in enumerate(headers) if "stableford" in h), None)
+        stableford_col = next((i for i, h in enumerate(headers) if "stableford" in h or "best 5" in h), None)
         gross_col = next((i for i, h in enumerate(headers) if "gross" in h), None)
 
         if pos_col is None or player_col is None or stableford_col is None:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Could not find required columns: Pos., Player, Stableford Points. "
+                detail="Could not find required columns. Expected Rank/Pos., Player, and Best 5 Total/Stableford Points. "
                        f"Found headers: {headers}",
             )
 
@@ -223,9 +232,19 @@ def upload_leaderboard_xls(
                 detail="No valid player rows found in the spreadsheet.",
             )
 
-        # Replace all existing entries
-        db.query(LeaderboardEntry).delete()
-        db.add_all(entries)
+        # Upsert: update existing players by name, insert new ones, keep players not in file
+        existing = {
+            (e.first_name.strip().lower(), e.last_name.strip().lower()): e
+            for e in db.query(LeaderboardEntry).all()
+        }
+        for entry in entries:
+            key = (entry.first_name.strip().lower(), entry.last_name.strip().lower())
+            if key in existing:
+                existing[key].position = entry.position
+                existing[key].stableford_points = entry.stableford_points
+                existing[key].total_gross = entry.total_gross
+            else:
+                db.add(entry)
         db.commit()
 
         # Re-query to get IDs
