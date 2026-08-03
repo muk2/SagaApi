@@ -6,6 +6,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, EmailStr, Field
+from sqlalchemy import update
 from sqlalchemy.orm import Session
 
 from core.database import get_db
@@ -161,6 +162,22 @@ def _validate_promo_code(db: Session, code_str: str, event_id: int):
     if promo.event_id and promo.event_id != event_id:
         raise HTTPException(status_code=400, detail="This promo code is not valid for this event.")
     return promo
+
+
+def _increment_promo_usage(db: Session, promo) -> None:
+    """
+    Atomically increment times_used at the database level.
+    Using `promo.times_used += 1` would read-modify-write in Python, which loses
+    updates when multiple registrations for the same code commit concurrently
+    (e.g. several people redeeming an event promo code around the same time).
+    """
+    from models.event_promo_code import EventPromoCode
+
+    db.execute(
+        update(EventPromoCode)
+        .where(EventPromoCode.id == promo.id)
+        .values(times_used=EventPromoCode.times_used + 1)
+    )
 
 
 def _apply_promo_discount(promo, base_price: Decimal, member_price: Decimal) -> Decimal:
@@ -352,7 +369,7 @@ async def register_member(
 
     # Increment promo code usage
     if promo:
-        promo.times_used += 1
+        _increment_promo_usage(db, promo)
 
     db.commit()
     db.refresh(registration)
@@ -492,7 +509,7 @@ async def register_guest(
 
     # Increment promo code usage
     if promo:
-        promo.times_used += 1
+        _increment_promo_usage(db, promo)
 
     db.commit()
     db.refresh(registration)
