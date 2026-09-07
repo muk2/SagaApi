@@ -13,4 +13,5 @@ class LeaderboardEntry(Base):
     last_name        = Column(Text, nullable=False)
     stableford_points = Column(Numeric(7, 1), nullable=False)
     total_gross      = Column(Numeric(7, 1), nullable=True)
+    flight           = Column(Text, nullable=True)
     updated_at       = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
