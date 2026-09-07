@@ -81,3 +81,7 @@ class EventRegistration(Base):
     is_sponsor: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     sponsor_amount: Mapped[Optional[Decimal]] = mapped_column(Numeric(10, 2), nullable=True)
     company_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+
+    # Championship gala guests (family/friends attending the post-round gala)
+    gala_guests: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    gala_guest_amount: Mapped[Optional[Decimal]] = mapped_column(Numeric(10, 2), nullable=True)

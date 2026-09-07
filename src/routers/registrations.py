@@ -39,6 +39,14 @@ class AdditionalGolfer(BaseModel):
     handicap:    Optional[str]   = None
 
 
+class AdditionalEvent(BaseModel):
+    """An additional event to register for under the same payment."""
+    event_id:       int
+    is_sponsor:     bool            = False
+    sponsor_amount: Optional[float] = None
+    company_name:   Optional[str]   = None
+
+
 class MemberRegistrationRequest(BaseModel):
     event_id:           int
     paypal_order_id:    Optional[str]   = None
@@ -47,7 +55,9 @@ class MemberRegistrationRequest(BaseModel):
     sponsor_amount:     Optional[float] = None
     company_name:       Optional[str]   = None
     additional_golfers: list[AdditionalGolfer] = []
+    additional_events:  list[AdditionalEvent]  = []
     promo_code:         Optional[str]   = None
+    gala_guests:        int             = 0
 
 
 class GuestRegistrationRequest(BaseModel):
@@ -62,7 +72,9 @@ class GuestRegistrationRequest(BaseModel):
     sponsor_amount:     Optional[float] = None
     company_name:       Optional[str]   = None
     additional_golfers: list[AdditionalGolfer] = []
+    additional_events:  list[AdditionalEvent]  = []
     promo_code:         Optional[str]   = None
+    gala_guests:        int             = 0
 
 
 class ValidatePromoCodeRequest(BaseModel):
@@ -175,6 +187,26 @@ def _apply_promo_discount(promo, base_price: Decimal, member_price: Decimal) -> 
     return base_price
 
 
+DEFAULT_GALA_GUEST_PRICE = Decimal("75")
+
+
+def _calculate_gala_guest_total(event: Event, gala_guests: int) -> Decimal:
+    """Return the total charge for championship gala guests, or raise if not applicable."""
+    if gala_guests <= 0:
+        return Decimal("0")
+    if event.event_type != "championship":
+        raise HTTPException(
+            status_code=400,
+            detail="Gala guests can only be added for the championship event.",
+        )
+    unit_price = (
+        Decimal(str(event.gala_guest_price))
+        if event.gala_guest_price
+        else DEFAULT_GALA_GUEST_PRICE
+    )
+    return unit_price * gala_guests
+
+
 # ── Validate promo code (public) ──────────────────────────────────────────────
 
 @router.post("/validate-promo-code")
@@ -234,6 +266,8 @@ def _create_additional_registrations(
         if golfer.is_member and golfer.user_id:
             user = db.query(User).filter(User.id == golfer.user_id).first()
             ua = db.query(UserAccount).filter(UserAccount.user_id == golfer.user_id).first()
+            if ua:
+                _check_duplicate_member(db, event.id, ua.id)
             reg = EventRegistration(
                 event_id=event.id,
                 user_id=ua.id if ua else None,
@@ -311,10 +345,25 @@ async def register_member(
         base = _apply_promo_discount(promo, base, Decimal(str(event.member_price or 0)))
 
     sponsor = Decimal(str(data.sponsor_amount or 0)) if data.is_sponsor else Decimal("0")
-    total   = base + sponsor
+    gala_total = _calculate_gala_guest_total(event, data.gala_guests)
+    total   = base + sponsor + gala_total
 
     for golfer in data.additional_golfers:
         total += _calculate_additional_golfer_price(db, event, golfer)
+
+    # Calculate prices for additional events
+    additional_event_data = []
+    for ae in data.additional_events:
+        ae_event = _get_event_or_404(db, ae.event_id)
+        _check_capacity(db, ae_event, 1)
+        _check_duplicate_member(db, ae.event_id, user_account.id)
+        if registrant and not is_membership_expired(registrant):
+            ae_price = Decimal(str(ae_event.member_price or ae_event.guest_price))
+        else:
+            ae_price = Decimal(str(ae_event.guest_price))
+        ae_sponsor = Decimal(str(ae.sponsor_amount or 0)) if ae.is_sponsor else Decimal("0")
+        total += ae_price + ae_sponsor
+        additional_event_data.append((ae_event, ae_price, ae))
 
     # Capture PayPal order (skip for free events)
     capture = None
@@ -336,11 +385,13 @@ async def register_member(
         handicap=data.handicap,
         payment_status="paid" if capture else "free",
         payment_method="paypal" if capture else "none",
-        amount_paid=float(base + sponsor),
+        amount_paid=float(base + sponsor + gala_total),
         transaction_id=capture.capture_id if capture else None,
         is_sponsor=data.is_sponsor,
         sponsor_amount=float(data.sponsor_amount) if data.is_sponsor and data.sponsor_amount else None,
         company_name=data.company_name if data.is_sponsor else None,
+        gala_guests=data.gala_guests,
+        gala_guest_amount=float(gala_total) if gala_total else None,
     )
     db.add(registration)
     db.flush()
@@ -349,6 +400,27 @@ async def register_member(
         db, event, data.additional_golfers,
         capture.capture_id if capture else None, float(total),
     )
+
+    # Create registrations for additional events
+    for ae_event, ae_price, ae in additional_event_data:
+        ae_sponsor_amt = Decimal(str(ae.sponsor_amount or 0)) if ae.is_sponsor else Decimal("0")
+        ae_reg = EventRegistration(
+            event_id=ae_event.id,
+            user_id=user_account.id,
+            email=user_account.email,
+            phone=getattr(current_user, "phone_number", None),
+            handicap=data.handicap,
+            payment_status="paid" if capture else "free",
+            payment_method="paypal" if capture else "none",
+            amount_paid=float(ae_price + ae_sponsor_amt),
+            transaction_id=capture.capture_id if capture else None,
+            is_sponsor=ae.is_sponsor,
+            sponsor_amount=float(ae.sponsor_amount) if ae.is_sponsor and ae.sponsor_amount else None,
+            company_name=ae.company_name if ae.is_sponsor else None,
+        )
+        db.add(ae_reg)
+        db.flush()
+        additional_ids.append(ae_reg.id)
 
     # Increment promo code usage
     if promo:
@@ -386,6 +458,8 @@ async def register_member(
                 base_price=float(base + sponsor),
                 additional_golfers=add_golfer_details if add_golfer_details else None,
                 sponsor_amount=float(data.sponsor_amount) if data.is_sponsor and data.sponsor_amount else None,
+                gala_guests=data.gala_guests,
+                gala_guest_amount=float(gala_total) if gala_total else None,
                 total=float(total),
             )
     except Exception:
@@ -430,8 +504,20 @@ async def register_guest(
         guest_price = _apply_promo_discount(promo, guest_price, Decimal(str(event.member_price or 0)))
 
     sponsor = Decimal(str(data.sponsor_amount or 0)) if data.is_sponsor else Decimal("0")
-    total   = guest_price + sponsor
+    gala_total = _calculate_gala_guest_total(event, data.gala_guests)
+    total   = guest_price + sponsor + gala_total
     total += Decimal(str(event.guest_price)) * len(data.additional_golfers)  # additional golfers at original price
+
+    # Calculate prices for additional events (guests always pay guest price)
+    additional_event_data = []
+    for ae in data.additional_events:
+        ae_event = _get_event_or_404(db, ae.event_id)
+        _check_capacity(db, ae_event, 1)
+        _check_duplicate_guest(db, ae.event_id, data.email)
+        ae_price = Decimal(str(ae_event.guest_price))
+        ae_sponsor = Decimal(str(ae.sponsor_amount or 0)) if ae.is_sponsor else Decimal("0")
+        total += ae_price + ae_sponsor
+        additional_event_data.append((ae_event, ae_price, ae))
 
     # Capture PayPal order (skip for free events)
     capture = None
@@ -465,11 +551,13 @@ async def register_guest(
         handicap=data.handicap,
         payment_status="paid" if capture else "free",
         payment_method="paypal" if capture else "none",
-        amount_paid=float(guest_price + sponsor),
+        amount_paid=float(guest_price + sponsor + gala_total),
         transaction_id=capture.capture_id if capture else None,
         is_sponsor=data.is_sponsor,
         sponsor_amount=float(data.sponsor_amount) if data.is_sponsor and data.sponsor_amount else None,
         company_name=data.company_name if data.is_sponsor else None,
+        gala_guests=data.gala_guests,
+        gala_guest_amount=float(gala_total) if gala_total else None,
     )
     db.add(registration)
     db.flush()
@@ -489,6 +577,27 @@ async def register_guest(
         db, event, guest_golfers,
         capture.capture_id if capture else None, float(total),
     )
+
+    # Create registrations for additional events
+    for ae_event, ae_price, ae in additional_event_data:
+        ae_sponsor_amt = Decimal(str(ae.sponsor_amount or 0)) if ae.is_sponsor else Decimal("0")
+        ae_reg = EventRegistration(
+            event_id=ae_event.id,
+            guest_id=guest.id,
+            email=data.email,
+            phone=data.phone,
+            handicap=data.handicap,
+            payment_status="paid" if capture else "free",
+            payment_method="paypal" if capture else "none",
+            amount_paid=float(ae_price + ae_sponsor_amt),
+            transaction_id=capture.capture_id if capture else None,
+            is_sponsor=ae.is_sponsor,
+            sponsor_amount=float(ae.sponsor_amount) if ae.is_sponsor and ae.sponsor_amount else None,
+            company_name=ae.company_name if ae.is_sponsor else None,
+        )
+        db.add(ae_reg)
+        db.flush()
+        additional_ids.append(ae_reg.id)
 
     # Increment promo code usage
     if promo:
@@ -519,6 +628,8 @@ async def register_guest(
             base_price=float(guest_price + sponsor),
             additional_golfers=add_golfer_details if add_golfer_details else None,
             sponsor_amount=float(data.sponsor_amount) if data.is_sponsor and data.sponsor_amount else None,
+            gala_guests=data.gala_guests,
+            gala_guest_amount=float(gala_total) if gala_total else None,
             total=float(total),
         )
     except Exception:

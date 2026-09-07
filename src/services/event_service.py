@@ -27,6 +27,7 @@ def list_events(db: Session):
             'image_url': event.image_url if hasattr(event, 'image_url') else None,
             'registration_open': event.registration_open if hasattr(event, 'registration_open') else True,
             'event_type': event.event_type if hasattr(event, 'event_type') else 'regular',
+            'gala_guest_price': float(event.gala_guest_price) if getattr(event, 'gala_guest_price', None) else None,
         }
         result.append(event_dict)
 

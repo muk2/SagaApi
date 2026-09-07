@@ -19,3 +19,4 @@ class Event(Base):
     image_url = Column(String, nullable=True)
     registration_open = Column(Boolean, nullable=False, default=True, server_default="true")
     event_type = Column(String, nullable=False, default="regular", server_default="regular")
+    gala_guest_price = Column(Numeric(10, 2), nullable=True)

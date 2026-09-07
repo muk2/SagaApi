@@ -206,6 +206,7 @@ class AdminService:
                     is_sponsor=reg.is_sponsor or False,
                     sponsor_amount=float(reg.sponsor_amount) if reg.sponsor_amount else None,
                     company_name=reg.company_name,
+                    gala_guests=reg.gala_guests or 0,
                 )
             )
 
@@ -244,6 +245,7 @@ class AdminService:
                     image_url=getattr(event, 'image_url', None),
                     registration_open=getattr(event, 'registration_open', True),
                     event_type=getattr(event, 'event_type', 'regular'),
+                    gala_guest_price=float(event.gala_guest_price) if getattr(event, 'gala_guest_price', None) else None,
                 )
             )
 
@@ -276,6 +278,7 @@ class AdminService:
                 "image_url": getattr(event, 'image_url', None),
                 "registration_open": getattr(event, 'registration_open', True),
                 "event_type": getattr(event, 'event_type', 'regular'),
+                "gala_guest_price": float(event.gala_guest_price) if getattr(event, 'gala_guest_price', None) else None,
             }
         except Exception as e:
             self.repo.rollback()
@@ -337,6 +340,7 @@ class AdminService:
                 "image_url": getattr(event, 'image_url', None),
                 "registration_open": getattr(event, 'registration_open', True),
                 "event_type": getattr(event, 'event_type', 'regular'),
+                "gala_guest_price": float(event.gala_guest_price) if getattr(event, 'gala_guest_price', None) else None,
             }
         except HTTPException:
             self.repo.rollback()
