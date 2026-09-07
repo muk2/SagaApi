@@ -109,6 +109,8 @@ def upload_leaderboard_xls(
     CSV: Rank, Player (Last, First), Best 5 Total (or Total)
     An optional Flight column (e.g. "Flight 1") splits the leaderboard into
     per-flight standings on the public page instead of one combined table.
+    A flighted upload REPLACES the entire leaderboard (it's treated as a final
+    standings snapshot); a non-flighted upload upserts by player name as before.
     """
     import csv as csv_module
 
@@ -242,21 +244,27 @@ def upload_leaderboard_xls(
                 detail="No valid player rows found in the spreadsheet.",
             )
 
-        # Upsert: update existing players by name, insert new ones, keep players not in file
-        existing = {
-            (e.first_name.strip().lower(), e.last_name.strip().lower()): e
-            for e in db.query(LeaderboardEntry).all()
-        }
-        for entry in entries:
-            key = (entry.first_name.strip().lower(), entry.last_name.strip().lower())
-            if key in existing:
-                existing[key].position = entry.position
-                existing[key].stableford_points = entry.stableford_points
-                existing[key].total_gross = entry.total_gross
-                if flight_col is not None:
-                    existing[key].flight = entry.flight
-            else:
+        if flight_col is not None:
+            # Flighted imports (e.g. final playoff standings) supersede whatever
+            # leaderboard existed before — merging by name would otherwise mix an
+            # unrelated season leaderboard in with the new flighted one.
+            db.query(LeaderboardEntry).delete()
+            for entry in entries:
                 db.add(entry)
+        else:
+            # Upsert: update existing players by name, insert new ones, keep players not in file
+            existing = {
+                (e.first_name.strip().lower(), e.last_name.strip().lower()): e
+                for e in db.query(LeaderboardEntry).all()
+            }
+            for entry in entries:
+                key = (entry.first_name.strip().lower(), entry.last_name.strip().lower())
+                if key in existing:
+                    existing[key].position = entry.position
+                    existing[key].stableford_points = entry.stableford_points
+                    existing[key].total_gross = entry.total_gross
+                else:
+                    db.add(entry)
         db.commit()
 
         # Re-query to get IDs
