@@ -18,6 +18,7 @@ class EventRead(BaseModel):
     image_url: Optional[str] = None
     registration_open: bool = True
     event_type: str = "regular"
+    gala_guest_price: Optional[float] = None
 
     class Config:
         from_attributes = True

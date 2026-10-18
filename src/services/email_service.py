@@ -108,6 +108,8 @@ class EmailService:
         base_price: float,
         additional_golfers: list[dict] | None = None,
         sponsor_amount: float | None = None,
+        gala_guests: int = 0,
+        gala_guest_amount: float | None = None,
         total: float = 0.0,
     ) -> bool:
         """Send event registration confirmation with full price breakdown."""
@@ -139,6 +141,15 @@ class EmailService:
             </tr>
             """
             rows_text += f"  Sponsorship: ${sponsor_amount:.2f}\n"
+
+        if gala_guest_amount and gala_guest_amount > 0:
+            rows_html += f"""
+            <tr>
+                <td style="padding:8px 0; border-bottom:1px solid #eee;">Gala Guests ({gala_guests})</td>
+                <td style="padding:8px 0; border-bottom:1px solid #eee; text-align:right;">${gala_guest_amount:.2f}</td>
+            </tr>
+            """
+            rows_text += f"  Gala Guests ({gala_guests}): ${gala_guest_amount:.2f}\n"
 
         inner = f"""
         <h2 style="color:#1a472a; margin:0 0 16px 0;">Event Registration Confirmed</h2>
@@ -239,4 +250,5 @@ class EmailService:
             text_body,
             self._wrap(inner),
         )
+
 

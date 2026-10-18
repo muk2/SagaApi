@@ -106,7 +106,11 @@ def upload_leaderboard_xls(
     """
     Parse an XLS/XLSX/CSV file and upsert leaderboard entries.
     XLS/XLSX: Pos., Player (Last, First), Stableford Points, Total Gross
-    CSV: Rank, Player (Last, First), Best 5 Total
+    CSV: Rank, Player (Last, First), Best 5 Total (or Total)
+    An optional Flight column (e.g. "Flight 1") splits the leaderboard into
+    per-flight standings on the public page instead of one combined table.
+    A flighted upload REPLACES the entire leaderboard (it's treated as a final
+    standings snapshot); a non-flighted upload upserts by player name as before.
     """
     import csv as csv_module
 
@@ -168,8 +172,9 @@ def upload_leaderboard_xls(
         # Map column indices — support both XLS ("pos.", "stableford points") and CSV ("rank", "best 5 total")
         pos_col = next((i for i, h in enumerate(headers) if "pos" in h or h == "rank"), None)
         player_col = next((i for i, h in enumerate(headers) if "player" in h), None)
-        stableford_col = next((i for i, h in enumerate(headers) if "stableford" in h or "best 5" in h), None)
+        stableford_col = next((i for i, h in enumerate(headers) if "stableford" in h or "best 5" in h or h == "total"), None)
         gross_col = next((i for i, h in enumerate(headers) if "gross" in h), None)
+        flight_col = next((i for i, h in enumerate(headers) if "flight" in h), None)
 
         if pos_col is None or player_col is None or stableford_col is None:
             raise HTTPException(
@@ -218,12 +223,19 @@ def upload_leaderboard_xls(
                 except (ValueError, TypeError):
                     pass
 
+            # Parse flight (optional) — e.g. "Flight 1"
+            flight = None
+            if flight_col is not None and flight_col < len(row) and row[flight_col] is not None:
+                flight_str = str(row[flight_col]).strip()
+                flight = flight_str or None
+
             entries.append(LeaderboardEntry(
                 position=position,
                 first_name=first_name,
                 last_name=last_name,
                 stableford_points=stableford_points,
                 total_gross=total_gross,
+                flight=flight,
             ))
 
         if not entries:
@@ -232,19 +244,27 @@ def upload_leaderboard_xls(
                 detail="No valid player rows found in the spreadsheet.",
             )
 
-        # Upsert: update existing players by name, insert new ones, keep players not in file
-        existing = {
-            (e.first_name.strip().lower(), e.last_name.strip().lower()): e
-            for e in db.query(LeaderboardEntry).all()
-        }
-        for entry in entries:
-            key = (entry.first_name.strip().lower(), entry.last_name.strip().lower())
-            if key in existing:
-                existing[key].position = entry.position
-                existing[key].stableford_points = entry.stableford_points
-                existing[key].total_gross = entry.total_gross
-            else:
+        if flight_col is not None:
+            # Flighted imports (e.g. final playoff standings) supersede whatever
+            # leaderboard existed before — merging by name would otherwise mix an
+            # unrelated season leaderboard in with the new flighted one.
+            db.query(LeaderboardEntry).delete()
+            for entry in entries:
                 db.add(entry)
+        else:
+            # Upsert: update existing players by name, insert new ones, keep players not in file
+            existing = {
+                (e.first_name.strip().lower(), e.last_name.strip().lower()): e
+                for e in db.query(LeaderboardEntry).all()
+            }
+            for entry in entries:
+                key = (entry.first_name.strip().lower(), entry.last_name.strip().lower())
+                if key in existing:
+                    existing[key].position = entry.position
+                    existing[key].stableford_points = entry.stableford_points
+                    existing[key].total_gross = entry.total_gross
+                else:
+                    db.add(entry)
         db.commit()
 
         # Re-query to get IDs
@@ -352,24 +372,18 @@ def update_round_winners(
             detail="Record not found"
         )
 
-    if data.lowest_gross_winner is not None:
-        record.lowest_gross_winner = data.lowest_gross_winner
-    if data.lowest_gross_score is not None:
-        record.lowest_gross_score = data.lowest_gross_score
-    if data.stableford_winner is not None:
-        record.stableford_winner = data.stableford_winner
-    if data.stableford_points is not None:
-        record.stableford_points = data.stableford_points
-    if data.straightest_drive_winner is not None:
-        record.straightest_drive_winner = data.straightest_drive_winner
-    if data.straightest_drive_hole is not None:
-        record.straightest_drive_hole = data.straightest_drive_hole
-    if data.straightest_drive_distance is not None:
-        record.straightest_drive_distance = data.straightest_drive_distance
-    if data.close_to_pin is not None:
-        record.close_to_pin = json.dumps([e.dict() for e in data.close_to_pin])
-    if data.sponsors is not None:
-        record.sponsors = json.dumps([s.dict() for s in data.sponsors])
+    # This endpoint always receives the full current form state from the admin
+    # UI (never a partial patch), so every field is set directly — including
+    # None/empty values, which is how the UI clears a field back out.
+    record.lowest_gross_winner = data.lowest_gross_winner
+    record.lowest_gross_score = data.lowest_gross_score
+    record.stableford_winner = data.stableford_winner
+    record.stableford_points = data.stableford_points
+    record.straightest_drive_winner = data.straightest_drive_winner
+    record.straightest_drive_hole = data.straightest_drive_hole
+    record.straightest_drive_distance = data.straightest_drive_distance
+    record.close_to_pin = json.dumps([e.dict() for e in (data.close_to_pin or [])])
+    record.sponsors = json.dumps([s.dict() for s in (data.sponsors or [])])
 
     db.commit()
     db.refresh(record)

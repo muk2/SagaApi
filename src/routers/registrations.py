@@ -6,7 +6,6 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, EmailStr, Field
-from sqlalchemy import update
 from sqlalchemy.orm import Session
 
 from core.database import get_db
@@ -58,6 +57,7 @@ class MemberRegistrationRequest(BaseModel):
     additional_golfers: list[AdditionalGolfer] = []
     additional_events:  list[AdditionalEvent]  = []
     promo_code:         Optional[str]   = None
+    gala_guests:        int             = 0
 
 
 class GuestRegistrationRequest(BaseModel):
@@ -74,6 +74,7 @@ class GuestRegistrationRequest(BaseModel):
     additional_golfers: list[AdditionalGolfer] = []
     additional_events:  list[AdditionalEvent]  = []
     promo_code:         Optional[str]   = None
+    gala_guests:        int             = 0
 
 
 class ValidatePromoCodeRequest(BaseModel):
@@ -174,22 +175,6 @@ def _validate_promo_code(db: Session, code_str: str, event_id: int):
     return promo
 
 
-def _increment_promo_usage(db: Session, promo) -> None:
-    """
-    Atomically increment times_used at the database level.
-    Using `promo.times_used += 1` would read-modify-write in Python, which loses
-    updates when multiple registrations for the same code commit concurrently
-    (e.g. several people redeeming an event promo code around the same time).
-    """
-    from models.event_promo_code import EventPromoCode
-
-    db.execute(
-        update(EventPromoCode)
-        .where(EventPromoCode.id == promo.id)
-        .values(times_used=EventPromoCode.times_used + 1)
-    )
-
-
 def _apply_promo_discount(promo, base_price: Decimal, member_price: Decimal) -> Decimal:
     """Apply promo discount and return the new price."""
     if promo.discount_type == "free":
@@ -200,6 +185,26 @@ def _apply_promo_discount(promo, base_price: Decimal, member_price: Decimal) -> 
         discount = base_price * Decimal(str(promo.discount_value)) / Decimal("100")
         return max(base_price - discount, Decimal("0"))
     return base_price
+
+
+DEFAULT_GALA_GUEST_PRICE = Decimal("75")
+
+
+def _calculate_gala_guest_total(event: Event, gala_guests: int) -> Decimal:
+    """Return the total charge for championship gala guests, or raise if not applicable."""
+    if gala_guests <= 0:
+        return Decimal("0")
+    if event.event_type != "championship":
+        raise HTTPException(
+            status_code=400,
+            detail="Gala guests can only be added for the championship event.",
+        )
+    unit_price = (
+        Decimal(str(event.gala_guest_price))
+        if event.gala_guest_price
+        else DEFAULT_GALA_GUEST_PRICE
+    )
+    return unit_price * gala_guests
 
 
 # ── Validate promo code (public) ──────────────────────────────────────────────
@@ -340,7 +345,8 @@ async def register_member(
         base = _apply_promo_discount(promo, base, Decimal(str(event.member_price or 0)))
 
     sponsor = Decimal(str(data.sponsor_amount or 0)) if data.is_sponsor else Decimal("0")
-    total   = base + sponsor
+    gala_total = _calculate_gala_guest_total(event, data.gala_guests)
+    total   = base + sponsor + gala_total
 
     for golfer in data.additional_golfers:
         total += _calculate_additional_golfer_price(db, event, golfer)
@@ -379,11 +385,13 @@ async def register_member(
         handicap=data.handicap,
         payment_status="paid" if capture else "free",
         payment_method="paypal" if capture else "none",
-        amount_paid=float(base + sponsor),
+        amount_paid=float(base + sponsor + gala_total),
         transaction_id=capture.capture_id if capture else None,
         is_sponsor=data.is_sponsor,
         sponsor_amount=float(data.sponsor_amount) if data.is_sponsor and data.sponsor_amount else None,
         company_name=data.company_name if data.is_sponsor else None,
+        gala_guests=data.gala_guests,
+        gala_guest_amount=float(gala_total) if gala_total else None,
     )
     db.add(registration)
     db.flush()
@@ -416,7 +424,7 @@ async def register_member(
 
     # Increment promo code usage
     if promo:
-        _increment_promo_usage(db, promo)
+        promo.times_used += 1
 
     db.commit()
     db.refresh(registration)
@@ -450,6 +458,8 @@ async def register_member(
                 base_price=float(base + sponsor),
                 additional_golfers=add_golfer_details if add_golfer_details else None,
                 sponsor_amount=float(data.sponsor_amount) if data.is_sponsor and data.sponsor_amount else None,
+                gala_guests=data.gala_guests,
+                gala_guest_amount=float(gala_total) if gala_total else None,
                 total=float(total),
             )
     except Exception:
@@ -494,7 +504,8 @@ async def register_guest(
         guest_price = _apply_promo_discount(promo, guest_price, Decimal(str(event.member_price or 0)))
 
     sponsor = Decimal(str(data.sponsor_amount or 0)) if data.is_sponsor else Decimal("0")
-    total   = guest_price + sponsor
+    gala_total = _calculate_gala_guest_total(event, data.gala_guests)
+    total   = guest_price + sponsor + gala_total
     total += Decimal(str(event.guest_price)) * len(data.additional_golfers)  # additional golfers at original price
 
     # Calculate prices for additional events (guests always pay guest price)
@@ -540,11 +551,13 @@ async def register_guest(
         handicap=data.handicap,
         payment_status="paid" if capture else "free",
         payment_method="paypal" if capture else "none",
-        amount_paid=float(guest_price + sponsor),
+        amount_paid=float(guest_price + sponsor + gala_total),
         transaction_id=capture.capture_id if capture else None,
         is_sponsor=data.is_sponsor,
         sponsor_amount=float(data.sponsor_amount) if data.is_sponsor and data.sponsor_amount else None,
         company_name=data.company_name if data.is_sponsor else None,
+        gala_guests=data.gala_guests,
+        gala_guest_amount=float(gala_total) if gala_total else None,
     )
     db.add(registration)
     db.flush()
@@ -588,7 +601,7 @@ async def register_guest(
 
     # Increment promo code usage
     if promo:
-        _increment_promo_usage(db, promo)
+        promo.times_used += 1
 
     db.commit()
     db.refresh(registration)
@@ -615,6 +628,8 @@ async def register_guest(
             base_price=float(guest_price + sponsor),
             additional_golfers=add_golfer_details if add_golfer_details else None,
             sponsor_amount=float(data.sponsor_amount) if data.is_sponsor and data.sponsor_amount else None,
+            gala_guests=data.gala_guests,
+            gala_guest_amount=float(gala_total) if gala_total else None,
             total=float(total),
         )
     except Exception:

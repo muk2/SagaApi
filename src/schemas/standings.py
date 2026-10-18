@@ -26,6 +26,7 @@ class LeaderboardEntryResponse(BaseModel):
     last_name: str
     stableford_points: float
     total_gross: Optional[float] = None
+    flight: Optional[str] = None
 
     class Config:
         from_attributes = True

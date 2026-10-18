@@ -79,6 +79,7 @@ class EventRegistrationDetail(BaseModel):
     is_sponsor: bool = False
     sponsor_amount: Optional[float] = None
     company_name: Optional[str] = None
+    gala_guests: int = 0
     model_config = {"from_attributes": True}
 
 
@@ -99,6 +100,7 @@ class CreateEventRequest(BaseModel):
     capacity: int
     image_url: Optional[str] = None
     event_type: str = "regular"
+    gala_guest_price: Optional[float] = None
 
 
 class UpdateEventRequest(BaseModel):
@@ -114,6 +116,7 @@ class UpdateEventRequest(BaseModel):
     image_url: Optional[str] = None
     registration_open: Optional[bool] = None
     event_type: Optional[str] = None
+    gala_guest_price: Optional[float] = None
 
 
 class EventResponse(BaseModel):
@@ -131,6 +134,7 @@ class EventResponse(BaseModel):
     image_url: Optional[str] = None
     registration_open: bool = True
     event_type: str = "regular"
+    gala_guest_price: Optional[float] = None
     model_config = {"from_attributes": True}
 
     @field_serializer("date")
