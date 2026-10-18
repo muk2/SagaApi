@@ -32,7 +32,11 @@ build/
 
 # Logs and temporary files
 *.log
+*.out
 tmp/
+
+# Uploaded media (served from disk, not meant to live in git)
+uploads/
 
 # Config with production URLs
 src/core/config.py
