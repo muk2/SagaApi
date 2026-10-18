@@ -372,24 +372,18 @@ def update_round_winners(
             detail="Record not found"
         )
 
-    if data.lowest_gross_winner is not None:
-        record.lowest_gross_winner = data.lowest_gross_winner
-    if data.lowest_gross_score is not None:
-        record.lowest_gross_score = data.lowest_gross_score
-    if data.stableford_winner is not None:
-        record.stableford_winner = data.stableford_winner
-    if data.stableford_points is not None:
-        record.stableford_points = data.stableford_points
-    if data.straightest_drive_winner is not None:
-        record.straightest_drive_winner = data.straightest_drive_winner
-    if data.straightest_drive_hole is not None:
-        record.straightest_drive_hole = data.straightest_drive_hole
-    if data.straightest_drive_distance is not None:
-        record.straightest_drive_distance = data.straightest_drive_distance
-    if data.close_to_pin is not None:
-        record.close_to_pin = json.dumps([e.dict() for e in data.close_to_pin])
-    if data.sponsors is not None:
-        record.sponsors = json.dumps([s.dict() for s in data.sponsors])
+    # This endpoint always receives the full current form state from the admin
+    # UI (never a partial patch), so every field is set directly — including
+    # None/empty values, which is how the UI clears a field back out.
+    record.lowest_gross_winner = data.lowest_gross_winner
+    record.lowest_gross_score = data.lowest_gross_score
+    record.stableford_winner = data.stableford_winner
+    record.stableford_points = data.stableford_points
+    record.straightest_drive_winner = data.straightest_drive_winner
+    record.straightest_drive_hole = data.straightest_drive_hole
+    record.straightest_drive_distance = data.straightest_drive_distance
+    record.close_to_pin = json.dumps([e.dict() for e in (data.close_to_pin or [])])
+    record.sponsors = json.dumps([s.dict() for s in (data.sponsors or [])])
 
     db.commit()
     db.refresh(record)

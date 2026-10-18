@@ -251,3 +251,4 @@ class EmailService:
             self._wrap(inner),
         )
 
+

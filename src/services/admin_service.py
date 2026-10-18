@@ -601,3 +601,4 @@ class AdminService:
             raise HTTPException(status_code=404, detail="Partner not found")
 
         return success
+
