@@ -1,0 +1,1237 @@
+[
+  {
+    "timestamp": "2026-03-22T17:11:40.745981+00:00",
+    "operation": "auth",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/auth",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "180",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "mid": "3130030854451",
+        "developerKey": "e06ba83a211382119a276231422822c8",
+        "password": "shsxYLwTk/Hwa85KZhehGeQeQm3g16vUqqROrAcAR97dQRkcMRvHf9NOR++nsPpY0dnfXw6yBNWjbOrQXWQmzg=="
+      }
+    },
+    "response": {
+      "status_code": 200,
+      "body": {
+        "accountId": 609,
+        "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDE5OTUwMCwiZXhwIjoxNzc0MjAzMTAwfQ.-0dSqqrINA-h6cNKngAtJu_59SF1bN-P6zn3Qo5CFwX94_64xO6icN7W6AV3hty1i5bAPE-CWVp1Hep1EEWOxQ",
+        "mid": "3130030854451"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-22T17:11:41.256733+00:00",
+    "operation": "charge",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/mids/3130030854451/gateways/payment",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "223",
+        "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDE5OTUwMCwiZXhwIjoxNzc0MjAzMTAwfQ.-0dSqqrINA-h6cNKngAtJu_59SF1bN-P6zn3Qo5CFwX94_64xO6icN7W6AV3hty1i5bAPE-CWVp1Hep1EEWOxQ",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "token": "41bb3089fb89dfec52d28b72046aacfd:9af04bd6253a23998659ed060adadbd28f96c8f2f45c7af845c171ef5dd70ca3",
+        "amount": "125.03",
+        "gateway_public_key": "adf9abf6411fedc2522f4a5e519fdc0f",
+        "transaction_source": "PA-JS-SDK"
+      }
+    },
+    "response": {
+      "status_code": 201,
+      "body": {
+        "uniq_id": "ccs_2134",
+        "response_code": "APR",
+        "status_code": "00",
+        "status_message": "00 - Approval",
+        "last4": "0009",
+        "exp_date": "2028-04-01",
+        "network": "Mastercard",
+        "cc_type": "Keyed",
+        "sold_by": "rosseth43@gmail.com",
+        "is_duplicate": false,
+        "requested_amt": "125.03",
+        "authorized_amt": "125.03",
+        "invoice_number": "1463"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-22T17:12:05.834218+00:00",
+    "operation": "auth",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/auth",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "180",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "mid": "3130030854451",
+        "developerKey": "e06ba83a211382119a276231422822c8",
+        "password": "shsxYLwTk/Hwa85KZhehGeQeQm3g16vUqqROrAcAR97dQRkcMRvHf9NOR++nsPpY0dnfXw6yBNWjbOrQXWQmzg=="
+      }
+    },
+    "response": {
+      "status_code": 200,
+      "body": {
+        "accountId": 609,
+        "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDE5OTUyNSwiZXhwIjoxNzc0MjAzMTI1fQ.r3OkE5yc0L0nf_7V98R-lsXpyCd3SJ5U6TjZsEkQoS-5oNtiq2j2qI01tkPnXQTDZCRuzT0fEiVsz3tY2g32rQ",
+        "mid": "3130030854451"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-22T17:12:16.355886+00:00",
+    "operation": "refund",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/accounts/609/transactions",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "124",
+        "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDE5OTUyNSwiZXhwIjoxNzc0MjAzMTI1fQ.r3OkE5yc0L0nf_7V98R-lsXpyCd3SJ5U6TjZsEkQoS-5oNtiq2j2qI01tkPnXQTDZCRuzT0fEiVsz3tY2g32rQ",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "type": "refund",
+        "ccs_pk": 2134,
+        "amount": "125.03",
+        "username": "rosseth43@gmail.com",
+        "transaction_source": "PA-JS-SDK"
+      }
+    },
+    "response": {
+      "status_code": 201,
+      "body": {
+        "tran_type": "CCE9",
+        "refund_id": 452,
+        "http_status_code": 400,
+        "response_code": "HST",
+        "status_code": "91",
+        "status_message": "91 - Issuer or Switch is Inoperative",
+        "response": "91",
+        "processor_response_id": 5289,
+        "amount_requested": "125.03",
+        "amount_approved": "0.00",
+        "credit_card_network": "MC",
+        "last4": "0009",
+        "first6": "500000",
+        "parent_transaction_id": "ccs_2134",
+        "sold_by": "Roshan S"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-22T17:20:03.506400+00:00",
+    "operation": "auth",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/auth",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "180",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "mid": "3130030854451",
+        "developerKey": "e06ba83a211382119a276231422822c8",
+        "password": "shsxYLwTk/Hwa85KZhehGeQeQm3g16vUqqROrAcAR97dQRkcMRvHf9NOR++nsPpY0dnfXw6yBNWjbOrQXWQmzg=="
+      }
+    },
+    "response": {
+      "status_code": 200,
+      "body": {
+        "accountId": 609,
+        "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDIwMDAwMywiZXhwIjoxNzc0MjAzNjAzfQ.SVAF4t5xi_dJ6kaDk5XnTMFdbhaD4BVQgI3GcpVgNIBTQEILjNnRYGJrnY0g-SEknRf_laHixxbc63znb6Whxw",
+        "mid": "3130030854451"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-22T17:20:04.111903+00:00",
+    "operation": "charge",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/mids/3130030854451/gateways/payment",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "221",
+        "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDIwMDAwMywiZXhwIjoxNzc0MjAzNjAzfQ.SVAF4t5xi_dJ6kaDk5XnTMFdbhaD4BVQgI3GcpVgNIBTQEILjNnRYGJrnY0g-SEknRf_laHixxbc63znb6Whxw",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "token": "15a1c668f792a46c1f4369a9e5e3ad64:921c7710ae1f98afbcc6466a5710128acc9199ddc42f161c6cb1768b0966a479",
+        "amount": "1.05",
+        "gateway_public_key": "adf9abf6411fedc2522f4a5e519fdc0f",
+        "transaction_source": "PA-JS-SDK"
+      }
+    },
+    "response": {
+      "status_code": 400,
+      "body": {
+        "message": "Bad Request"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-22T17:23:32.606807+00:00",
+    "operation": "auth",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/auth",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "180",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "mid": "3130030854451",
+        "developerKey": "e06ba83a211382119a276231422822c8",
+        "password": "shsxYLwTk/Hwa85KZhehGeQeQm3g16vUqqROrAcAR97dQRkcMRvHf9NOR++nsPpY0dnfXw6yBNWjbOrQXWQmzg=="
+      }
+    },
+    "response": {
+      "status_code": 200,
+      "body": {
+        "accountId": 609,
+        "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDIwMDIxMiwiZXhwIjoxNzc0MjAzODEyfQ.yTFykq417EU0XmFivpo7c8CzfBbl8j1f_Eagx89LjCs_RR0wjL9AhgJ23K6RvKUrWGPfk2uXdyRt04kZJrkcyg",
+        "mid": "3130030854451"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-22T17:23:33.112712+00:00",
+    "operation": "charge",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/mids/3130030854451/gateways/payment",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "222",
+        "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDIwMDIxMiwiZXhwIjoxNzc0MjAzODEyfQ.yTFykq417EU0XmFivpo7c8CzfBbl8j1f_Eagx89LjCs_RR0wjL9AhgJ23K6RvKUrWGPfk2uXdyRt04kZJrkcyg",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "token": "dc10a8a8096b857c03a979d5bb133418:1d9188182875fd0142b4378a7eb9c69ff28d21bc31856a6209d723312699b60f",
+        "amount": "21.05",
+        "gateway_public_key": "adf9abf6411fedc2522f4a5e519fdc0f",
+        "transaction_source": "PA-JS-SDK"
+      }
+    },
+    "response": {
+      "status_code": 400,
+      "body": {
+        "message": "Bad Request"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-22T17:26:19.176929+00:00",
+    "operation": "auth",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/auth",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "180",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "mid": "3130030854451",
+        "developerKey": "e06ba83a211382119a276231422822c8",
+        "password": "shsxYLwTk/Hwa85KZhehGeQeQm3g16vUqqROrAcAR97dQRkcMRvHf9NOR++nsPpY0dnfXw6yBNWjbOrQXWQmzg=="
+      }
+    },
+    "response": {
+      "status_code": 200,
+      "body": {
+        "accountId": 609,
+        "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDIwMDM3OSwiZXhwIjoxNzc0MjAzOTc5fQ.aLKTJ3IPyOliMt5ufUsxPiMpegKi6x5d6xv8DBCTCrORv3KN1SprHr2r5OYH1CYH24bSx7j3B-aL1lkGVfIypA",
+        "mid": "3130030854451"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-22T17:26:19.648718+00:00",
+    "operation": "charge",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/mids/3130030854451/gateways/payment",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "222",
+        "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDIwMDM3OSwiZXhwIjoxNzc0MjAzOTc5fQ.aLKTJ3IPyOliMt5ufUsxPiMpegKi6x5d6xv8DBCTCrORv3KN1SprHr2r5OYH1CYH24bSx7j3B-aL1lkGVfIypA",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "token": "721741acd95c27e180e714373182aba7:7a2d1b5d9b36d43981a59ff99db0da4a134e618f8a7b2c28272a7eff3ebc48cf",
+        "amount": "21.05",
+        "gateway_public_key": "adf9abf6411fedc2522f4a5e519fdc0f",
+        "transaction_source": "PA-JS-SDK"
+      }
+    },
+    "response": {
+      "status_code": 400,
+      "body": {
+        "message": "Bad Request"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-22T17:37:35.776381+00:00",
+    "operation": "auth",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/auth",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "180",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "mid": "3130030854451",
+        "developerKey": "e06ba83a211382119a276231422822c8",
+        "password": "shsxYLwTk/Hwa85KZhehGeQeQm3g16vUqqROrAcAR97dQRkcMRvHf9NOR++nsPpY0dnfXw6yBNWjbOrQXWQmzg=="
+      }
+    },
+    "response": {
+      "status_code": 200,
+      "body": {
+        "accountId": 609,
+        "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDIwMTA1NSwiZXhwIjoxNzc0MjA0NjU1fQ.WoSvq-Hw7rixPwuhgMWW0652bC0ArbB0uVx3ZEqEbt9jtPzd2I9iJquvfvxgp2hIn4OSj06UKbIMBH9d3gTJZQ",
+        "mid": "3130030854451"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-22T17:37:36.299908+00:00",
+    "operation": "charge",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/mids/3130030854451/gateways/payment",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "223",
+        "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDIwMTA1NSwiZXhwIjoxNzc0MjA0NjU1fQ.WoSvq-Hw7rixPwuhgMWW0652bC0ArbB0uVx3ZEqEbt9jtPzd2I9iJquvfvxgp2hIn4OSj06UKbIMBH9d3gTJZQ",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "token": "7bb1d4668fc7f0d424710ca7cff4475a:38dec465592f44d0a25f39aa4aa75e91ebb52868dd9dbfdabed32c1dddfdafa7",
+        "amount": "125.03",
+        "gateway_public_key": "adf9abf6411fedc2522f4a5e519fdc0f",
+        "transaction_source": "PA-JS-SDK"
+      }
+    },
+    "response": {
+      "status_code": 201,
+      "body": {
+        "uniq_id": "ccs_2138",
+        "response_code": "APR",
+        "status_code": "00",
+        "status_message": "00 - Approval",
+        "last4": "0009",
+        "exp_date": "2028-11-01",
+        "network": "Mastercard",
+        "cc_type": "Keyed",
+        "sold_by": "rosseth43@gmail.com",
+        "is_duplicate": true,
+        "requested_amt": "125.03",
+        "authorized_amt": "125.03",
+        "invoice_number": "1467"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-22T17:46:29.879209+00:00",
+    "operation": "auth",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/auth",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "180",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "mid": "3130030854451",
+        "developerKey": "e06ba83a211382119a276231422822c8",
+        "password": "shsxYLwTk/Hwa85KZhehGeQeQm3g16vUqqROrAcAR97dQRkcMRvHf9NOR++nsPpY0dnfXw6yBNWjbOrQXWQmzg=="
+      }
+    },
+    "response": {
+      "status_code": 200,
+      "body": {
+        "accountId": 609,
+        "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDIwMTU4OSwiZXhwIjoxNzc0MjA1MTg5fQ.5JabUPe8jq_9fK6twbC5lTOC8MFKzsSPVb_CUqRCBL0JXXcDKCVNxC5I2egi33g49BsblXQj6Uu0kEsFa0vHEw",
+        "mid": "3130030854451"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-22T17:46:30.447642+00:00",
+    "operation": "charge",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/mids/3130030854451/gateways/payment",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "223",
+        "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDIwMTU4OSwiZXhwIjoxNzc0MjA1MTg5fQ.5JabUPe8jq_9fK6twbC5lTOC8MFKzsSPVb_CUqRCBL0JXXcDKCVNxC5I2egi33g49BsblXQj6Uu0kEsFa0vHEw",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "token": "7b97f6fa925bde0b68e6872c1498c7e9:73f6edf1f5519bfd709489e94dee5ca28ddfcaad8621eb8fca2a227730a9d800",
+        "amount": "150.00",
+        "gateway_public_key": "adf9abf6411fedc2522f4a5e519fdc0f",
+        "transaction_source": "PA-JS-SDK"
+      }
+    },
+    "response": {
+      "status_code": 201,
+      "body": {
+        "uniq_id": "ccs_2139",
+        "response_code": "APR",
+        "status_code": "00",
+        "status_message": "00 - Approval",
+        "last4": "0002",
+        "exp_date": "2026-12-01",
+        "network": "Visa",
+        "cc_type": "Keyed",
+        "sold_by": "rosseth43@gmail.com",
+        "is_duplicate": false,
+        "requested_amt": "150.00",
+        "authorized_amt": "150.00",
+        "invoice_number": "1468"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T03:07:55.938920+00:00",
+    "operation": "auth",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/auth",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "180",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "mid": "3130030854451",
+        "developerKey": "e06ba83a211382119a276231422822c8",
+        "password": "shsxYLwTk/Hwa85KZhehGeQeQm3g16vUqqROrAcAR97dQRkcMRvHf9NOR++nsPpY0dnfXw6yBNWjbOrQXWQmzg=="
+      }
+    },
+    "response": {
+      "status_code": 200,
+      "body": {
+        "accountId": 609,
+        "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDMyMTY3NSwiZXhwIjoxNzc0MzI1Mjc1fQ.B671jYPrKPS3wp92N22UnU4jtGXiRtkzONyEw5foi2pnuM1bI-HGO2OEVdFePUQeTSozuWT9L4FrN2j8JcZy6w",
+        "mid": "3130030854451"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T03:07:59.283764+00:00",
+    "operation": "refund",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/accounts/609/transactions",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "124",
+        "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDMyMTY3NSwiZXhwIjoxNzc0MzI1Mjc1fQ.B671jYPrKPS3wp92N22UnU4jtGXiRtkzONyEw5foi2pnuM1bI-HGO2OEVdFePUQeTSozuWT9L4FrN2j8JcZy6w",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "type": "refund",
+        "ccs_pk": 2138,
+        "amount": "125.03",
+        "username": "rosseth43@gmail.com",
+        "transaction_source": "PA-JS-SDK"
+      }
+    },
+    "response": {
+      "status_code": 201,
+      "body": {
+        "tran_type": "CCE9",
+        "refund_id": 453,
+        "processor_response_id": 5318,
+        "processor_reference_token": "09LN5B2HV09J5G26JL4",
+        "credit_card_network": "MC",
+        "auth_code": "034316",
+        "status_message": "00 - Approval",
+        "status_code": "00",
+        "amount_approved": "125.03",
+        "amount_requested": "125.03",
+        "last4": "0009",
+        "first6": "500000",
+        "response_code": "APR",
+        "parent_transaction_id": "ccs_2138",
+        "sold_by": "Roshan S"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T03:25:29.844599+00:00",
+    "operation": "auth",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/auth",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "180",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "mid": "3130030854451",
+        "developerKey": "e06ba83a211382119a276231422822c8",
+        "password": "shsxYLwTk/Hwa85KZhehGeQeQm3g16vUqqROrAcAR97dQRkcMRvHf9NOR++nsPpY0dnfXw6yBNWjbOrQXWQmzg=="
+      }
+    },
+    "response": {
+      "status_code": 200,
+      "body": {
+        "accountId": 609,
+        "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDMyMjcyOSwiZXhwIjoxNzc0MzI2MzI5fQ.ImrSB-YTvxUHJOnVXZdfLi2ewPMqQXkCwQRor_8ldWgJJGzbhKxVG8vmouaVPQiAuEdaw9AlOr_xZ68T09B4Ow",
+        "mid": "3130030854451"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T03:25:30.417000+00:00",
+    "operation": "charge",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/mids/3130030854451/gateways/payment",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "223",
+        "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDMyMjcyOSwiZXhwIjoxNzc0MzI2MzI5fQ.ImrSB-YTvxUHJOnVXZdfLi2ewPMqQXkCwQRor_8ldWgJJGzbhKxVG8vmouaVPQiAuEdaw9AlOr_xZ68T09B4Ow",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "token": "5881a8860766ad67f479ecc3211ff5c1:edb859eeb21c5d889243b4144e9442e1360a367e6b481352fde983a29409706a",
+        "amount": "121.04",
+        "gateway_public_key": "adf9abf6411fedc2522f4a5e519fdc0f",
+        "transaction_source": "PA-JS-SDK"
+      }
+    },
+    "response": {
+      "status_code": 400,
+      "body": {
+        "message": "Bad Request"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T03:29:12.741360+00:00",
+    "operation": "auth",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/auth",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "180",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "mid": "3130030854451",
+        "developerKey": "e06ba83a211382119a276231422822c8",
+        "password": "shsxYLwTk/Hwa85KZhehGeQeQm3g16vUqqROrAcAR97dQRkcMRvHf9NOR++nsPpY0dnfXw6yBNWjbOrQXWQmzg=="
+      }
+    },
+    "response": {
+      "status_code": 200,
+      "body": {
+        "accountId": 609,
+        "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDMyMjk1MiwiZXhwIjoxNzc0MzI2NTUyfQ.-a6hYmzbTFAdl5DxzIvZBogVCpKgQmNr1soDQr9VwRgzc7NrD4m2edAlFBtc3RX6Gh1Mbd72wj2h2sh1CQ7KhA",
+        "mid": "3130030854451"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T03:29:13.374542+00:00",
+    "operation": "charge",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/mids/3130030854451/gateways/payment",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "223",
+        "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDMyMjk1MiwiZXhwIjoxNzc0MzI2NTUyfQ.-a6hYmzbTFAdl5DxzIvZBogVCpKgQmNr1soDQr9VwRgzc7NrD4m2edAlFBtc3RX6Gh1Mbd72wj2h2sh1CQ7KhA",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "token": "afc191961d9c7d8299ba3299120eefb8:a25d70a827b2d73aed1ed6a9bb89345ed1c5adcc8b004f669682c055d5d66089",
+        "amount": "100.05",
+        "gateway_public_key": "adf9abf6411fedc2522f4a5e519fdc0f",
+        "transaction_source": "PA-JS-SDK"
+      }
+    },
+    "response": {
+      "status_code": 201,
+      "body": {
+        "uniq_id": "ccs_2144",
+        "response_code": "APR",
+        "status_code": "00",
+        "status_message": "00 - Approval",
+        "last4": "0002",
+        "exp_date": "2026-12-01",
+        "network": "Visa",
+        "cc_type": "Keyed",
+        "sold_by": "rosseth43@gmail.com",
+        "is_duplicate": false,
+        "requested_amt": "100.05",
+        "authorized_amt": "100.05",
+        "invoice_number": "1471"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T03:32:42.197918+00:00",
+    "operation": "auth",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/auth",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "180",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "mid": "3130030854451",
+        "developerKey": "e06ba83a211382119a276231422822c8",
+        "password": "shsxYLwTk/Hwa85KZhehGeQeQm3g16vUqqROrAcAR97dQRkcMRvHf9NOR++nsPpY0dnfXw6yBNWjbOrQXWQmzg=="
+      }
+    },
+    "response": {
+      "status_code": 200,
+      "body": {
+        "accountId": 609,
+        "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDMyMzE2MiwiZXhwIjoxNzc0MzI2NzYyfQ.2Rnxf3rwOUrL0j3xU1GXd7oleDuUCHWf8Q4SSXIdl4N_LYNXhB0F-0wpHlgj5lC73ZjBY99Kxud4smuP1jfKiA",
+        "mid": "3130030854451"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T03:32:49.425908+00:00",
+    "operation": "refund",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/accounts/609/transactions",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "124",
+        "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDMyMzE2MiwiZXhwIjoxNzc0MzI2NzYyfQ.2Rnxf3rwOUrL0j3xU1GXd7oleDuUCHWf8Q4SSXIdl4N_LYNXhB0F-0wpHlgj5lC73ZjBY99Kxud4smuP1jfKiA",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "type": "refund",
+        "ccs_pk": 2144,
+        "amount": "100.05",
+        "username": "rosseth43@gmail.com",
+        "transaction_source": "PA-JS-SDK"
+      }
+    },
+    "response": {
+      "status_code": 201,
+      "body": {
+        "tran_type": "CCE9",
+        "refund_id": 454,
+        "processor_response_id": 5325,
+        "processor_reference_token": "09LN5B3VADZ5ZGKYKR9",
+        "credit_card_network": "VI",
+        "auth_code": "034695",
+        "status_message": "00 - Approval",
+        "status_code": "00",
+        "amount_approved": "100.05",
+        "amount_requested": "100.05",
+        "last4": "0002",
+        "first6": "400000",
+        "response_code": "APR",
+        "parent_transaction_id": "ccs_2144",
+        "sold_by": "Roshan S"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T03:36:31.871952+00:00",
+    "operation": "auth",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/auth",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "180",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "mid": "3130030854451",
+        "developerKey": "e06ba83a211382119a276231422822c8",
+        "password": "shsxYLwTk/Hwa85KZhehGeQeQm3g16vUqqROrAcAR97dQRkcMRvHf9NOR++nsPpY0dnfXw6yBNWjbOrQXWQmzg=="
+      }
+    },
+    "response": {
+      "status_code": 200,
+      "body": {
+        "accountId": 609,
+        "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDMyMzM5MSwiZXhwIjoxNzc0MzI2OTkxfQ.18N08CUil_0w686AIhzIl8CitHjhfKU_aZ8tde9BPfdgYizI53Xb0wQ6kF-jMNKU-nRFWvX8PGAuZw4IEFnSeA",
+        "mid": "3130030854451"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T03:36:32.499666+00:00",
+    "operation": "charge",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/mids/3130030854451/gateways/payment",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "221",
+        "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDMyMzM5MSwiZXhwIjoxNzc0MzI2OTkxfQ.18N08CUil_0w686AIhzIl8CitHjhfKU_aZ8tde9BPfdgYizI53Xb0wQ6kF-jMNKU-nRFWvX8PGAuZw4IEFnSeA",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "token": "72b5243aee4df346da3d362a22e80361:701e415c97918e8aa14b6fbb1e0a48df68a1c3bee96ac5e609d6feea0263b071",
+        "amount": "1.05",
+        "gateway_public_key": "adf9abf6411fedc2522f4a5e519fdc0f",
+        "transaction_source": "PA-JS-SDK"
+      }
+    },
+    "response": {
+      "status_code": 400,
+      "body": {
+        "message": "Bad Request"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T03:37:52.626705+00:00",
+    "operation": "auth",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/auth",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "180",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "mid": "3130030854451",
+        "developerKey": "e06ba83a211382119a276231422822c8",
+        "password": "shsxYLwTk/Hwa85KZhehGeQeQm3g16vUqqROrAcAR97dQRkcMRvHf9NOR++nsPpY0dnfXw6yBNWjbOrQXWQmzg=="
+      }
+    },
+    "response": {
+      "status_code": 200,
+      "body": {
+        "accountId": 609,
+        "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDMyMzQ3MiwiZXhwIjoxNzc0MzI3MDcyfQ.zjmkgHY-aYlZ9ShpVz9sLPddrR-63D9FFQzN45cwCXCFKKfij4JLss3jBYe7zuGQvwReEaeoeCDj_KA9RiLxIQ",
+        "mid": "3130030854451"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T03:37:53.191237+00:00",
+    "operation": "charge",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/mids/3130030854451/gateways/payment",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "221",
+        "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDMyMzQ3MiwiZXhwIjoxNzc0MzI3MDcyfQ.zjmkgHY-aYlZ9ShpVz9sLPddrR-63D9FFQzN45cwCXCFKKfij4JLss3jBYe7zuGQvwReEaeoeCDj_KA9RiLxIQ",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "token": "9f6954875b50901cf678f1fbfe298b9a:18f7ce86f4edae6d7a7786b21633e080716bfab84af6f7846dbfaa9c0022b849",
+        "amount": "1.00",
+        "gateway_public_key": "adf9abf6411fedc2522f4a5e519fdc0f",
+        "transaction_source": "PA-JS-SDK"
+      }
+    },
+    "response": {
+      "status_code": 201,
+      "body": {
+        "uniq_id": "ccs_2146",
+        "response_code": "APR",
+        "status_code": "00",
+        "status_message": "00 - Approval",
+        "last4": "0002",
+        "exp_date": "2026-12-01",
+        "network": "Visa",
+        "cc_type": "Keyed",
+        "sold_by": "rosseth43@gmail.com",
+        "is_duplicate": false,
+        "requested_amt": "1.00",
+        "authorized_amt": "1.00",
+        "invoice_number": "1473"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T03:40:00.690204+00:00",
+    "operation": "auth",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/auth",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "180",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "mid": "3130030854451",
+        "developerKey": "e06ba83a211382119a276231422822c8",
+        "password": "shsxYLwTk/Hwa85KZhehGeQeQm3g16vUqqROrAcAR97dQRkcMRvHf9NOR++nsPpY0dnfXw6yBNWjbOrQXWQmzg=="
+      }
+    },
+    "response": {
+      "status_code": 200,
+      "body": {
+        "accountId": 609,
+        "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDMyMzYwMCwiZXhwIjoxNzc0MzI3MjAwfQ.Z6FW7uw1Y1YR9sscmZKQZ92YvrzD3L80ja6902_oFRWandyyiuGIMwZtoC9IKCek65rF-jgsJVfs0EjyEdnIfQ",
+        "mid": "3130030854451"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T03:40:09.416692+00:00",
+    "operation": "refund",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/accounts/609/transactions",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "122",
+        "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDMyMzYwMCwiZXhwIjoxNzc0MzI3MjAwfQ.Z6FW7uw1Y1YR9sscmZKQZ92YvrzD3L80ja6902_oFRWandyyiuGIMwZtoC9IKCek65rF-jgsJVfs0EjyEdnIfQ",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "type": "refund",
+        "ccs_pk": 2146,
+        "amount": "1.00",
+        "username": "rosseth43@gmail.com",
+        "transaction_source": "PA-JS-SDK"
+      }
+    },
+    "response": {
+      "status_code": 201,
+      "body": {
+        "tran_type": "CCE9",
+        "refund_id": 455,
+        "processor_response_id": 5332,
+        "processor_reference_token": "09LN5B4WMKM121H6L2P",
+        "credit_card_network": "VI",
+        "auth_code": "034799",
+        "status_message": "00 - Approval",
+        "status_code": "00",
+        "amount_approved": "1.00",
+        "amount_requested": "1.00",
+        "last4": "0002",
+        "first6": "400000",
+        "response_code": "APR",
+        "parent_transaction_id": "ccs_2146",
+        "sold_by": "Roshan S"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T03:41:12.853743+00:00",
+    "operation": "auth",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/auth",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "180",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "mid": "3130030854451",
+        "developerKey": "e06ba83a211382119a276231422822c8",
+        "password": "shsxYLwTk/Hwa85KZhehGeQeQm3g16vUqqROrAcAR97dQRkcMRvHf9NOR++nsPpY0dnfXw6yBNWjbOrQXWQmzg=="
+      }
+    },
+    "response": {
+      "status_code": 200,
+      "body": {
+        "accountId": 609,
+        "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDMyMzY3MiwiZXhwIjoxNzc0MzI3MjcyfQ.bTAvwmvqdZ7A2PqeZrh8yhiRcAry_oFVVYkyE9REg-wCZUavs9jSqnGvbJBkcddUAR_4JCZmPtniRsoJ2m48Yw",
+        "mid": "3130030854451"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T03:41:13.452341+00:00",
+    "operation": "charge",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/mids/3130030854451/gateways/payment",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "221",
+        "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDMyMzY3MiwiZXhwIjoxNzc0MzI3MjcyfQ.bTAvwmvqdZ7A2PqeZrh8yhiRcAry_oFVVYkyE9REg-wCZUavs9jSqnGvbJBkcddUAR_4JCZmPtniRsoJ2m48Yw",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "token": "5315b9c8602fe1ebe7a6c7442e10dead:260ccb4e40cad8d594e5aff9574148efa0d057f45c119e02b7bb88d7a76f4f19",
+        "amount": "1.05",
+        "gateway_public_key": "adf9abf6411fedc2522f4a5e519fdc0f",
+        "transaction_source": "PA-JS-SDK"
+      }
+    },
+    "response": {
+      "status_code": 400,
+      "body": {
+        "message": "Bad Request"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T12:10:49.506719+00:00",
+    "operation": "auth",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/auth",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "180",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "mid": "3130030854451",
+        "developerKey": "e06ba83a211382119a276231422822c8",
+        "password": "shsxYLwTk/Hwa85KZhehGeQeQm3g16vUqqROrAcAR97dQRkcMRvHf9NOR++nsPpY0dnfXw6yBNWjbOrQXWQmzg=="
+      }
+    },
+    "response": {
+      "status_code": 200,
+      "body": {
+        "accountId": 609,
+        "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDM1NDI0OSwiZXhwIjoxNzc0MzU3ODQ5fQ.sUbKdIFygbz_ZInWnZDWyXNgWYgVQ32PYZOCeezxwUgtuTqQ6ak9nEEmKsB6LJG9FzibtEnilREiNygWc3ww6w",
+        "mid": "3130030854451"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T12:10:50.079812+00:00",
+    "operation": "charge",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/mids/3130030854451/gateways/payment",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "221",
+        "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDM1NDI0OSwiZXhwIjoxNzc0MzU3ODQ5fQ.sUbKdIFygbz_ZInWnZDWyXNgWYgVQ32PYZOCeezxwUgtuTqQ6ak9nEEmKsB6LJG9FzibtEnilREiNygWc3ww6w",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "token": "f3b2abf0e552e3f89e24592a547d0bc1:01fd9bf04593da74b055ef46efad1e3ab44628a19ea751980b42230c511344d5",
+        "amount": "1.05",
+        "gateway_public_key": "adf9abf6411fedc2522f4a5e519fdc0f",
+        "transaction_source": "PA-JS-SDK"
+      }
+    },
+    "response": {
+      "status_code": 400,
+      "body": {
+        "message": "Bad Request"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T12:38:27.311911+00:00",
+    "operation": "auth",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/auth",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "180",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "mid": "3130030854451",
+        "developerKey": "e06ba83a211382119a276231422822c8",
+        "password": "shsxYLwTk/Hwa85KZhehGeQeQm3g16vUqqROrAcAR97dQRkcMRvHf9NOR++nsPpY0dnfXw6yBNWjbOrQXWQmzg=="
+      }
+    },
+    "response": {
+      "status_code": 200,
+      "body": {
+        "accountId": 609,
+        "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDM1NTkwNywiZXhwIjoxNzc0MzU5NTA3fQ.BWQI58qtLE4fuFKwc-RSZlJgltAKALf6InH_mGqD7iIyb-fOdYGUWtYXpi0A2qShDJpWqiBRXBLp4Rwxo4_wUw",
+        "mid": "3130030854451"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T12:38:27.912674+00:00",
+    "operation": "charge",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/mids/3130030854451/gateways/payment",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "186",
+        "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDM1NTkwNywiZXhwIjoxNzc0MzU5NTA3fQ.BWQI58qtLE4fuFKwc-RSZlJgltAKALf6InH_mGqD7iIyb-fOdYGUWtYXpi0A2qShDJpWqiBRXBLp4Rwxo4_wUw",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "token": "a216b9dfe73b4743a561cdd318813914:9b18de05e2537ee3fbd7332601033057ece48ab6d6e558486655265bb7e489eb",
+        "amount": "1.23",
+        "gateway_public_key": "adf9abf6411fedc2522f4a5e519fdc0f"
+      }
+    },
+    "response": {
+      "status_code": 400,
+      "body": {
+        "message": "Bad Request"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T22:04:45.700805+00:00",
+    "operation": "auth",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/auth",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "180",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "mid": "3130030854451",
+        "developerKey": "e06ba83a211382119a276231422822c8",
+        "password": "shsxYLwTk/Hwa85KZhehGeQeQm3g16vUqqROrAcAR97dQRkcMRvHf9NOR++nsPpY0dnfXw6yBNWjbOrQXWQmzg=="
+      }
+    },
+    "response": {
+      "status_code": 200,
+      "body": {
+        "accountId": 609,
+        "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDM4OTg4NSwiZXhwIjoxNzc0MzkzNDg1fQ.Sgnag_515RvW9h21gAqlNQ5WFo9DoLq7iMDUhQgrZ8yNYMVG_p-GGawtV9Wu3TAFxS3ONRpIPdMdFmhEnI8OrQ",
+        "mid": "3130030854451"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T22:04:46.308561+00:00",
+    "operation": "charge",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/mids/3130030854451/gateways/payment",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "221",
+        "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDM4OTg4NSwiZXhwIjoxNzc0MzkzNDg1fQ.Sgnag_515RvW9h21gAqlNQ5WFo9DoLq7iMDUhQgrZ8yNYMVG_p-GGawtV9Wu3TAFxS3ONRpIPdMdFmhEnI8OrQ",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "token": "b42cd8153ee80935797c8aeb266e52e2:cbabfba3d9d94b4f88c40c74299edf022124018e5cc6488799b80672dc4b7956",
+        "amount": "1.05",
+        "gateway_public_key": "adf9abf6411fedc2522f4a5e519fdc0f",
+        "transaction_source": "PA-JS-SDK"
+      }
+    },
+    "response": {
+      "status_code": 400,
+      "body": {
+        "message": "Bad Request"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T22:10:39.280355+00:00",
+    "operation": "auth",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/auth",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "180",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "mid": "3130030854451",
+        "developerKey": "e06ba83a211382119a276231422822c8",
+        "password": "shsxYLwTk/Hwa85KZhehGeQeQm3g16vUqqROrAcAR97dQRkcMRvHf9NOR++nsPpY0dnfXw6yBNWjbOrQXWQmzg=="
+      }
+    },
+    "response": {
+      "status_code": 200,
+      "body": {
+        "accountId": 609,
+        "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDM5MDIzOSwiZXhwIjoxNzc0MzkzODM5fQ.t-CQwkOuYJH7qyhwZApfBRUIjYImi1iZMT99fqqa61Xu3jgi3eJgldRibdWOH4RrOb3enC0RRmnTU1_AC3R_wA",
+        "mid": "3130030854451"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T22:10:39.779175+00:00",
+    "operation": "charge",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/mids/3130030854451/gateways/payment",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "221",
+        "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDM5MDIzOSwiZXhwIjoxNzc0MzkzODM5fQ.t-CQwkOuYJH7qyhwZApfBRUIjYImi1iZMT99fqqa61Xu3jgi3eJgldRibdWOH4RrOb3enC0RRmnTU1_AC3R_wA",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "token": "d99712f87018da0d6e62bd29f93fb854:3479c83851f511512fc0aab2eba29869577aaf0df2069ca548993c18106374da",
+        "amount": "1.05",
+        "gateway_public_key": "adf9abf6411fedc2522f4a5e519fdc0f",
+        "transaction_source": "PA-JS-SDK"
+      }
+    },
+    "response": {
+      "status_code": 400,
+      "body": {
+        "message": "Bad Request"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T22:37:06.477391+00:00",
+    "operation": "auth",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/auth",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "180",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "mid": "3130030854451",
+        "developerKey": "e06ba83a211382119a276231422822c8",
+        "password": "shsxYLwTk/Hwa85KZhehGeQeQm3g16vUqqROrAcAR97dQRkcMRvHf9NOR++nsPpY0dnfXw6yBNWjbOrQXWQmzg=="
+      }
+    },
+    "response": {
+      "status_code": 200,
+      "body": {
+        "accountId": 609,
+        "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDM5MTgyNiwiZXhwIjoxNzc0Mzk1NDI2fQ.XnURFungGTtxBbl3Kr8AHIBv42QjoRAYYAXd0GLQjTFz47jj5FxAtZQyd0U2Ay9ALXxD5l1l_7i4lI-VBNNSRQ",
+        "mid": "3130030854451"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T22:37:07.099903+00:00",
+    "operation": "charge",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/mids/3130030854451/gateways/payment",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "221",
+        "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDM5MTgyNiwiZXhwIjoxNzc0Mzk1NDI2fQ.XnURFungGTtxBbl3Kr8AHIBv42QjoRAYYAXd0GLQjTFz47jj5FxAtZQyd0U2Ay9ALXxD5l1l_7i4lI-VBNNSRQ",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "token": "ba11c087307ed0a0410b3a474f8d30a4:944296c16773bb8e15a3cb78645a566a7f6f69fe2b5c08da8bf8a488252ed741",
+        "amount": "1.05",
+        "gateway_public_key": "adf9abf6411fedc2522f4a5e519fdc0f",
+        "transaction_source": "PA-JS-SDK"
+      }
+    },
+    "response": {
+      "status_code": 400,
+      "body": {
+        "message": "Bad Request"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-24T03:41:00.000000+00:00",
+    "operation": "charge",
+    "request": {
+      "method": "POST",
+      "url": "SDK-side decline via PayNow iFrame JS SDK onErrors callback",
+      "headers": {},
+      "body": {
+        "amount": "1.05",
+        "card": "Mastercard test card ...0009",
+        "note": "Decline handled client-side by North PayNow SDK before reaching backend"
+      }
+    },
+    "response": {
+      "status_code": 200,
+      "body": {
+        "processor_response_id": 5352,
+        "response_code": "DCL",
+        "status_code": "ST",
+        "status_message": "ST - BRIC storage account verify data failed",
+        "response": "ST"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-26T11:18:28.940111+00:00",
+    "operation": "auth",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/auth",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "180",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "mid": "3130030854451",
+        "developerKey": "e06ba83a211382119a276231422822c8",
+        "password": "shsxYLwTk/Hwa85KZhehGeQeQm3g16vUqqROrAcAR97dQRkcMRvHf9NOR++nsPpY0dnfXw6yBNWjbOrQXWQmzg=="
+      }
+    },
+    "response": {
+      "status_code": 200,
+      "body": {
+        "accountId": 609,
+        "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDUyMzkwOCwiZXhwIjoxNzc0NTI3NTA4fQ.zsl2feL1WZXtjoi8lUpytIXNXGNZc3k6b5sWCjDuXytTMyi7ss4jwVz2vu3qFtj0k7YT2UhpAZ0VrFoQzxUyUw",
+        "mid": "3130030854451"
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-26T11:18:29.546347+00:00",
+    "operation": "charge",
+    "request": {
+      "method": "POST",
+      "url": "https://proxy.payanywhere.dev/mids/3130030854451/gateways/payment",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "221",
+        "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUxMCwic2RrS2V5IjoiZTA2YmE4M2EyMTEzODIxMTlhMjc2MjMxNDIyODIyYzgiLCJzZGtNaWRSZXF1aXJlZCI6dHJ1ZSwic2RrQXBwU291cmNlSGVhZGVyIjoicGEtaXN2LTg4MGZjOGJiZWNlMDZkZTgwNTFkYzExMzVhYmQwNDg0IiwiYWNjb3VudElkIjo2MDksIm1pZCI6IjMxMzAwMzA4NTQ0NTEiLCJtaWRVc2VySWQiOjUxMCwibWlkVXNlclJvbGUiOiJvd25lciIsImlhdCI6MTc3NDUyMzkwOCwiZXhwIjoxNzc0NTI3NTA4fQ.zsl2feL1WZXtjoi8lUpytIXNXGNZc3k6b5sWCjDuXytTMyi7ss4jwVz2vu3qFtj0k7YT2UhpAZ0VrFoQzxUyUw",
+        "x-nabwss-appsource": "pa-isv-880fc8bbece06de8051dc1135abd0484"
+      },
+      "body": {
+        "token": "2295b32f11405c2666191de21a9ae0f2:f4f355de9cdf72f4b447773900e3775237ce5f311c4ce3c11c17052fb9660b56",
+        "amount": "1.05",
+        "gateway_public_key": "adf9abf6411fedc2522f4a5e519fdc0f",
+        "transaction_source": "PA-JS-SDK"
+      }
+    },
+    "response": {
+      "status_code": 400,
+      "body": {
+        "message": "Bad Request"
+      }
+    }
+  }
+]
